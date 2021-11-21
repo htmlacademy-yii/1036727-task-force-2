@@ -1,36 +1,44 @@
 <?php
+declare(strict_types=1);
 
-// ; ----------------------------
-// ; Assertion
-// ; ----------------------------
-
-// assert.active                = on
-// assert.bail                  = off
-// assert.callback              = "assert_handler"
-// assert.exception             = off
-// assert.warning               = off
-// zend.assertions              = 1
-
+use Anatolev\Service\Task;
 use Anatolev\Service\{ActCancel, ActDone, ActRefuse, ActRespond};
 
+use Anatolev\Exception\BaseException;
+use Anatolev\Exception\ClassNotFoundException;
+use Anatolev\Exception\StatusNotExistException;
+use Anatolev\Exception\ActionNotExistException;
+
 require_once('vendor/autoload.php');
-require_once('functions.php');
 require_once('define.php');
 
-$task = new Anatolev\Service\Task(1, 2);
+set_exception_handler(BaseException::class . '::exceptionHandler');
+set_error_handler(BaseException::class . '::errorHandler');
 
-assert($task->getStatusMap() === TASK_STATUS_MAP);
-assert($task->getActionMap() === TASK_ACTION_MAP);
+$task = new Task(1, 2);
 
-assert($task->getNextStatus('act_cancel') === 'cancel');
-assert($task->getNextStatus('act_respond') === 'work');
-assert($task->getNextStatus('act_done') === 'done');
-assert($task->getNextStatus('act_refuse') === 'failed');
+try {
+    assert($task->getStatusMap() === TASK_STATUS_MAP);
+    assert($task->getActionMap() === TASK_ACTION_MAP);
 
-assert($task->getAvailableAction('new', 1) instanceof ActRespond);
-assert($task->getAvailableAction('new', 2) instanceof ActCancel);
-assert($task->getAvailableAction('new', 3) === null);
+    assert($task->getNextStatus('act_cancel') === 'cancel');
+    assert($task->getNextStatus('act_respond') === 'work');
+    assert($task->getNextStatus('act_done') === 'done');
+    assert($task->getNextStatus('act_refuse') === 'failed');
 
-assert($task->getAvailableAction('work', 1) instanceof ActRefuse);
-assert($task->getAvailableAction('work', 2) instanceof ActDone);
-assert($task->getAvailableAction('work', 3) === null);
+    assert($task->getAvailableActions('new', 1)[0] instanceof ActRespond);
+    assert($task->getAvailableActions('new', 2)[0] instanceof ActCancel);
+    assert($task->getAvailableActions('new', 3) === []);
+
+    assert($task->getAvailableActions('work', 1)[0] instanceof ActRefuse);
+    assert($task->getAvailableActions('work', 2)[0] instanceof ActDone);
+    assert($task->getAvailableActions('work', 3) === []);
+} catch (ClassNotFoundException $ex) {
+    error_log($ex->__toString() . "\n");
+} catch (StatusNotExistException $ex) {
+    error_log($ex->__toString() . "\n");
+} catch (ActionNotExistException $ex) {
+    error_log($ex->__toString() . "\n");
+} catch (ErrorException $ex) {
+    error_log($ex->__toString() . "\n");
+}

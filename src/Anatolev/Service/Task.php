@@ -1,25 +1,30 @@
 <?php
-
 namespace Anatolev\Service;
+
+use Anatolev\Exception\ClassNotFoundException;
+use Anatolev\Exception\StatusNotExistException;
+use Anatolev\Exception\ActionNotExistException;
 
 class Task
 {
-    public const STATUS_NEW = 'new';
-    public const STATUS_CANCEL = 'cancel';
-    public const STATUS_WORK = 'work';
-    public const STATUS_DONE = 'done';
-    public const STATUS_FAILED = 'failed';
+    private const STATUS_NEW = 'new';
+    private const STATUS_CANCEL = 'cancel';
+    private const STATUS_WORK = 'work';
+    private const STATUS_DONE = 'done';
+    private const STATUS_FAILED = 'failed';
 
-    public string $current_status = self::STATUS_NEW;
+    private array $actions = [];
 
     public function __construct(
-        public int $executor_id,
-        public int $customer_id
+        private int $executor_id,
+        private int $customer_id,
+        private string $status = self::STATUS_NEW
     ) {}
 
     /**
      * Возвращает "карту" статусов
      * [внутреннее имя => название статуса на русском]
+     *
      * @return array
      */
     public function getStatusMap(): array
@@ -36,73 +41,104 @@ class Task
     /**
      * Возвращает "карту" действий
      * [внутреннее имя => название действия на русском]
+     *
      * @return array
      */
     public function getActionMap(): array
     {
-        return [
-            ActCancel::getInnerName() => ActCancel::getName(),
-            ActRespond::getInnerName() => ActRespond::getName(),
-            ActDone::getInnerName() => ActDone::getName(),
-            ActRefuse::getInnerName() => ActRefuse::getName()
-        ];
+        $actions = ['act_cancel', 'act_respond', 'act_done', 'act_refuse'];
+        foreach ($actions as $action_key) {
+            $action = $this->getAction($action_key);
+            $action_map[$action->getInnerName()] = $action->getName();
+        }
+
+        return $action_map ?? [];
     }
 
     /**
-     * Возвращает статус, в который перейдёт задание
-     * после выполнения указанного действия
-     * @param string $action Действие
+     * Возвращает статус, в который перейдёт задание после выполнения
+     * указанного действия
+     *
+     * @param string $action Действие (внутреннее имя)
+     *
      * @return string
      */
     public function getNextStatus(string $action): string
     {
+        if (!array_key_exists($action, $this->getActionMap())) {
+            throw new ActionNotExistException("Действие не существует");
+        }
+
         $data = [
-            ActCancel::getInnerName() => self::STATUS_CANCEL,
-            ActRespond::getInnerName() => self::STATUS_WORK,
-            ActDone::getInnerName() => self::STATUS_DONE,
-            ActRefuse::getInnerName() => self::STATUS_FAILED
+            $this->getAction('act_cancel')->getInnerName() => self::STATUS_CANCEL,
+            $this->getAction('act_respond')->getInnerName() => self::STATUS_WORK,
+            $this->getAction('act_done')->getInnerName() => self::STATUS_DONE,
+            $this->getAction('act_refuse')->getInnerName() => self::STATUS_FAILED
         ];
 
         return $data[$action] ?? '';
     }
 
     /**
-     * Возвращает объект доступного действия
-     * для указанного статуса и пользователя
-     * @param string $status Статус задания
+     * Возвращает массив доступных действий для указанного статуса
+     * и пользователя
+     *
+     * @param string $status Статус задания (внутреннее имя)
      * @param int $user_id Идентификатор пользователя
      *
-     * @return object|null
+     * @return array
      */
-    public function getAvailableAction(string $status, int $user_id): ?object
+    public function getAvailableActions(string $status, int $user_id): array
     {
-        $ids = [$this->executor_id, $this->customer_id, $user_id];
-
-        if (
-            $status === self::STATUS_NEW
-            && ActCancel::checkUserRights(...$ids)
-        ) {
-            $action = new ActCancel();
-
-        } elseif (
-            $status === self::STATUS_NEW
-            && ActRespond::checkUserRights(...$ids)
-        ) {
-            $action = new ActRespond();
-
-        } elseif (
-            $status === self::STATUS_WORK
-            && ActDone::checkUserRights(...$ids)
-        ) {
-            $action = new ActDone();
-
-        } elseif (
-            $status === self::STATUS_WORK
-            && ActRefuse::checkUserRights(...$ids)
-        ) {
-            $action = new ActRefuse();
+        if (!array_key_exists($status, $this->getStatusMap())) {
+            throw new StatusNotExistException("Статус не существует");
         }
 
-        return $action ?? null;
+        $array = [
+            self::STATUS_NEW => [
+                $this->getAction('act_cancel'),
+                $this->getAction('act_respond')
+            ],
+            self::STATUS_WORK => [
+                $this->getAction('act_done'),
+                $this->getAction('act_refuse')
+            ]
+        ];
+
+        foreach ($array as $key => $actions) {
+            foreach ($actions as $action) {
+                $ids = [$this->executor_id, $this->customer_id, $user_id];
+                if ($status === $key && $action->checkUserRights(...$ids)) {
+                    $available_actions[] = $action;
+                }
+            }
+        }
+
+        return $available_actions ?? [];
+    }
+
+    /**
+     * Возвращает объект указанного действия
+     *
+     * @param string $action Действие
+     *
+     * @return TaskAction
+     */
+    private function getAction(string $action): TaskAction
+    {
+        $actions = ['act_cancel', 'act_respond', 'act_done', 'act_refuse'];
+        if (!in_array($action, $actions)) {
+            throw new ActionNotExistException("Действие не существует");
+        }
+
+        if (!isset($this->actions[$action])) {
+            $classname = '\Anatolev\Service\\' . str_replace('_', '', $action);
+            if (!class_exists($classname)) {
+                throw new ClassNotFoundException("Класс не найден");
+            }
+            $this->actions[$action] = new $classname();
+        }
+
+        return $this->actions[$action];
     }
 }
