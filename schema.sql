@@ -66,7 +66,8 @@ CREATE TABLE user_profile (
 
 	failed_task_count INT NOT NULL DEFAULT 0,
 	user_id INT UNSIGNED NOT NULL,
-	FOREIGN KEY (user_id) REFERENCES user(id)
+	FOREIGN KEY (user_id) REFERENCES user(id),
+	UNIQUE INDEX user_profile(id, user_id)
 );
 
 -- --------------------------------------------------------
@@ -176,7 +177,9 @@ CREATE TABLE review (
 	rate INT UNSIGNED NOT NULL,
 	comment VARCHAR(255) NOT NULL,
 	user_id INT UNSIGNED NOT NULL,
-	FOREIGN KEY (user_id) REFERENCES user(id)
+	author_id INT UNSIGNED NOT NULL,
+	FOREIGN KEY (user_id) REFERENCES user(id),
+	FOREIGN KEY (author_id) REFERENCES user(id)
 );
 
 -- --------------------------------------------------------
@@ -191,7 +194,9 @@ CREATE TABLE reply (
 	price INT UNSIGNED NULL,
 	comment VARCHAR(255) NULL,
 	task_id INT UNSIGNED NOT NULL,
-	FOREIGN KEY (task_id) REFERENCES task(id)
+	author_id INT UNSIGNED NOT NULL,
+	FOREIGN KEY (task_id) REFERENCES task(id),
+	FOREIGN KEY (author_id) REFERENCES user(id)
 );
 
 -- --------------------------------------------------------
