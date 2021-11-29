@@ -1,7 +1,7 @@
 <?php
 namespace Anatolev\Exception;
 
-class StatusNotExistException extends TaskException
+class StatusNotExistException extends \Exception
 {
 
 }

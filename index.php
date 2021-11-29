@@ -14,7 +14,6 @@ require_once 'init.php';
 $task = new Task(1, 2);
 
 try {
-
     assert($task->getStatusMap() === TASK_STATUS_MAP);
     assert($task->getActionMap() === TASK_ACTION_MAP);
 
@@ -30,7 +29,6 @@ try {
     assert($task->getAvailableActions('work', 1)[0] instanceof ActRefuse);
     assert($task->getAvailableActions('work', 2)[0] instanceof ActDone);
     assert($task->getAvailableActions('work', 3) === []);
-
 } catch (ErrorException $ex) {
     error_log($ex->__toString() . "\n");
 } catch (SourceFileException $ex) {
