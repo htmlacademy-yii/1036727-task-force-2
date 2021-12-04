@@ -18,7 +18,7 @@ class DataConverter
     public function convert(): void
     {
         if (!file_exists($this->file_path)) {
-            throw new SourceFilException('Файл не существует');
+            throw new SourceFileException('Файл не существует');
         }
 
         try {
