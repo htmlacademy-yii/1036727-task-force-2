@@ -1,7 +1,7 @@
 <?php
 namespace Anatolev\Exception;
 
-class SourceFileException extends BaseException
+class SourceFileException extends \Exception
 {
 
 }
