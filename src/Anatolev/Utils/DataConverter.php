@@ -5,52 +5,39 @@ use Anatolev\Exception\SourceFileException;
 
 class DataConverter
 {
-    private $files;
-    private $file_object;
-    private $file_name;
-    private $file_columns;
-    private $file_data;
+    private $input_file;
+    private $output_file;
+    private $import_columns;
+    private $import_data;
 
     public function __construct(
-        private string $input_dir,
+        private string $file_path,
         private string $output_dir = 'sql'
-    ) {
-        if (!file_exists($this->input_dir)) {
-            throw new SourceFileException('Каталог не существует');
-        }
-    }
+    ) {}
 
     public function convert(): void
     {
-        $this->files = array_diff(scandir($this->input_dir), ['.', '..']);
-
-        foreach ($this->files as $filename) {
-            $file_path = "{$this->input_dir}/{$filename}";
-            $file_type = mime_content_type($file_path);
-            $this->file_name = str_replace('.csv', '', $filename);
-
-            if (!in_array($file_type, ['application/csv', 'text/csv'])) {
-                continue;
-            }
-
-            try {
-                $this->file_object = new \SplFileObject($file_path);
-            } catch (RuntimeException $ex) {
-                throw new SourceFileException('Не удалось открыть файл на чтение');
-            }
-
-            $this->file_columns = $this->getHeaderData();
-            $this->import();
-            $this->createSQLFile();
+        if (!file_exists($this->file_path)) {
+            throw new SourceFileException('Файл не существует');
         }
+
+        try {
+            $this->input_file = new \SplFileObject($this->file_path);
+        } catch (RuntimeException $ex) {
+            throw new SourceFileException('Не удалось открыть файл на чтение');
+        }
+
+        $this->import();
+        $this->createSQLFile();
     }
 
     private function import(): void
     {
-        $this->file_data = [];
+        $this->import_columns = implode(', ', $this->getHeaderData());
+
         foreach ($this->getNextLine() as $line) {
             if (isset($line[0])) {
-                $this->file_data[] = $line;
+                $this->import_data[] = $line;
             }
         }
     }
@@ -61,15 +48,16 @@ class DataConverter
             mkdir($this->output_dir);
         }
 
-        $file_path = "{$this->output_dir}/{$this->file_name}.sql";
-        $columns = implode(', ', $this->file_columns);
-        $data = "INSERT INTO {$this->file_name} ({$columns}) VALUES\n";
+        $table = basename($this->file_path, '.csv');
+        $data = "INSERT INTO {$table} ({$this->import_columns}) VALUES\n";
 
-        $this->file_object = new \SplFileObject($file_path, 'w');
-        $this->file_object->fwrite($data);
+        $output_path = "{$this->output_dir}/{$table}.sql";
 
-        $last_index = count($this->file_data) - 1;
-        foreach ($this->file_data as $index => $row) {
+        $this->output_file = new \SplFileObject($output_path, 'w');
+        $this->output_file->fwrite($data);
+
+        $last_index = count($this->import_data) - 1;
+        foreach ($this->import_data as $index => $row) {
             $values = [];
 
             foreach ($row as $value) {
@@ -83,14 +71,14 @@ class DataConverter
             $data = '(' . implode(', ', $values) . ')';
             $data .= $index === $last_index ? ";\n" : ",\n";
 
-            $this->file_object->fwrite($data);
+            $this->output_file->fwrite($data);
         }
     }
 
     private function getHeaderData(): ?array
     {
-        $this->file_object->rewind();
-        $data = $this->file_object->fgetcsv();
+        $this->input_file->rewind();
+        $data = $this->input_file->fgetcsv();
 
         return $data;
     }
@@ -99,8 +87,8 @@ class DataConverter
     {
         $result = null;
 
-        while (!$this->file_object->eof()) {
-            yield $this->file_object->fgetcsv();
+        while (!$this->input_file->eof()) {
+            yield $this->input_file->fgetcsv();
         }
 
         return null;
