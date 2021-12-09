@@ -32,6 +32,8 @@ tests/_support/_generated
 #vagrant folder
 /.vagrant
 
+/config/db.php
+
 *.ai
 *.log
 *.pdf
