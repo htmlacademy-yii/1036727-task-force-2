@@ -29,6 +29,7 @@ class TaskStatus extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
+            [['name', 'inner_name'], 'safe'],
             [['name', 'inner_name'], 'required'],
             [['name', 'inner_name'], 'string', 'max' => 64],
         ];

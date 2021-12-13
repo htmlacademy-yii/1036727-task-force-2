@@ -37,8 +37,8 @@ class Message extends \yii\db\ActiveRecord
             [['content', 'sender_id', 'recipient_id'], 'required'],
             [['read_status', 'sender_id', 'recipient_id'], 'integer'],
             [['content'], 'string', 'max' => 255],
-            [['sender_id'], 'exist', 'skipOnError' => true, 'targetClass' => User::className(), 'targetAttribute' => ['sender_id' => 'id']],
             [['recipient_id'], 'exist', 'skipOnError' => true, 'targetClass' => User::className(), 'targetAttribute' => ['recipient_id' => 'id']],
+            [['sender_id'], 'exist', 'skipOnError' => true, 'targetClass' => User::className(), 'targetAttribute' => ['sender_id' => 'id']],
         ];
     }
 

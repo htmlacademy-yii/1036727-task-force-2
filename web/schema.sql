@@ -1,12 +1,12 @@
 --
--- База данных: task_force
+-- База данных: taskforce
 --
 
-CREATE DATABASE IF NOT EXISTS task_force
+CREATE DATABASE IF NOT EXISTS taskforce
 	DEFAULT CHARACTER SET utf8
 	DEFAULT COLLATE utf8_general_ci;
 
-USE task_force;
+USE taskforce;
 
 -- --------------------------------------------------------
 
@@ -51,7 +51,7 @@ CREATE TABLE user_profile (
 	address VARCHAR(128) NULL,
 	birthday TIMESTAMP NULL,
 	about VARCHAR(128) NULL,
-	avatar_path VARCHAR(128) UNIQUE,
+	avatar_path VARCHAR(128) NULL UNIQUE,
 
 	phone VARCHAR(11) NULL UNIQUE,
 	skype VARCHAR(128) NULL UNIQUE,

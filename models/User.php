@@ -87,7 +87,7 @@ class User extends \yii\db\ActiveRecord
      */
     public function getMessages()
     {
-        return $this->hasMany(Message::className(), ['sender_id' => 'id']);
+        return $this->hasMany(Message::className(), ['recipient_id' => 'id']);
     }
 
     /**
@@ -97,7 +97,7 @@ class User extends \yii\db\ActiveRecord
      */
     public function getMessages0()
     {
-        return $this->hasMany(Message::className(), ['recipient_id' => 'id']);
+        return $this->hasMany(Message::className(), ['sender_id' => 'id']);
     }
 
     /**
@@ -117,7 +117,7 @@ class User extends \yii\db\ActiveRecord
      */
     public function getReviews()
     {
-        return $this->hasMany(Review::className(), ['user_id' => 'id']);
+        return $this->hasMany(Review::className(), ['author_id' => 'id']);
     }
 
     /**
@@ -127,7 +127,7 @@ class User extends \yii\db\ActiveRecord
      */
     public function getReviews0()
     {
-        return $this->hasMany(Review::className(), ['author_id' => 'id']);
+        return $this->hasMany(Review::className(), ['user_id' => 'id']);
     }
 
     /**
@@ -137,7 +137,7 @@ class User extends \yii\db\ActiveRecord
      */
     public function getTasks()
     {
-        return $this->hasMany(Task::className(), ['executor_id' => 'id']);
+        return $this->hasMany(Task::className(), ['customer_id' => 'id']);
     }
 
     /**
@@ -147,7 +147,7 @@ class User extends \yii\db\ActiveRecord
      */
     public function getTasks0()
     {
-        return $this->hasMany(Task::className(), ['customer_id' => 'id']);
+        return $this->hasMany(Task::className(), ['executor_id' => 'id']);
     }
 
     /**

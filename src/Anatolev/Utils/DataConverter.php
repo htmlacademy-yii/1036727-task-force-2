@@ -12,10 +12,11 @@ class DataConverter
 
     public function __construct(
         private string $file_path,
-        private string $output_dir = 'sql'
+        private string $output_dir = 'sql',
+        private bool $array_mode = true
     ) {}
 
-    public function convert(): void
+    public function convert()
     {
         if (!file_exists($this->file_path)) {
             throw new SourceFileException('Файл не существует');
@@ -28,17 +29,31 @@ class DataConverter
         }
 
         $this->import();
+
+        if ($this->array_mode) {
+            return $this->import_data;
+        }
+
         $this->createSQLFile();
     }
 
     private function import(): void
     {
-        $this->import_columns = implode(', ', $this->getHeaderData());
+        $this->import_columns = $this->getHeaderData();
 
         foreach ($this->getNextLine() as $line) {
-            if (isset($line[0])) {
-                $this->import_data[] = $line;
+            if (!isset($line[0])) {
+                continue;
             }
+
+            if ($this->array_mode) {
+                $values = [];
+                foreach ($this->import_columns as $i => $column) {
+                    $values[$column] = $line[$i];
+                }
+            }
+
+            $this->import_data[] = $values ?? $line;
         }
     }
 
@@ -49,7 +64,8 @@ class DataConverter
         }
 
         $table = basename($this->file_path, '.csv');
-        $data = "INSERT INTO {$table} ({$this->import_columns}) VALUES\n";
+        $import_columns = implode(', ', $this->import_columns);
+        $data = "INSERT INTO {$table} ({$import_columns}) VALUES\n";
 
         $output_path = "{$this->output_dir}/{$table}.sql";
 

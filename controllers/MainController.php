@@ -2,16 +2,16 @@
 
 namespace app\controllers;
 
-use app\models\User;
+use app\models\TaskStatus;
 use yii\web\Controller;
 
 class MainController extends Controller
 {
     public function actionIndex()
     {
-        foreach (User::find()->all() as $user) {
-            print($user->email . '<br>');
-            print($user->city->name . '<br><br>');
+        foreach (TaskStatus::find()->all() as $status) {
+            print($status->name . '<br>');
+            print($status->inner_name . '<br><br>');
         }
     }
 }

@@ -8,8 +8,8 @@ use Yii;
  * This is the model class for table "user_category".
  *
  * @property int $id
- * @property int $category_id
- * @property int $user_id
+ * @property int|null $user_id
+ * @property int|null $category_id
  *
  * @property Category $category
  * @property User $user
@@ -30,8 +30,7 @@ class UserCategory extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['category_id', 'user_id'], 'required'],
-            [['category_id', 'user_id'], 'integer'],
+            [['user_id', 'category_id'], 'integer'],
             [['category_id'], 'exist', 'skipOnError' => true, 'targetClass' => Category::className(), 'targetAttribute' => ['category_id' => 'id']],
             [['user_id'], 'exist', 'skipOnError' => true, 'targetClass' => User::className(), 'targetAttribute' => ['user_id' => 'id']],
         ];
@@ -44,8 +43,8 @@ class UserCategory extends \yii\db\ActiveRecord
     {
         return [
             'id' => 'ID',
-            'category_id' => 'Category ID',
             'user_id' => 'User ID',
+            'category_id' => 'Category ID',
         ];
     }
 
