@@ -46,7 +46,7 @@ class Task extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['dt_add', 'expire'], 'safe'],
+            // [['dt_add', 'expire'], 'safe'],
             [['name', 'description', 'category_id', 'executor_id', 'customer_id'], 'required'],
             [['budget', 'city_id', 'status_id', 'category_id', 'executor_id', 'customer_id'], 'integer'],
             [['latitude', 'longitude'], 'number'],
