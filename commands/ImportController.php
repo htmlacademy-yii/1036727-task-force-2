@@ -15,8 +15,8 @@ class ImportController extends Controller
     {
         foreach (explode(', ', $tables) as $table) {
             $file_path = __DIR__ . '/../web/data/' . $table . '.csv';
+            $table = (new BaseInflector())->camelize($table);
             $classname = '\app\models\\' . ucfirst(str_replace('_', '', $table));
-            $classname = (new BaseInflector())->camelize($classname);
 
             foreach ((new DataConverter($file_path))->convert() as $row) {
                 $table = new $classname();
