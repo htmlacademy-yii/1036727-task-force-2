@@ -1,6 +1,9 @@
 <?php
 
-use yii\bootstrap4\Html;
+/* @var $this \yii\web\View */
+/* @var $content string */
+
+use yii\helpers\Html;
 
 ?>
 <?php $this->beginPage() ?>
@@ -19,16 +22,17 @@ use yii\bootstrap4\Html;
 
 <header class="page-header">
     <nav class="main-nav">
-        <a href='#' class="header-logo">
+        <a href='/' class="header-logo">
             <img class="logo-image" src="img/logotype.png" width=227 height=60 alt="taskforce">
         </a>
         <div class="nav-wrapper">
             <ul class="nav-list">
-                <li class="list-item list-item--active">
+                <?php $path = parse_url(\Yii::$app->request->getAbsoluteUrl())['path']; ?>
+                <li class="list-item">
                     <a class="link link--nav" >Новое</a>
                 </li>
-                <li class="list-item">
-                    <a href="#" class="link link--nav" >Мои задания</a>
+                <li class="list-item<?= $path === '/tasks' ? ' list-item--active' : '' ?>">
+                    <a href="/tasks" class="link link--nav" >Мои задания</a>
                 </li>
                 <li class="list-item">
                     <a href="#" class="link link--nav" >Создать задание</a>

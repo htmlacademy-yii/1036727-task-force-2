@@ -23,7 +23,8 @@ class DataController extends Controller
             $file_type = mime_content_type($file_path);
 
             if (in_array($file_type, ['application/csv', 'text/csv'])) {
-                (new DataConverter($file_path, array_mode: false))->convert();
+                $converter = new DataConverter($file_path);
+                $converter->convert()->dumpToSqlFile(output_dir: 'sql');
             }
         }
     }

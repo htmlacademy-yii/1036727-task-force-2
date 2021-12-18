@@ -42,7 +42,6 @@ class UserProfile extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['birthday'], 'safe'],
             [['new_message', 'activities', 'new_review', 'show_contacts', 'show_profile', 'failed_task_count', 'user_id'], 'integer'],
             [['user_id'], 'required'],
             [['address', 'about', 'avatar_path', 'skype'], 'string', 'max' => 128],

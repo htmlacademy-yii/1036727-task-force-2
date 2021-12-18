@@ -33,7 +33,6 @@ class Review extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['dt_add'], 'safe'],
             [['rate', 'comment', 'user_id', 'author_id'], 'required'],
             [['rate', 'user_id', 'author_id'], 'integer'],
             [['comment'], 'string', 'max' => 255],

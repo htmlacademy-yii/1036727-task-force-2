@@ -2,20 +2,28 @@
 
 namespace app\controllers;
 
-use app\models\Task;
 use yii\web\Controller;
+use app\services\TaskService;
+use app\services\CategoryService;
+use app\models\forms\SearchForm;
 
 class TasksController extends Controller
 {
     public function actionIndex()
     {
-        $query = Task::find()
-            ->joinWith('category')
-            ->where(['status_id' => 1])
-            ->orderBy('dt_add DESC');
+        $model = new SearchForm();
 
-        $tasks = $query->all();
+        if (\Yii::$app->request->getIsPost()) {
+            $model->load(\Yii::$app->request->post());
+        }
 
-        return $this->render('index', ['tasks' => $tasks]);
+        $tasks = (new TaskService())->getFilteredTasks($model);
+        $categories = (new CategoryService())->getAllCategories();
+
+        return $this->render('index', [
+            'model' => $model,
+            'tasks' => $tasks,
+            'categories' => $categories
+        ]);
     }
 }
