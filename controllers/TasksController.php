@@ -20,11 +20,19 @@ class TasksController extends Controller
 
         $tasks = (new TaskService())->getFilteredTasks($model);
         $categories = (new CategoryService())->getAllCategories();
+        
+        $period_values = [
+            '0' => 'default',
+            '1' => '1 час',
+            '12' => '12 часов',
+            '24' => '24 часа'
+        ];
 
         return $this->render('index', [
             'model' => $model,
             'tasks' => $tasks,
-            'categories' => $categories
+            'categories' => $categories,
+            'period_values' => $period_values
         ]);
     }
 }
