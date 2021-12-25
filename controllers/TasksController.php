@@ -16,23 +16,21 @@ class TasksController extends Controller
 
         if (Yii::$app->request->getIsPost()) {
             $model->load(Yii::$app->request->post());
+
+            if ($model->validate()) {
+                $tasks = (new TaskService())->getFilteredTasks($model);
+            }
         }
 
-        $tasks = (new TaskService())->getFilteredTasks($model);
+        !isset($tasks) && $tasks = (new TaskService())->getAllTasks();
+
         $categories = (new CategoryService())->getAllCategories();
-        
-        $period_values = [
-            '0' => 'default',
-            '1' => '1 час',
-            '12' => '12 часов',
-            '24' => '24 часа'
-        ];
 
         return $this->render('index', [
             'model' => $model,
             'tasks' => $tasks,
             'categories' => $categories,
-            'period_values' => $period_values
+            'period_values' => SearchForm::PERIOD_VALUES
         ]);
     }
 }

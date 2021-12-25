@@ -1,4 +1,5 @@
 <?php
+
 namespace Anatolev\Service;
 
 use Anatolev\Exception\SourceFileException;
@@ -7,11 +8,11 @@ use Anatolev\Exception\ActionNotExistException;
 
 class Task
 {
-    public const STATUS_NEW = 'new';
-    public const STATUS_CANCEL = 'cancel';
-    public const STATUS_WORK = 'work';
-    public const STATUS_DONE = 'done';
-    public const STATUS_FAILED = 'failed';
+    const STATUS_NEW = 'new';
+    const STATUS_CANCEL = 'cancel';
+    const STATUS_WORK = 'work';
+    const STATUS_DONE = 'done';
+    const STATUS_FAILED = 'failed';
 
     private array $actions = [];
 

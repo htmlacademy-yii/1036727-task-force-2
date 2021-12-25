@@ -8,6 +8,11 @@ use yii\db\Expression;
 
 class TaskService
 {
+    public function getAllTasks(): array
+    {
+        return Task::find()->all();
+    }
+
     public function getFilteredTasks(SearchForm $model): array
     {
         $query = Task::find()

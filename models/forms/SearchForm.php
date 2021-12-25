@@ -10,10 +10,19 @@ class SearchForm extends Model
     public $without_performer;
     public $period;
 
+    const PERIOD_VALUES = [
+        '0' => 'default',
+        '1' => '1 час',
+        '12' => '12 часов',
+        '24' => '24 часа'
+    ];
+
     public function rules()
     {
         return [
-            [['categories', 'without_performer', 'period'], 'safe']
+            ['categories', 'exist', 'targetClass' => '\app\\models\\Category', 'targetAttribute' => 'id', 'allowArray' => true],
+            ['without_performer', 'boolean'],
+            ['period', 'in', 'range' => array_keys(self::PERIOD_VALUES)]
         ];
     }
 

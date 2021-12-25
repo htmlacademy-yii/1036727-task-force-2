@@ -4,6 +4,7 @@
 /* @var $content string */
 
 use yii\helpers\Html;
+use yii\helpers\Url;
 
 ?>
 <?php $this->beginPage() ?>
@@ -27,11 +28,10 @@ use yii\helpers\Html;
         </a>
         <div class="nav-wrapper">
             <ul class="nav-list">
-                <?php $path = parse_url(\Yii::$app->request->getAbsoluteUrl())['path']; ?>
                 <li class="list-item">
                     <a class="link link--nav" >Новое</a>
                 </li>
-                <li class="list-item<?= $path === '/tasks' ? ' list-item--active' : '' ?>">
+                <li class="list-item<?= Url::current() === '/tasks/index' ? ' list-item--active' : '' ?>">
                     <a href="/tasks" class="link link--nav" >Мои задания</a>
                 </li>
                 <li class="list-item">
