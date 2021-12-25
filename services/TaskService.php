@@ -23,8 +23,8 @@ class TaskService
             $query->andWhere(['executor_id' => null]);
         }
 
-        if (intval($model->period) > 0) {
-            settype($model->period, 'integer');
+        settype($model->period, 'integer');
+        if ($model->period > 0) {
             $exp = new Expression("DATE_SUB(NOW(), INTERVAL {$model->period} HOUR)");
             $query->andWhere(['>', 'dt_add', $exp]);
         }
