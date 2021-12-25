@@ -78,11 +78,7 @@ use Anatolev\Helpers\TimeConverter;
                 ->checkbox(['id' => 'without-performer'], false) ?>
 
             <h4 class="head-card">Период</h4>
-            <?= $form->field($model, 'period')->dropDownList([
-                '1' => '1 час',
-                '12' => '12 часов',
-                '24' => '24 часа'
-            ], ['id' => 'period-value']) ?>
+            <?= $form->field($model, 'period')->dropDownList($period_values, ['id' => 'period-value']) ?>
 
             <?= Html::submitButton('Искать', ['class' => 'button button--blue']) ?>
 
