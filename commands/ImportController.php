@@ -15,7 +15,7 @@ class ImportController extends Controller
      * @param array $tables example: user,task
      * @return int Exit code
      */
-    public function actionIndex(array $tables)
+    public function actionIndex(array $tables = ['category', 'city', 'user', 'task_status', 'task'])
     {
         foreach ($tables as $table) {
             $file_path = __DIR__ . '/../web/data/' . $table . '.csv';
