@@ -25,7 +25,7 @@ class m211213_000008_create_task_table extends Migration
             'city_id' => $this->integer()->unsigned()->null(),
             'status_id' => $this->integer()->unsigned()->notNull()->defaultValue(1),
             'category_id' => $this->integer()->unsigned()->notNull(),
-            'executor_id' => $this->integer()->unsigned()->notNull(),
+            'executor_id' => $this->integer()->unsigned()->null(),
             'customer_id' => $this->integer()->unsigned()->notNull()
         ]);
 

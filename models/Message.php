@@ -33,7 +33,6 @@ class Message extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['dt_add'], 'safe'],
             [['content', 'sender_id', 'recipient_id'], 'required'],
             [['read_status', 'sender_id', 'recipient_id'], 'integer'],
             [['content'], 'string', 'max' => 255],

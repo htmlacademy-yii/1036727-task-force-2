@@ -43,16 +43,15 @@ $config = [
             ],
         ],
         'db' => $db,
-        /*
         'urlManager' => [
             'enablePrettyUrl' => true,
             'showScriptName' => false,
             'rules' => [
             ],
         ],
-        */
     ],
     'params' => $params,
+    'language' => 'ru',
 ];
 
 if (YII_ENV_DEV) {

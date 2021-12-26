@@ -33,7 +33,6 @@ class Reply extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['dt_add'], 'safe'],
             [['price', 'task_id', 'author_id'], 'integer'],
             [['task_id', 'author_id'], 'required'],
             [['comment'], 'string', 'max' => 255],

@@ -11,12 +11,10 @@ class DataConverter
     private $import_data;
 
     public function __construct(
-        private string $file_path,
-        private string $output_dir = 'sql',
-        private bool $array_mode = true
+        private string $file_path
     ) {}
 
-    public function convert()
+    public function convert(): self
     {
         if (!file_exists($this->file_path)) {
             throw new SourceFileException('Файл не существует');
@@ -28,49 +26,45 @@ class DataConverter
             throw new SourceFileException('Не удалось открыть файл на чтение');
         }
 
-        $this->import();
-
-        if ($this->array_mode) {
-            return $this->import_data;
-        }
-
-        $this->createSQLFile();
-    }
-
-    private function import(): void
-    {
         $this->import_columns = $this->getHeaderData();
 
         foreach ($this->getNextLine() as $line) {
-            if (!isset($line[0])) {
-                continue;
+            if (isset($line[0])) {
+                $this->import_data[] = $line;
             }
-
-            if ($this->array_mode) {
-                $values = [];
-                foreach ($this->import_columns as $i => $column) {
-                    $values[$column] = $line[$i];
-                }
-            }
-
-            $this->import_data[] = $values ?? $line;
         }
+
+        return $this;
     }
 
-    private function createSQLFile(): void
+    public function asArray(): array
     {
-        if (!file_exists($this->output_dir)) {
-            mkdir($this->output_dir);
+        $result = [];
+
+        foreach ($this->import_data as $line) {
+            foreach ($this->import_columns as $i => $column) {
+                $values[$column] = $line[$i];
+            }
+            $result[] = $values;
+        }
+
+        return $result;
+    }
+
+    public function dumpToSqlFile(string $output_dir): void
+    {
+        if (!file_exists($output_dir)) {
+            mkdir($output_dir);
         }
 
         $table = basename($this->file_path, '.csv');
-        $import_columns = implode(', ', $this->import_columns);
-        $data = "INSERT INTO {$table} ({$import_columns}) VALUES\n";
+        $columns = implode(', ', $this->import_columns);
+        $first_line = "INSERT INTO {$table} ({$columns}) VALUES\n";
 
-        $output_path = "{$this->output_dir}/{$table}.sql";
+        $output_path = "{$output_dir}/{$table}.sql";
 
         $this->output_file = new \SplFileObject($output_path, 'w');
-        $this->output_file->fwrite($data);
+        $this->output_file->fwrite($first_line);
 
         $last_index = count($this->import_data) - 1;
         foreach ($this->import_data as $index => $row) {
@@ -84,10 +78,10 @@ class DataConverter
                 }
             }
 
-            $data = '(' . implode(', ', $values) . ')';
-            $data .= $index === $last_index ? ";\n" : ",\n";
+            $values_line = '(' . implode(', ', $values) . ')';
+            $values_line .= $index === $last_index ? ";\n" : ",\n";
 
-            $this->output_file->fwrite($data);
+            $this->output_file->fwrite($values_line);
         }
     }
 
