@@ -5,8 +5,9 @@ namespace app\commands;
 use yii\console\Controller;
 use yii\console\ExitCode;
 use yii\helpers\BaseInflector;
-use Anatolev\Utils\DataConverter;
-use Anatolev\Exception\SourceFileException;
+
+use anatolev\utils\DataConverter;
+use anatolev\exception\SourceFileException;
 
 class ImportController extends Controller
 {
@@ -22,7 +23,7 @@ class ImportController extends Controller
      * @param array $tables example: user,task
      * @return int Exit code
      */
-    public function actionIndex(array $tables = self::TABLES)
+    public function actionIndex(array $tables = self::TABLES): int
     {
         foreach ($tables as $table) {
             $file_path = __DIR__ . '/../data/' . $table . '.csv';

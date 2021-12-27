@@ -2,9 +2,9 @@
 
 namespace app\services;
 
+use yii\db\Expression;
 use app\models\Task;
 use app\models\forms\SearchForm;
-use yii\db\Expression;
 
 class TaskService
 {
@@ -15,6 +15,8 @@ class TaskService
 
     public function getFilteredTasks(SearchForm $model): array
     {
+        settype($model->period, 'integer');
+
         $query = Task::find()
             ->joinWith('category')
             ->where(['status_id' => 1])
@@ -28,7 +30,6 @@ class TaskService
             $query->andWhere(['executor_id' => null]);
         }
 
-        settype($model->period, 'integer');
         if ($model->period > 0) {
             $exp = new Expression("DATE_SUB(NOW(), INTERVAL {$model->period} HOUR)");
             $query->andWhere(['>', 'dt_add', $exp]);

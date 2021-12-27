@@ -1,6 +1,6 @@
 <?php
 
-namespace Anatolev\Helpers;
+namespace anatolev\helpers;
 
 class TimeConverter
 {

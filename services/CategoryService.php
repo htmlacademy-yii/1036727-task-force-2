@@ -10,9 +10,4 @@ class CategoryService
     {
         return Category::find()->all();
     }
-
-    public function getCategoryIds(): array
-    {
-        return Category::find()->column();
-    }
 }

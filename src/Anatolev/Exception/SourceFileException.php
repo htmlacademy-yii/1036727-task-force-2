@@ -1,5 +1,6 @@
 <?php
-namespace Anatolev\Exception;
+
+namespace anatolev\exception;
 
 class SourceFileException extends \Exception
 {

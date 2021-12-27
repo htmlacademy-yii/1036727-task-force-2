@@ -3,7 +3,8 @@
 use yii\helpers\Html;
 use yii\helpers\ArrayHelper;
 use yii\widgets\ActiveForm;
-use Anatolev\Helpers\TimeConverter;
+
+use anatolev\helpers\TimeConverter;
 
 ?>
 <div class="left-column">

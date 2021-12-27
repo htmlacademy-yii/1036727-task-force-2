@@ -1,5 +1,6 @@
 <?php
-namespace Anatolev\Service;
+
+namespace anatolev\service;
 
 class ActRespond extends TaskAction
 {
