@@ -142,7 +142,7 @@ CREATE TABLE task (
 
 	status_id INT UNSIGNED NOT NULL DEFAULT 1,
 	category_id INT UNSIGNED NOT NULL,
-	executor_id INT UNSIGNED NOT NULL,
+	executor_id INT UNSIGNED NULL,
 	customer_id INT UNSIGNED NOT NULL,
 	FOREIGN KEY (city_id) REFERENCES city(id),
 	FOREIGN KEY (status_id) REFERENCES task_status(id),
