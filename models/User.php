@@ -48,7 +48,7 @@ class User extends \yii\db\ActiveRecord
             [['email', 'name'], 'string', 'max' => 128],
             [['password'], 'string', 'max' => 255],
             [['email'], 'unique'],
-            [['city_id'], 'exist', 'skipOnError' => true, 'targetClass' => City::className(), 'targetAttribute' => ['city_id' => 'id']],
+            [['city_id'], 'exist', 'targetClass' => City::class, 'targetAttribute' => ['city_id' => 'id']],
         ];
     }
 

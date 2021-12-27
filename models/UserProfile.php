@@ -51,7 +51,7 @@ class UserProfile extends \yii\db\ActiveRecord
             [['phone'], 'unique'],
             [['skype'], 'unique'],
             [['messenger'], 'unique'],
-            [['user_id'], 'exist', 'skipOnError' => true, 'targetClass' => User::className(), 'targetAttribute' => ['user_id' => 'id']],
+            [['user_id'], 'exist', 'targetClass' => User::class, 'targetAttribute' => ['user_id' => 'id']],
         ];
     }
 

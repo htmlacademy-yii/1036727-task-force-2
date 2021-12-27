@@ -33,7 +33,7 @@ class PhotoOfWork extends \yii\db\ActiveRecord
             [['profile_id'], 'integer'],
             [['path'], 'string', 'max' => 128],
             [['path'], 'unique'],
-            [['profile_id'], 'exist', 'skipOnError' => true, 'targetClass' => UserProfile::className(), 'targetAttribute' => ['profile_id' => 'id']],
+            [['profile_id'], 'exist', 'targetClass' => UserProfile::class, 'targetAttribute' => ['profile_id' => 'id']],
         ];
     }
 
