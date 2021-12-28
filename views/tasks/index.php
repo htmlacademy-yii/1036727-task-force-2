@@ -1,5 +1,9 @@
 <?php
 
+/* @var $this \yii\web\View */
+/* @var $tasks \app\models\Task[] */
+/* @var $model \app\models\forms\SearchForm */
+
 use yii\helpers\Html;
 use yii\helpers\ArrayHelper;
 use yii\widgets\ActiveForm;

@@ -5,17 +5,26 @@
 
 use yii\helpers\Html;
 use yii\helpers\Url;
+use app\assets\AppAsset;
+
+AppAsset::register($this);
+
+$this->title = 'Taskforce';
+
+$this->registerMetaTag([
+    'name' => 'description',
+    'content' => '«TaskForce» — это онлайн площадка для поиска исполнителей на разовые задачи.'
+]);
 
 ?>
 <?php $this->beginPage() ?>
 <!DOCTYPE html>
-<html lang="ru">
+<html lang="<?= \Yii::$app->language ?>">
 <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <meta charset="<?= \Yii::$app->charset ?>">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
     <?php $this->registerCsrfMetaTags() ?>
     <title><?= Html::encode($this->title) ?></title>
-    <link rel="stylesheet" href="css/style.css">
     <?php $this->head() ?>
 </head>
 <body>
@@ -24,15 +33,15 @@ use yii\helpers\Url;
 <header class="page-header">
     <nav class="main-nav">
         <a href='/' class="header-logo">
-            <img class="logo-image" src="img/logotype.png" width=227 height=60 alt="taskforce">
+            <img class="logo-image" src="img/logotype.png" width="227" height="60" alt="taskforce">
         </a>
         <div class="nav-wrapper">
             <ul class="nav-list">
                 <li class="list-item">
                     <a class="link link--nav" >Новое</a>
                 </li>
-                <li class="list-item<?= Url::current() === '/tasks/index' ? ' list-item--active' : '' ?>">
-                    <a href="/tasks" class="link link--nav" >Мои задания</a>
+                <li class="list-item<?= Url::current() === Url::to(['tasks/index']) ? ' list-item--active' : '' ?>">
+                    <a href="<?= Url::to(['tasks/']) ?>" class="link link--nav" >Мои задания</a>
                 </li>
                 <li class="list-item">
                     <a href="#" class="link link--nav" >Создать задание</a>

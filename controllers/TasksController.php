@@ -22,7 +22,7 @@ class TasksController extends Controller
             }
         }
 
-        !isset($tasks) && $tasks = (new TaskService())->getAllTasks();
+        isset($tasks) or $tasks = (new TaskService())->getAllTasks();
 
         $categories = (new CategoryService())->getAllCategories();
 
