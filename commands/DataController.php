@@ -15,11 +15,15 @@ class DataController extends Controller
     const CSV_MIME_TYPES = ['application/csv', 'text/csv'];
 
     const TABLES = [
-        'category',
         'city',
         'user',
+        'category',
+        'user_category',
+        'user_profile',
         'task_status',
-        'task'
+        'task',
+        'review',
+        'reply'
     ];
 
     public $defaultAction = 'import';

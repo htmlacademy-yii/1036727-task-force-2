@@ -41,8 +41,8 @@ class TaskStatus extends \yii\db\ActiveRecord
     {
         return [
             'id' => 'ID',
-            'name' => 'Name',
-            'inner_name' => 'Inner Name',
+            'name' => 'Название',
+            'inner_name' => 'Внутреннее имя',
         ];
     }
 
@@ -53,6 +53,6 @@ class TaskStatus extends \yii\db\ActiveRecord
      */
     public function getTasks()
     {
-        return $this->hasMany(Task::className(), ['status_id' => 'id']);
+        return $this->hasMany(Task::class, ['status_id' => 'id']);
     }
 }

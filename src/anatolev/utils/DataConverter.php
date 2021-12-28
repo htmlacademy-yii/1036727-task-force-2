@@ -45,7 +45,7 @@ class DataConverter
         foreach ($this->import_data as $line) {
 
             foreach ($this->import_columns as $i => $column) {
-                $values[$column] = $line[$i];
+                $values[$column] = $line[$i] ?: null;
             }
             $result[] = $values;
         }

@@ -13,22 +13,22 @@ use Yii;
  * @property string $name
  * @property string $password
  * @property int $city_id
- * @property int $is_executor
- * @property string|null $last_online
+ * @property bool $is_executor
  *
  * @property City $city
  * @property Message[] $messages
  * @property Message[] $messages0
  * @property Reply[] $replies
- * @property Review[] $reviews
- * @property Review[] $reviews0
  * @property Task[] $tasks
  * @property Task[] $tasks0
- * @property UserCategory[] $userCategories
- * @property UserProfile[] $userProfiles
+ * @property Category[] $categories
+ * @property UserProfile $profile
  */
 class User extends \yii\db\ActiveRecord
 {
+    public $busy_status;
+    public $place_in_rating;
+
     /**
      * {@inheritdoc}
      */
@@ -65,7 +65,6 @@ class User extends \yii\db\ActiveRecord
             'password' => 'Password',
             'city_id' => 'City ID',
             'is_executor' => 'Is Executor',
-            'last_online' => 'Last Online',
         ];
     }
 
@@ -76,7 +75,7 @@ class User extends \yii\db\ActiveRecord
      */
     public function getCity()
     {
-        return $this->hasOne(City::className(), ['id' => 'city_id']);
+        return $this->hasOne(City::class, ['id' => 'city_id']);
     }
 
     /**
@@ -86,7 +85,7 @@ class User extends \yii\db\ActiveRecord
      */
     public function getMessages()
     {
-        return $this->hasMany(Message::className(), ['recipient_id' => 'id']);
+        return $this->hasMany(Message::class, ['recipient_id' => 'id']);
     }
 
     /**
@@ -96,7 +95,7 @@ class User extends \yii\db\ActiveRecord
      */
     public function getMessages0()
     {
-        return $this->hasMany(Message::className(), ['sender_id' => 'id']);
+        return $this->hasMany(Message::class, ['sender_id' => 'id']);
     }
 
     /**
@@ -106,27 +105,7 @@ class User extends \yii\db\ActiveRecord
      */
     public function getReplies()
     {
-        return $this->hasMany(Reply::className(), ['author_id' => 'id']);
-    }
-
-    /**
-     * Gets query for [[Reviews]].
-     *
-     * @return \yii\db\ActiveQuery
-     */
-    public function getReviews()
-    {
-        return $this->hasMany(Review::className(), ['author_id' => 'id']);
-    }
-
-    /**
-     * Gets query for [[Reviews0]].
-     *
-     * @return \yii\db\ActiveQuery
-     */
-    public function getReviews0()
-    {
-        return $this->hasMany(Review::className(), ['user_id' => 'id']);
+        return $this->hasMany(Reply::class, ['author_id' => 'id']);
     }
 
     /**
@@ -136,7 +115,7 @@ class User extends \yii\db\ActiveRecord
      */
     public function getTasks()
     {
-        return $this->hasMany(Task::className(), ['customer_id' => 'id']);
+        return $this->hasMany(Task::class, ['customer_id' => 'id']);
     }
 
     /**
@@ -146,26 +125,28 @@ class User extends \yii\db\ActiveRecord
      */
     public function getTasks0()
     {
-        return $this->hasMany(Task::className(), ['executor_id' => 'id']);
+        return $this->hasMany(Task::class, ['executor_id' => 'id']);
     }
 
     /**
-     * Gets query for [[UserCategories]].
+     * Gets query for [[Categories]].
      *
      * @return \yii\db\ActiveQuery
      */
-    public function getUserCategories()
+    public function getCategories()
     {
-        return $this->hasMany(UserCategory::className(), ['user_id' => 'id']);
+        return $this
+            ->hasMany(Category::class, ['id' => 'category_id'])
+            ->viaTable('user_category', ['user_id' => 'id']);
     }
 
     /**
-     * Gets query for [[UserProfiles]].
+     * Gets query for [[UserProfile]].
      *
      * @return \yii\db\ActiveQuery
      */
-    public function getUserProfiles()
+    public function getProfile()
     {
-        return $this->hasMany(UserProfile::className(), ['user_id' => 'id']);
+        return $this->hasOne(UserProfile::class, ['user_id' => 'id']);
     }
 }

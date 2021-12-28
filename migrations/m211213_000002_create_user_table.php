@@ -20,7 +20,6 @@ class m211213_000002_create_user_table extends Migration
             'password' => $this->string(255)->notNull(),
             'city_id' => $this->integer()->unsigned()->notNull(),
             'is_executor' => $this->boolean()->notNull()->defaultValue(1),
-            'last_online' => $this->timestamp()->null()->defaultExpression('CURRENT_TIMESTAMP')
         ]);
 
         // add foreign key for table `{{%city}}`

@@ -12,14 +12,16 @@ use Yii;
  * @property string|null $birthday
  * @property string|null $about
  * @property string|null $avatar_path
- * @property string|null $phone
- * @property string|null $skype
- * @property string|null $messenger
- * @property int $new_message
- * @property int $activities
- * @property int $new_review
- * @property int $show_contacts
- * @property int $show_profile
+ * @property string|null $contact_phone
+ * @property string|null $contact_skype
+ * @property string|null $contact_tg
+ * @property bool $notice_message
+ * @property bool $notice_actions
+ * @property bool $notice_review
+ * @property bool $show_contacts
+ * @property bool $show_profile
+ * @property float $current_rate
+ * @property int $done_task_count
  * @property int $failed_task_count
  * @property int $user_id
  *
@@ -42,15 +44,15 @@ class UserProfile extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['new_message', 'activities', 'new_review', 'show_contacts', 'show_profile', 'failed_task_count', 'user_id'], 'integer'],
+            [['notice_message', 'notice_actions', 'notice_review', 'show_contacts', 'show_profile', 'done_task_count', 'failed_task_count', 'user_id'], 'integer'],
             [['user_id'], 'required'],
-            [['address', 'about', 'avatar_path', 'skype'], 'string', 'max' => 128],
-            [['phone'], 'string', 'max' => 11],
-            [['messenger'], 'string', 'max' => 64],
+            [['address', 'about', 'avatar_path', 'contact_skype'], 'string', 'max' => 128],
+            [['contact_phone'], 'string', 'max' => 11],
+            [['contact_tg'], 'string', 'max' => 64],
             [['avatar_path'], 'unique'],
-            [['phone'], 'unique'],
-            [['skype'], 'unique'],
-            [['messenger'], 'unique'],
+            [['contact_phone'], 'unique'],
+            [['contact_skype'], 'unique'],
+            [['contact_tg'], 'unique'],
             [['user_id'], 'exist', 'targetClass' => User::class, 'targetAttribute' => ['user_id' => 'id']],
         ];
     }
@@ -66,14 +68,19 @@ class UserProfile extends \yii\db\ActiveRecord
             'birthday' => 'Birthday',
             'about' => 'About',
             'avatar_path' => 'Avatar Path',
-            'phone' => 'Phone',
-            'skype' => 'Skype',
-            'messenger' => 'Messenger',
-            'new_message' => 'New Message',
-            'activities' => 'Activities',
-            'new_review' => 'New Review',
+
+            'contact_phone' => 'Contact Phone',
+            'contact_skype' => 'Contact Skype',
+            'contact_tg' => 'Contact Tg',
+
+            'notice_message' => 'Notice Message',
+            'notice_actions' => 'Notice Actions',
+            'notice_review' => 'Notice Review',
+
             'show_contacts' => 'Show Contacts',
             'show_profile' => 'Show Profile',
+            'current_rate' => 'Current Rate',
+            'done_task_count' => 'Done Task Count',
             'failed_task_count' => 'Failed Task Count',
             'user_id' => 'User ID',
         ];
@@ -86,7 +93,7 @@ class UserProfile extends \yii\db\ActiveRecord
      */
     public function getPhotoOfWorks()
     {
-        return $this->hasMany(PhotoOfWork::className(), ['profile_id' => 'id']);
+        return $this->hasMany(PhotoOfWork::class, ['profile_id' => 'id']);
     }
 
     /**
@@ -96,6 +103,6 @@ class UserProfile extends \yii\db\ActiveRecord
      */
     public function getUser()
     {
-        return $this->hasOne(User::className(), ['id' => 'user_id']);
+        return $this->hasOne(User::class, ['id' => 'user_id']);
     }
 }

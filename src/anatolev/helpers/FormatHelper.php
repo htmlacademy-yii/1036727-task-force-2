@@ -2,7 +2,7 @@
 
 namespace anatolev\helpers;
 
-class TimeConverter
+class FormatHelper
 {
     const SECONDS_PER_MINUTE = 60;
     const SECONDS_PER_HOUR = self::SECONDS_PER_MINUTE * 60;

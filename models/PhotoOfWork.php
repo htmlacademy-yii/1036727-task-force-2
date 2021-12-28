@@ -56,6 +56,6 @@ class PhotoOfWork extends \yii\db\ActiveRecord
      */
     public function getProfile()
     {
-        return $this->hasOne(UserProfile::className(), ['id' => 'profile_id']);
+        return $this->hasOne(UserProfile::class, ['id' => 'profile_id']);
     }
 }
