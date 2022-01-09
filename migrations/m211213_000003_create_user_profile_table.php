@@ -16,16 +16,21 @@ class m211213_000003_create_user_profile_table extends Migration
             'id' => $this->primaryKey()->unsigned(),
             'address' => $this->string(128)->null(),
             'birthday' => $this->timestamp()->null(),
-            'about' => $this->string(128),
+            'about' => $this->string(128)->null(),
             'avatar_path' => $this->string(128)->null()->unique(),
-            'phone' => $this->string(11)->null()->unique(),
-            'skype' => $this->string(128)->null()->unique(),
-            'messenger' => $this->string(64)->null()->unique(),
-            'new_message' => $this->boolean()->notNull()->defaultValue(0),
-            'activities' => $this->boolean()->notNull()->defaultValue(0),
-            'new_review' => $this->boolean()->notNull()->defaultValue(0),
+
+            'contact_phone' => $this->string(11)->null()->unique(),
+            'contact_skype' => $this->string(128)->null()->unique(),
+            'contact_tg' => $this->string(64)->null()->unique(),
+
+            'notice_message' => $this->boolean()->notNull()->defaultValue(0),
+            'notice_actions' => $this->boolean()->notNull()->defaultValue(0),
+            'notice_review' => $this->boolean()->notNull()->defaultValue(0),
+
             'show_contacts' => $this->boolean()->notNull()->defaultValue(1),
             'show_profile' => $this->boolean()->notNull()->defaultValue(1),
+            'current_rate' => $this->float()->notNull()->defaultValue(0),
+            'done_task_count' => $this->integer()->unsigned()->notNull()->defaultValue(0),
             'failed_task_count' => $this->integer()->unsigned()->notNull()->defaultValue(0),
             'user_id' => $this->integer()->unsigned()->notNull()
         ]);

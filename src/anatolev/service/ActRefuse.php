@@ -1,10 +1,11 @@
 <?php
-namespace Anatolev\Service;
 
-class ActRespond extends TaskAction
+namespace anatolev\service;
+
+class ActRefuse extends TaskAction
 {
-    private const NAME = 'Откликнуться';
-    private const INNER_NAME = 'act_respond';
+    private const NAME = 'Отказаться';
+    private const INNER_NAME = 'act_refuse';
 
     public function getName(): string
     {

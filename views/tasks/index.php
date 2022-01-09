@@ -1,9 +1,15 @@
 <?php
 
-use yii\helpers\Html;
+/* @var $this \yii\web\View */
+/* @var $tasks \app\models\Task[] */
+/* @var $model \app\models\forms\SearchForm */
+
 use yii\helpers\ArrayHelper;
+use yii\helpers\Html;
+use yii\helpers\Url;
 use yii\widgets\ActiveForm;
-use Anatolev\Helpers\TimeConverter;
+
+use anatolev\helpers\FormatHelper;
 
 ?>
 <div class="left-column">
@@ -12,16 +18,17 @@ use Anatolev\Helpers\TimeConverter;
     <?php foreach ($tasks as $task): ?>
         <div class="task-card">
             <div class="header-task">
-                <a  href="#" class="link link--block link--big"><?= Html::encode($task->name) ?></a>
+                <?php $href = Url::to(['tasks/view', 'id' => $task->id]); ?>
+                <a  href="<?= $href ?>" class="link link--block link--big"><?= Html::encode($task->name) ?></a>
                 <p class="price price--task"><?= Html::encode($task->budget) ?></p>
             </div>
-            <?php $time = TimeConverter::getRelativeTime($task->dt_add); ?>
+            <?php $time = FormatHelper::getRelativeTime($task->dt_add); ?>
             <p class="info-text"><span class="current-time"><?= $time ?> </span>назад</p>
             <p class="task-text"><?= Html::encode($task->description) ?></p>
             <div class="footer-task">
                 <p class="info-text town-text"><?= Html::encode($task->address) ?></p>
                 <p class="info-text category-text"><?= Html::encode($task->category->name) ?></p>
-                <a href="#" class="button button--black">Смотреть Задание</a>
+                <a href="<?= $href ?>" class="button button--black">Смотреть Задание</a>
             </div>
         </div>
     <?php endforeach; ?>
@@ -78,7 +85,7 @@ use Anatolev\Helpers\TimeConverter;
                 ->checkbox(['id' => 'without-performer'], false) ?>
 
             <h4 class="head-card">Период</h4>
-            <?= $form->field($model, 'period')->dropDownList($period_values, ['id' => 'period-value']) ?>
+            <?= $form->field($model, 'period_value')->dropDownList($period_values, ['id' => 'period-value']) ?>
 
             <?= Html::submitButton('Искать', ['class' => 'button button--blue']) ?>
 

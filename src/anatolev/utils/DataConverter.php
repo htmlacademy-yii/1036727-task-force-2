@@ -1,7 +1,8 @@
 <?php
-namespace Anatolev\Utils;
 
-use Anatolev\Exception\SourceFileException;
+namespace anatolev\utils;
+
+use anatolev\exception\SourceFileException;
 
 class DataConverter
 {
@@ -42,8 +43,9 @@ class DataConverter
         $result = [];
 
         foreach ($this->import_data as $line) {
+
             foreach ($this->import_columns as $i => $column) {
-                $values[$column] = $line[$i];
+                $values[$column] = $line[$i] ?: null;
             }
             $result[] = $values;
         }
@@ -65,12 +67,13 @@ class DataConverter
 
         $this->output_file = new \SplFileObject($output_path, 'w');
         $this->output_file->fwrite($first_line);
-
         $last_index = count($this->import_data) - 1;
+
         foreach ($this->import_data as $index => $row) {
             $values = [];
 
             foreach ($row as $value) {
+
                 if (is_numeric($value)) {
                     $values[] = $value;
                 } else {

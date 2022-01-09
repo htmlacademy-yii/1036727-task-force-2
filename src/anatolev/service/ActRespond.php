@@ -1,10 +1,11 @@
 <?php
-namespace Anatolev\Service;
 
-class ActDone extends TaskAction
+namespace anatolev\service;
+
+class ActRespond extends TaskAction
 {
-    private const NAME = 'Выполнено';
-    private const INNER_NAME = 'act_done';
+    private const NAME = 'Откликнуться';
+    private const INNER_NAME = 'act_respond';
 
     public function getName(): string
     {
@@ -18,6 +19,6 @@ class ActDone extends TaskAction
 
     public function checkUserRights(int $executor_id, int $customer_id, int $user_id): bool
     {
-        return $customer_id === $user_id;
+        return $executor_id === $user_id;
     }
 }

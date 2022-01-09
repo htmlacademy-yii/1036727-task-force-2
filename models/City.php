@@ -44,9 +44,9 @@ class City extends \yii\db\ActiveRecord
     {
         return [
             'id' => 'ID',
-            'name' => 'Name',
-            'latitude' => 'Latitude',
-            'longitude' => 'Longitude',
+            'name' => 'Название',
+            'latitude' => 'Широта',
+            'longitude' => 'Долгота',
         ];
     }
 
@@ -57,7 +57,7 @@ class City extends \yii\db\ActiveRecord
      */
     public function getTasks()
     {
-        return $this->hasMany(Task::className(), ['city_id' => 'id']);
+        return $this->hasMany(Task::class, ['city_id' => 'id']);
     }
 
     /**
@@ -67,6 +67,6 @@ class City extends \yii\db\ActiveRecord
      */
     public function getUsers()
     {
-        return $this->hasMany(User::className(), ['city_id' => 'id']);
+        return $this->hasMany(User::class, ['city_id' => 'id']);
     }
 }

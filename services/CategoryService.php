@@ -11,8 +11,11 @@ class CategoryService
         return Category::find()->all();
     }
 
-    public function getCategoryIds(): array
+    public function getByInnerName(string $inner_name): ?Category
     {
-        return Category::find()->column();
+        $query = Category::find()
+            ->where(['inner_name' => $inner_name]);
+
+        return $query->one();
     }
 }

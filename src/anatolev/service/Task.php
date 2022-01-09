@@ -1,10 +1,10 @@
 <?php
 
-namespace Anatolev\Service;
+namespace anatolev\service;
 
-use Anatolev\Exception\SourceFileException;
-use Anatolev\Exception\StatusNotExistException;
-use Anatolev\Exception\ActionNotExistException;
+use anatolev\exception\SourceFileException;
+use anatolev\exception\StatusNotExistException;
+use anatolev\exception\ActionNotExistException;
 
 class Task
 {

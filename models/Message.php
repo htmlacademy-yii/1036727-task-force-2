@@ -36,8 +36,8 @@ class Message extends \yii\db\ActiveRecord
             [['content', 'sender_id', 'recipient_id'], 'required'],
             [['read_status', 'sender_id', 'recipient_id'], 'integer'],
             [['content'], 'string', 'max' => 255],
-            [['recipient_id'], 'exist', 'skipOnError' => true, 'targetClass' => User::className(), 'targetAttribute' => ['recipient_id' => 'id']],
-            [['sender_id'], 'exist', 'skipOnError' => true, 'targetClass' => User::className(), 'targetAttribute' => ['sender_id' => 'id']],
+            [['recipient_id'], 'exist', 'targetClass' => User::class, 'targetAttribute' => ['recipient_id' => 'id']],
+            [['sender_id'], 'exist', 'targetClass' => User::class, 'targetAttribute' => ['sender_id' => 'id']],
         ];
     }
 
@@ -63,7 +63,7 @@ class Message extends \yii\db\ActiveRecord
      */
     public function getRecipient()
     {
-        return $this->hasOne(User::className(), ['id' => 'recipient_id']);
+        return $this->hasOne(User::class, ['id' => 'recipient_id']);
     }
 
     /**
@@ -73,6 +73,6 @@ class Message extends \yii\db\ActiveRecord
      */
     public function getSender()
     {
-        return $this->hasOne(User::className(), ['id' => 'sender_id']);
+        return $this->hasOne(User::class, ['id' => 'sender_id']);
     }
 }

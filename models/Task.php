@@ -3,6 +3,7 @@
 namespace app\models;
 
 use Yii;
+use anatolev\service\Task as Task2;
 
 /**
  * This is the model class for table "task".
@@ -28,7 +29,7 @@ use Yii;
  * @property User $executor
  * @property Reply[] $replies
  * @property TaskStatus $status
- * @property TaskFile[] $taskFiles
+ * @property TaskFile[] $Files
  */
 class Task extends \yii\db\ActiveRecord
 {
@@ -51,11 +52,11 @@ class Task extends \yii\db\ActiveRecord
             [['latitude', 'longitude'], 'number'],
             [['name', 'address'], 'string', 'max' => 128],
             [['description'], 'string', 'max' => 255],
-            [['category_id'], 'exist', 'skipOnError' => true, 'targetClass' => Category::className(), 'targetAttribute' => ['category_id' => 'id']],
-            [['city_id'], 'exist', 'skipOnError' => true, 'targetClass' => City::className(), 'targetAttribute' => ['city_id' => 'id']],
-            [['customer_id'], 'exist', 'skipOnError' => true, 'targetClass' => User::className(), 'targetAttribute' => ['customer_id' => 'id']],
-            [['executor_id'], 'exist', 'skipOnError' => true, 'targetClass' => User::className(), 'targetAttribute' => ['executor_id' => 'id']],
-            [['status_id'], 'exist', 'skipOnError' => true, 'targetClass' => TaskStatus::className(), 'targetAttribute' => ['status_id' => 'id']],
+            [['category_id'], 'exist', 'targetClass' => Category::class, 'targetAttribute' => ['category_id' => 'id']],
+            [['city_id'], 'exist', 'targetClass' => City::class, 'targetAttribute' => ['city_id' => 'id']],
+            [['customer_id'], 'exist', 'targetClass' => User::class, 'targetAttribute' => ['customer_id' => 'id']],
+            [['executor_id'], 'exist', 'targetClass' => User::class, 'targetAttribute' => ['executor_id' => 'id']],
+            [['status_id'], 'exist', 'targetClass' => TaskStatus::class, 'targetAttribute' => ['status_id' => 'id']],
         ];
     }
 
@@ -82,6 +83,13 @@ class Task extends \yii\db\ActiveRecord
         ];
     }
 
+    public function getDone(): bool
+    {
+        $inner_name = $this->getStatus()->one()->inner_name;
+
+        return $inner_name === \anatolev\service\Task::STATUS_DONE;
+    }
+
     /**
      * Gets query for [[Category]].
      *
@@ -89,7 +97,7 @@ class Task extends \yii\db\ActiveRecord
      */
     public function getCategory()
     {
-        return $this->hasOne(Category::className(), ['id' => 'category_id']);
+        return $this->hasOne(Category::class, ['id' => 'category_id']);
     }
 
     /**
@@ -99,7 +107,7 @@ class Task extends \yii\db\ActiveRecord
      */
     public function getCity()
     {
-        return $this->hasOne(City::className(), ['id' => 'city_id']);
+        return $this->hasOne(City::class, ['id' => 'city_id']);
     }
 
     /**
@@ -109,7 +117,7 @@ class Task extends \yii\db\ActiveRecord
      */
     public function getCustomer()
     {
-        return $this->hasOne(User::className(), ['id' => 'customer_id']);
+        return $this->hasOne(User::class, ['id' => 'customer_id']);
     }
 
     /**
@@ -119,7 +127,17 @@ class Task extends \yii\db\ActiveRecord
      */
     public function getExecutor()
     {
-        return $this->hasOne(User::className(), ['id' => 'executor_id']);
+        return $this->hasOne(User::class, ['id' => 'executor_id']);
+    }
+
+    /**
+     * Gets query for [[Review]].
+     *
+     * @return \yii\db\ActiveQuery
+     */
+    public function getReview()
+    {
+        return $this->hasOne(Review::class, ['task_id' => 'id']);
     }
 
     /**
@@ -129,7 +147,7 @@ class Task extends \yii\db\ActiveRecord
      */
     public function getReplies()
     {
-        return $this->hasMany(Reply::className(), ['task_id' => 'id']);
+        return $this->hasMany(Reply::class, ['task_id' => 'id']);
     }
 
     /**
@@ -139,16 +157,16 @@ class Task extends \yii\db\ActiveRecord
      */
     public function getStatus()
     {
-        return $this->hasOne(TaskStatus::className(), ['id' => 'status_id']);
+        return $this->hasOne(TaskStatus::class, ['id' => 'status_id']);
     }
 
     /**
-     * Gets query for [[TaskFiles]].
+     * Gets query for [[Files]].
      *
      * @return \yii\db\ActiveQuery
      */
-    public function getTaskFiles()
+    public function getFiles()
     {
-        return $this->hasMany(TaskFile::className(), ['task_id' => 'id']);
+        return $this->hasMany(TaskFile::class, ['task_id' => 'id']);
     }
 }

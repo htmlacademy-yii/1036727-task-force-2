@@ -11,11 +11,13 @@ use Yii;
  * @property string $dt_add
  * @property int $rate
  * @property string $comment
- * @property int $user_id
- * @property int $author_id
+ * @property int $task_id
+ * @property int $executor_id
+ * @property int $customer_id
  *
- * @property User $author
- * @property User $user
+ * @property Task $task
+ * @property User $customer
+ * @property User $executor
  */
 class Review extends \yii\db\ActiveRecord
 {
@@ -33,11 +35,10 @@ class Review extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['rate', 'comment', 'user_id', 'author_id'], 'required'],
-            [['rate', 'user_id', 'author_id'], 'integer'],
+            [['rate', 'comment', 'task_id'], 'required'],
+            [['rate', 'task_id'], 'integer'],
             [['comment'], 'string', 'max' => 255],
-            [['author_id'], 'exist', 'skipOnError' => true, 'targetClass' => User::className(), 'targetAttribute' => ['author_id' => 'id']],
-            [['user_id'], 'exist', 'skipOnError' => true, 'targetClass' => User::className(), 'targetAttribute' => ['user_id' => 'id']],
+            [['task_id'], 'exist', 'targetClass' => Task::class, 'targetAttribute' => ['task_id' => 'id']],
         ];
     }
 
@@ -51,28 +52,17 @@ class Review extends \yii\db\ActiveRecord
             'dt_add' => 'Dt Add',
             'rate' => 'Rate',
             'comment' => 'Comment',
-            'user_id' => 'User ID',
-            'author_id' => 'Author ID',
+            'task_id' => 'Task ID',
         ];
     }
 
     /**
-     * Gets query for [[Author]].
+     * Gets query for [[Task]].
      *
      * @return \yii\db\ActiveQuery
      */
-    public function getAuthor()
+    public function getTask()
     {
-        return $this->hasOne(User::className(), ['id' => 'author_id']);
-    }
-
-    /**
-     * Gets query for [[User]].
-     *
-     * @return \yii\db\ActiveQuery
-     */
-    public function getUser()
-    {
-        return $this->hasOne(User::className(), ['id' => 'user_id']);
+        return $this->hasOne(Task::class, ['id' => 'task_id']);
     }
 }

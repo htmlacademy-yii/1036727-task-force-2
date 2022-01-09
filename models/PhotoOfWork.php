@@ -33,7 +33,7 @@ class PhotoOfWork extends \yii\db\ActiveRecord
             [['profile_id'], 'integer'],
             [['path'], 'string', 'max' => 128],
             [['path'], 'unique'],
-            [['profile_id'], 'exist', 'skipOnError' => true, 'targetClass' => UserProfile::className(), 'targetAttribute' => ['profile_id' => 'id']],
+            [['profile_id'], 'exist', 'targetClass' => UserProfile::class, 'targetAttribute' => ['profile_id' => 'id']],
         ];
     }
 
@@ -56,6 +56,6 @@ class PhotoOfWork extends \yii\db\ActiveRecord
      */
     public function getProfile()
     {
-        return $this->hasOne(UserProfile::className(), ['id' => 'profile_id']);
+        return $this->hasOne(UserProfile::class, ['id' => 'profile_id']);
     }
 }

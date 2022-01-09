@@ -33,7 +33,7 @@ class TaskFile extends \yii\db\ActiveRecord
             [['task_id'], 'integer'],
             [['path'], 'string', 'max' => 128],
             [['path'], 'unique'],
-            [['task_id'], 'exist', 'skipOnError' => true, 'targetClass' => Task::className(), 'targetAttribute' => ['task_id' => 'id']],
+            [['task_id'], 'exist', 'targetClass' => Task::class, 'targetAttribute' => ['task_id' => 'id']],
         ];
     }
 
@@ -56,6 +56,6 @@ class TaskFile extends \yii\db\ActiveRecord
      */
     public function getTask()
     {
-        return $this->hasOne(Task::className(), ['id' => 'task_id']);
+        return $this->hasOne(Task::class, ['id' => 'task_id']);
     }
 }

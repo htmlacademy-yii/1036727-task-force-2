@@ -42,8 +42,8 @@ class Category extends \yii\db\ActiveRecord
     {
         return [
             'id' => 'ID',
-            'name' => 'Name',
-            'inner_name' => 'Inner Name',
+            'name' => 'Название',
+            'inner_name' => 'Внутреннее имя',
         ];
     }
 
@@ -54,16 +54,18 @@ class Category extends \yii\db\ActiveRecord
      */
     public function getTasks()
     {
-        return $this->hasMany(Task::className(), ['category_id' => 'id']);
+        return $this->hasMany(Task::class, ['category_id' => 'id']);
     }
 
     /**
-     * Gets query for [[UserCategories]].
+     * Gets query for [[Users]].
      *
      * @return \yii\db\ActiveQuery
      */
-    public function getUserCategories()
+    public function getUsers()
     {
-        return $this->hasMany(UserCategory::className(), ['category_id' => 'id']);
+        return $this
+            ->hasMany(User::class, ['id' => 'user_id'])
+            ->viaTable('user_category', ['category_id' => 'id']);
     }
 }
