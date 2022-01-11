@@ -2,6 +2,7 @@
 
 namespace app\commands;
 
+use Yii;
 use yii\console\Controller;
 use yii\console\ExitCode;
 use yii\helpers\BaseInflector;
@@ -27,7 +28,6 @@ class DataController extends Controller
     ];
 
     public $defaultAction = 'import';
-    public string $input_dir = 'data';
 
     /**
      * Импортирует данные из csv-файлов в бд
@@ -38,7 +38,7 @@ class DataController extends Controller
     public function actionImport(array $tables = self::TABLES): int
     {
         foreach ($tables as $table) {
-            $file_path = __DIR__ . "/../{$this->input_dir}/" . $table . '.csv';
+            $file_path = Yii::getAlias('@data') . '/' . $table . '.csv';
             $table = (new BaseInflector())->camelize($table);
             $classname = '\app\models\\' . $table;
 
@@ -60,13 +60,7 @@ class DataController extends Controller
      */
     public function actionConvert(string $output_dir = 'sql'): int
     {
-        $input_dir = '../' . $this->input_dir;
-
-        if (!file_exists($input_dir)) {
-            throw new SourceFileException('Каталог не существует');
-        }
-
-        foreach (FileHelper::findFiles($input_dir) as $file) {
+        foreach (FileHelper::findFiles(Yii::getAlias('@data')) as $file) {
             $file_type = FileHelper::getMimeType($file);
 
             if (in_array($file_type, self::CSV_MIME_TYPES)) {

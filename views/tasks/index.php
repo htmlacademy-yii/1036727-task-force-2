@@ -1,6 +1,8 @@
 <?php
 
 /* @var $this \yii\web\View */
+/* @var $period_values array */
+/* @var $categories Category[] */
 /* @var $tasks \app\models\Task[] */
 /* @var $model \app\models\forms\SearchForm */
 
@@ -82,10 +84,10 @@ use anatolev\helpers\FormatHelper;
             <h4 class="head-card">Дополнительно</h4>
             <?= $form
                 ->field($model, 'without_performer', ['template' => "{input}\n{label}"])
-                ->checkbox(['id' => 'without-performer'], false) ?>
+                ->checkbox(enclosedByLabel: false) ?>
 
             <h4 class="head-card">Период</h4>
-            <?= $form->field($model, 'period_value')->dropDownList($period_values, ['id' => 'period-value']) ?>
+            <?= $form->field($model, 'period_value')->dropDownList($period_values) ?>
 
             <?= Html::submitButton('Искать', ['class' => 'button button--blue']) ?>
 

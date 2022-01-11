@@ -35,7 +35,7 @@ class UserProfile extends \yii\db\ActiveRecord
      */
     public static function tableName()
     {
-        return 'user_profile';
+        return '{{user_profile}}';
     }
 
     /**
@@ -44,16 +44,17 @@ class UserProfile extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['notice_message', 'notice_actions', 'notice_review', 'show_contacts', 'show_profile', 'done_task_count', 'failed_task_count', 'user_id'], 'integer'],
             [['user_id'], 'required'],
             [['address', 'about', 'avatar_path', 'contact_skype'], 'string', 'max' => 128],
-            [['contact_phone'], 'string', 'max' => 11],
-            [['contact_tg'], 'string', 'max' => 64],
             [['avatar_path'], 'unique'],
+            [['contact_phone'], 'string', 'length' => [11, 11]],
             [['contact_phone'], 'unique'],
             [['contact_skype'], 'unique'],
             [['contact_tg'], 'unique'],
-            [['user_id'], 'exist', 'targetClass' => User::class, 'targetAttribute' => ['user_id' => 'id']],
+            [['contact_tg'], 'string', 'max' => 64],
+            [['notice_message', 'notice_actions', 'notice_review', 'show_contacts', 'show_profile'], 'boolean'],
+            [['done_task_count', 'failed_task_count', 'user_id'], 'integer'],
+            [['user_id'], 'exist', 'targetClass' => User::class, 'targetAttribute' => 'id'],
         ];
     }
 

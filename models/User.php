@@ -34,7 +34,7 @@ class User extends \yii\db\ActiveRecord
      */
     public static function tableName()
     {
-        return 'user';
+        return '{{user}}';
     }
 
     /**
@@ -43,12 +43,16 @@ class User extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
+            [['email', 'name', 'password'], 'trim'],
             [['email', 'name', 'password', 'city_id'], 'required'],
-            [['city_id', 'is_executor'], 'integer'],
-            [['email', 'name'], 'string', 'max' => 128],
-            [['password'], 'string', 'max' => 255],
+            [['email'], 'string', 'max' => 128],
+            [['email'], 'email'],
             [['email'], 'unique'],
-            [['city_id'], 'exist', 'targetClass' => City::class, 'targetAttribute' => ['city_id' => 'id']],
+            [['name'], 'string', 'length' => [2, 128]],
+            [['password'], 'string', 'max' => 255],
+            [['city_id'], 'integer'],
+            [['city_id'], 'exist', 'targetClass' => City::class, 'targetAttribute' => 'id'],
+            [['is_executor'], 'boolean']
         ];
     }
 
