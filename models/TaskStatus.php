@@ -2,7 +2,7 @@
 
 namespace app\models;
 
-use Yii;
+use yii\db\ActiveRecord;
 
 /**
  * This is the model class for table "task_status".
@@ -13,7 +13,7 @@ use Yii;
  *
  * @property Task[] $tasks
  */
-class TaskStatus extends \yii\db\ActiveRecord
+class TaskStatus extends ActiveRecord
 {
     /**
      * {@inheritdoc}

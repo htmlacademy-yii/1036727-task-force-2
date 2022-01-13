@@ -2,7 +2,7 @@
 
 namespace app\models;
 
-use Yii;
+use yii\db\ActiveRecord;
 
 /**
  * This is the model class for table "user_profile".
@@ -28,7 +28,7 @@ use Yii;
  * @property PhotoOfWork[] $photoOfWorks
  * @property User $user
  */
-class UserProfile extends \yii\db\ActiveRecord
+class UserProfile extends ActiveRecord
 {
     /**
      * {@inheritdoc}

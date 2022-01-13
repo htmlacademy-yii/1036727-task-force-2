@@ -45,7 +45,7 @@ use anatolev\helpers\UserHelper;
                     <div class="response-wrapper">
                         <div class="stars-rating small">
 
-                            <?php for ($i = 1; $i <= \Yii::$app->params['maxUserRating']; $i++): ?>
+                            <?php for ($i = 1; $i <= Yii::$app->params['maxUserRating']; $i++): ?>
                                 <span class="<?= $i <= $reply->author->profile->current_rate ? 'fill-star' : '' ?>">&nbsp;</span>
                             <?php endfor; ?>
 
@@ -104,7 +104,7 @@ use anatolev\helpers\UserHelper;
 
                     <li class="enumeration-item">
                         <a
-                            href="/uploads/files/<?= Html::encode($file->path) ?>"
+                            href="<?= Url::to([FileHelper::FILES_UPLOAD_DIR . '/' . $file->path]) ?>"
                             class="link link--block link--clip"
                             download
                         ><?= Html::encode($file->path) ?></a>

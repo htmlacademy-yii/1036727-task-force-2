@@ -2,19 +2,19 @@
 
 namespace app\models;
 
-use Yii;
+use yii\db\ActiveRecord;
 
 /**
  * This is the model class for table "user_category".
  *
  * @property int $id
- * @property int|null $user_id
- * @property int|null $category_id
+ * @property int $user_id
+ * @property int $category_id
  *
  * @property Category $category
  * @property User $user
  */
-class UserCategory extends \yii\db\ActiveRecord
+class UserCategory extends ActiveRecord
 {
     /**
      * {@inheritdoc}

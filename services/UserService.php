@@ -4,15 +4,25 @@ namespace app\services;
 
 use Yii;
 use app\models\City;
-use app\models\Review;
 use app\models\Task;
 use app\models\User;
+use app\models\UserIdentity;
 use app\models\UserProfile;
 use app\models\forms\SignupForm;
 
 class UserService
 {
     const STATUS_WORK_ID = 3;
+
+    public function getUser(string $email): ?UserIdentity
+    {
+        return UserIdentity::findOne(['email' => $email]);
+    }
+
+    public function getUserById(int $user_id): ?User
+    {
+        return User::findOne($user_id);
+    }
 
     public function getExecutor(int $user_id): ?User
     {
@@ -49,7 +59,7 @@ class UserService
         return $query->count() ? 'Занят' : 'Открыт для новых заказов';
     }
 
-    public function addNewUser(SignupForm $model): void
+    public function signup(SignupForm $model): void
     {
         $hash = Yii::$app->getSecurity()->generatePasswordHash($model->password);
 

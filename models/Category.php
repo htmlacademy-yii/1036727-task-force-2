@@ -2,7 +2,7 @@
 
 namespace app\models;
 
-use Yii;
+use yii\db\ActiveRecord;
 
 /**
  * This is the model class for table "category".
@@ -12,9 +12,9 @@ use Yii;
  * @property string $inner_name
  *
  * @property Task[] $tasks
- * @property UserCategory[] $userCategories
+ * @property User[] $users
  */
-class Category extends \yii\db\ActiveRecord
+class Category extends ActiveRecord
 {
     /**
      * {@inheritdoc}
@@ -57,7 +57,7 @@ class Category extends \yii\db\ActiveRecord
         return $this->hasMany(Task::class, ['category_id' => 'id']);
     }
 
-    /**
+     /**
      * Gets query for [[Users]].
      *
      * @return \yii\db\ActiveQuery

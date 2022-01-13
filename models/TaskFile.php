@@ -2,7 +2,7 @@
 
 namespace app\models;
 
-use Yii;
+use yii\db\ActiveRecord;
 
 /**
  * This is the model class for table "task_file".
@@ -13,7 +13,7 @@ use Yii;
  *
  * @property Task $task
  */
-class TaskFile extends \yii\db\ActiveRecord
+class TaskFile extends ActiveRecord
 {
     /**
      * {@inheritdoc}

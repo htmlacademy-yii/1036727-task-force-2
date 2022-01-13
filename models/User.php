@@ -2,7 +2,7 @@
 
 namespace app\models;
 
-use Yii;
+use yii\db\ActiveRecord;
 
 /**
  * This is the model class for table "user".
@@ -24,7 +24,7 @@ use Yii;
  * @property Category[] $categories
  * @property UserProfile $profile
  */
-class User extends \yii\db\ActiveRecord
+class User extends ActiveRecord
 {
     public $busy_status;
     public $place_in_rating;

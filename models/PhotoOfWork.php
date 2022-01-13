@@ -2,7 +2,7 @@
 
 namespace app\models;
 
-use Yii;
+use yii\db\ActiveRecord;
 
 /**
  * This is the model class for table "photo_of_work".
@@ -13,7 +13,7 @@ use Yii;
  *
  * @property UserProfile $profile
  */
-class PhotoOfWork extends \yii\db\ActiveRecord
+class PhotoOfWork extends ActiveRecord
 {
     /**
      * {@inheritdoc}
@@ -49,7 +49,7 @@ class PhotoOfWork extends \yii\db\ActiveRecord
         ];
     }
 
-    /**
+     /**
      * Gets query for [[Profile]].
      *
      * @return \yii\db\ActiveQuery

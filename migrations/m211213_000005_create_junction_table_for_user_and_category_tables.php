@@ -18,8 +18,8 @@ class m211213_000005_create_junction_table_for_user_and_category_tables extends 
     {
         $this->createTable('{{%user_category}}', [
             'id' => $this->primaryKey()->unsigned(),
-            'user_id' => $this->integer()->unsigned(),
-            'category_id' => $this->integer()->unsigned()
+            'user_id' => $this->integer()->unsigned()->notNull(),
+            'category_id' => $this->integer()->unsigned()->notNull()
         ]);
 
         // add foreign key for table `{{%user}}`

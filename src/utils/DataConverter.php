@@ -17,21 +17,20 @@ class DataConverter
 
     public function convert(): self
     {
-        if (!file_exists($this->file_path)) {
-            throw new SourceFileException('Файл не существует');
-        }
+        if (file_exists($this->file_path)) {
 
-        try {
-            $this->input_file = new \SplFileObject($this->file_path);
-        } catch (RuntimeException $ex) {
-            throw new SourceFileException('Не удалось открыть файл на чтение');
-        }
+            try {
+                $this->input_file = new \SplFileObject($this->file_path);
+            } catch (RuntimeException $ex) {
+                throw new SourceFileException('Не удалось открыть файл на чтение');
+            }
 
-        $this->import_columns = $this->getHeaderData();
+            $this->import_columns = $this->getHeaderData();
 
-        foreach ($this->getNextLine() as $line) {
-            if (isset($line[0])) {
-                $this->import_data[] = $line;
+            foreach ($this->getNextLine() as $line) {
+                if (isset($line[0])) {
+                    $this->import_data[] = $line;
+                }
             }
         }
 
@@ -42,7 +41,7 @@ class DataConverter
     {
         $result = [];
 
-        foreach ($this->import_data as $line) {
+        foreach ($this->import_data ?? [] as $line) {
 
             foreach ($this->import_columns as $i => $column) {
                 $values[$column] = $line[$i] ?: null;

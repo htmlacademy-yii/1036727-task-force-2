@@ -2,37 +2,24 @@
 
 /* @var $this \yii\web\View */
 /* @var $period_values array */
-/* @var $categories Category[] */
 /* @var $tasks \app\models\Task[] */
+/* @var $categories \app\models\Category[] */
 /* @var $model \app\models\forms\SearchForm */
 
 use yii\helpers\ArrayHelper;
 use yii\helpers\Html;
-use yii\helpers\Url;
 use yii\widgets\ActiveForm;
 
-use anatolev\helpers\FormatHelper;
+$this->title = 'Новые задания';
 
 ?>
 <div class="left-column">
     <h3 class="head-main head-task">Новые задания</h3>
 
     <?php foreach ($tasks as $task): ?>
-        <div class="task-card">
-            <div class="header-task">
-                <?php $href = Url::to(['tasks/view', 'id' => $task->id]); ?>
-                <a  href="<?= $href ?>" class="link link--block link--big"><?= Html::encode($task->name) ?></a>
-                <p class="price price--task"><?= Html::encode($task->budget) ?></p>
-            </div>
-            <?php $time = FormatHelper::getRelativeTime($task->dt_add); ?>
-            <p class="info-text"><span class="current-time"><?= $time ?> </span>назад</p>
-            <p class="task-text"><?= Html::encode($task->description) ?></p>
-            <div class="footer-task">
-                <p class="info-text town-text"><?= Html::encode($task->address) ?></p>
-                <p class="info-text category-text"><?= Html::encode($task->category->name) ?></p>
-                <a href="<?= $href ?>" class="button button--black">Смотреть Задание</a>
-            </div>
-        </div>
+
+        <?= $this->render('_task', ['task' => $task]) ?>
+
     <?php endforeach; ?>
 
     <div class="pagination-wrapper">
@@ -66,30 +53,30 @@ use anatolev\helpers\FormatHelper;
                 ]
             ]) ?>
 
-            <h4 class="head-card">Категории</h4>
-            <?= $form->field($model, 'categories[]')->checkboxList(
-                ArrayHelper::map($categories, 'id', 'name'),
-                [
-                    'separator' => '<br>',
-                    'item' => function ($index, $label, $name, $checked, $value) use ($model) {
-                        settype($model->categories, 'array');
-                        $checked = in_array($value, $model->categories) ? ' checked' : '';
-                        $html = "<input type=\"checkbox\" name=\"{$name}\" value=\"{$value}\"{$checked}>";
+                <h4 class="head-card">Категории</h4>
+                <?= $form->field($model, 'categories[]')->checkboxList(
+                    ArrayHelper::map($categories, 'id', 'name'),
+                    [
+                        'separator' => '<br>',
+                        'item' => function ($index, $label, $name, $checked, $value) use ($model) {
+                            settype($model->categories, 'array');
+                            $checked = in_array($value, $model->categories) ? ' checked' : '';
+                            $html = "<input type=\"checkbox\" name=\"{$name}\" value=\"{$value}\"{$checked}>";
 
-                        return "<label>{$html}{$label}</label>";
-                    }
-                ]
-            ) ?>
+                            return "<label>{$html}{$label}</label>";
+                        }
+                    ]
+                ) ?>
 
-            <h4 class="head-card">Дополнительно</h4>
-            <?= $form
-                ->field($model, 'without_performer', ['template' => "{input}\n{label}"])
-                ->checkbox(enclosedByLabel: false) ?>
+                <h4 class="head-card">Дополнительно</h4>
+                <?= $form
+                    ->field($model, 'without_performer', ['template' => "{input}\n{label}"])
+                    ->checkbox(enclosedByLabel: false) ?>
 
-            <h4 class="head-card">Период</h4>
-            <?= $form->field($model, 'period_value')->dropDownList($period_values) ?>
+                <h4 class="head-card">Период</h4>
+                <?= $form->field($model, 'period_value')->dropDownList($period_values) ?>
 
-            <?= Html::submitButton('Искать', ['class' => 'button button--blue']) ?>
+                <?= Html::submitButton('Искать', ['class' => 'button button--blue']) ?>
 
             <?php ActiveForm::end() ?>
 

@@ -2,7 +2,7 @@
 
 namespace app\models;
 
-use Yii;
+use yii\db\ActiveRecord;
 
 /**
  * This is the model class for table "reply".
@@ -17,7 +17,7 @@ use Yii;
  * @property User $author
  * @property Task $task
  */
-class Reply extends \yii\db\ActiveRecord
+class Reply extends ActiveRecord
 {
     /**
      * {@inheritdoc}
