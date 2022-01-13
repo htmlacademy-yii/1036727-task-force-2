@@ -49,6 +49,7 @@ $config = [
             'enableStrictParsing' => true,
             'rules' => [
                 '/' => 'site/index',
+                'signup' => 'signup/index',
                 'tasks' => 'tasks/index',
                 'tasks/<category:(?!view)>' => 'tasks/index',
                 'tasks/view/<id:\d+>' => 'tasks/view',

@@ -2,10 +2,13 @@
 
 namespace app\services;
 
+use Yii;
+use app\models\City;
 use app\models\Review;
 use app\models\Task;
 use app\models\User;
 use app\models\UserProfile;
+use app\models\forms\SignupForm;
 
 class UserService
 {
@@ -44,6 +47,30 @@ class UserService
             ->andWhere(['status_id' => self::STATUS_WORK_ID]);
 
         return $query->count() ? 'Занят' : 'Открыт для новых заказов';
+    }
+
+    public function addNewUser(SignupForm $model): void
+    {
+        $hash = Yii::$app->getSecurity()->generatePasswordHash($model->password);
+
+        $user = new User();
+        $user->name = $model->name;
+        $user->email = $model->email;
+        $user->password = $hash;
+        $user->is_executor = $model->is_executor;
+        $city = City::findOne($model->city_id);
+
+        $transaction = Yii::$app->db->beginTransaction();
+        try {
+            $user->link('city', $city);
+
+            $profile = new UserProfile();
+            $profile->link('user', $user);
+
+            $transaction->commit();
+        } catch (\Throwable $e) {
+            $transaction->rollBack();
+        }
     }
 
     // public function getUserCurrentRate(int $user_id): float
