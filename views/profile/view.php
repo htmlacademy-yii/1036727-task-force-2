@@ -1,7 +1,7 @@
 <?php
 
-/* @var $this \yii\web\View */
-/* @var $user \app\models\User */
+/* @var $this yii\web\View */
+/* @var $user app\models\User */
 
 use yii\helpers\Html;
 use yii\helpers\Url;

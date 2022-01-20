@@ -1,6 +1,6 @@
 <?php
 
-/* @var $this \yii\web\View */
+/* @var $this yii\web\View */
 /* @var $content string */
 
 use yii\helpers\Html;
@@ -29,7 +29,7 @@ $this->registerMetaTag([
 
 <?= $this->render('_main-header') ?>
 
-<main class="main-content container">
+<main class="main-content container<?= $this->params['mainClass'] ?? '' ?>">
     <?= $content ?>
 </main>
 

@@ -10,6 +10,8 @@ $config = [
     'aliases' => [
         '@bower' => '@vendor/bower-asset',
         '@npm'   => '@vendor/npm-asset',
+        '@avatars' => 'uploads/avatars',
+        '@files' => 'uploads/files',
     ],
     'components' => [
         'request' => [
@@ -54,9 +56,10 @@ $config = [
                 'logout' => 'user/logout',
                 'signup' => 'user/signup',
                 'tasks' => 'tasks/index',
+                'tasks/add' => 'tasks/create',
                 'tasks/<category:(?!view)>' => 'tasks/index',
                 'tasks/view/<id:\d+>' => 'tasks/view',
-                'user/view/<id:\d+>' => 'user/view',
+                'user/view/<id:\d+>' => 'profile/view',
             ],
         ],
     ],
