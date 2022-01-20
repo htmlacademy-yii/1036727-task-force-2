@@ -9,17 +9,17 @@ use app\models\forms\SearchForm;
 use app\services\TaskService;
 use app\services\CategoryService;
 
-class TasksController extends Controller
+class TasksController extends SecuredController
 {
-    public function actionIndex()
+    public function actionIndex(?string $category = null)
     {
         $model = new SearchForm();
         $tasks = [];
 
-        if (Yii::$app->request->getIsPost()) {
+        if (Yii::$app->request->isPost) {
             $model->load(Yii::$app->request->post());
 
-        } elseif ($category = Yii::$app->request->get('category')) {
+        } elseif (isset($category)) {
 
             if ($id = (new CategoryService())->getByInnerName($category)?->id) {
                 $model->categories[] = $id;

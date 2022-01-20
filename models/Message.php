@@ -2,7 +2,7 @@
 
 namespace app\models;
 
-use Yii;
+use yii\db\ActiveRecord;
 
 /**
  * This is the model class for table "message".
@@ -17,7 +17,7 @@ use Yii;
  * @property User $recipient
  * @property User $sender
  */
-class Message extends \yii\db\ActiveRecord
+class Message extends ActiveRecord
 {
     /**
      * {@inheritdoc}
@@ -56,7 +56,7 @@ class Message extends \yii\db\ActiveRecord
         ];
     }
 
-    /**
+     /**
      * Gets query for [[Recipient]].
      *
      * @return \yii\db\ActiveQuery

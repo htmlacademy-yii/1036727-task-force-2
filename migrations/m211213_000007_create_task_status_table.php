@@ -14,8 +14,8 @@ class m211213_000007_create_task_status_table extends Migration
     {
         $this->createTable('{{%task_status}}', [
             'id' => $this->primaryKey()->unsigned(),
-            'name' => $this->string(64)->notNull(),
-            'inner_name' => $this->string(64)->notNull()
+            'name' => $this->string(64)->notNull()->unique(),
+            'inner_name' => $this->string(64)->notNull()->unique()
         ]);
     }
 

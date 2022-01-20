@@ -20,8 +20,9 @@ $config = [
             'class' => 'yii\caching\FileCache',
         ],
         'user' => [
-            'identityClass' => 'app\models\User',
-            'enableAutoLogin' => true,
+            'identityClass' => 'app\models\UserIdentity',
+            'enableAutoLogin' => false,
+            'loginUrl' => ['landing/index'],
         ],
         'errorHandler' => [
             'errorAction' => 'site/error',
@@ -48,8 +49,10 @@ $config = [
             'showScriptName' => false,
             'enableStrictParsing' => true,
             'rules' => [
-                '/' => 'site/index',
-                'signup' => 'signup/index',
+                '/' => 'landing/index',
+                'login' => 'user/login',
+                'logout' => 'user/logout',
+                'signup' => 'user/signup',
                 'tasks' => 'tasks/index',
                 'tasks/<category:(?!view)>' => 'tasks/index',
                 'tasks/view/<id:\d+>' => 'tasks/view',

@@ -1,12 +1,13 @@
 <?php
 
-/* @var $this \yii\web\View */
+/* @var $this yii\web\View */
 /* @var $content string */
 
 use yii\helpers\Html;
-use app\assets\MainAsset;
+use app\assets\LandingAsset;
+use app\models\forms\LoginForm;
 
-MainAsset::register($this);
+LandingAsset::register($this);
 
 $this->registerMetaTag([
     'name' => 'description',
@@ -24,14 +25,22 @@ $this->registerMetaTag([
     <title><?= Html::encode($this->title) ?> | Taskforce</title>
     <?php $this->head() ?>
 </head>
-<body>
+<body class="landing">
 <?php $this->beginBody() ?>
 
-<?= $this->render('_main-header') ?>
+<div class="table-layout">
 
-<main class="main-content container">
-    <?= $content ?>
-</main>
+    <?= $this->render('_landing-header') ?>
+
+    <main>
+        <?= $content ?>
+    </main>
+
+    <?= $this->render('_landing-footer') ?>
+    <?= $this->render('//modals/_login-form', ['model' => new LoginForm]) ?>
+
+</div>
+<div class="overlay"></div>
 
 <?php $this->endBody() ?>
 </body>

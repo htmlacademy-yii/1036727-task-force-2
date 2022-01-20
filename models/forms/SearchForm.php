@@ -18,7 +18,7 @@ class SearchForm extends Model
         '24' => '24 часа'
     ];
 
-    public function rules()
+    public function rules(): array
     {
         return [
             ['categories', 'exist', 'targetClass' => Category::class, 'targetAttribute' => 'id', 'allowArray' => true],
@@ -27,7 +27,7 @@ class SearchForm extends Model
         ];
     }
 
-    public function attributeLabels()
+    public function attributeLabels(): array
     {
         return [
             'without_performer' => 'Без исполнителя'

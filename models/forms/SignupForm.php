@@ -15,7 +15,7 @@ class SignupForm extends Model
     public $password_repeat;
     public $is_executor;
 
-    public function rules()
+    public function rules(): array
     {
         return [
             [['name', 'email', 'password', 'password_repeat'], 'trim'],
@@ -32,7 +32,7 @@ class SignupForm extends Model
         ];
     }
 
-    public function attributeLabels()
+    public function attributeLabels(): array
     {
         return [
             'name' => 'Ваше имя',

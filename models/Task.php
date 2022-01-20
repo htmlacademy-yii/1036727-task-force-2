@@ -2,8 +2,7 @@
 
 namespace app\models;
 
-use Yii;
-use anatolev\service\Task as Task2;
+use yii\db\ActiveRecord;
 
 /**
  * This is the model class for table "task".
@@ -31,7 +30,7 @@ use anatolev\service\Task as Task2;
  * @property TaskStatus $status
  * @property TaskFile[] $Files
  */
-class Task extends \yii\db\ActiveRecord
+class Task extends ActiveRecord
 {
     /**
      * {@inheritdoc}
