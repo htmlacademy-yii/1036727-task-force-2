@@ -20,7 +20,7 @@ class TaskStatus extends ActiveRecord
      */
     public static function tableName()
     {
-        return 'task_status';
+        return '{{task_status}}';
     }
 
     /**

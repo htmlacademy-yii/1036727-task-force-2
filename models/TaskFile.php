@@ -20,7 +20,7 @@ class TaskFile extends ActiveRecord
      */
     public static function tableName()
     {
-        return 'task_file';
+        return '{{task_file}}';
     }
 
     /**
@@ -30,10 +30,10 @@ class TaskFile extends ActiveRecord
     {
         return [
             [['path', 'task_id'], 'required'],
-            [['task_id'], 'integer'],
             [['path'], 'string', 'max' => 128],
             [['path'], 'unique'],
-            [['task_id'], 'exist', 'targetClass' => Task::class, 'targetAttribute' => ['task_id' => 'id']],
+            [['task_id'], 'integer'],
+            [['task_id'], 'exist', 'targetClass' => Task::class, 'targetAttribute' => 'id'],
         ];
     }
 

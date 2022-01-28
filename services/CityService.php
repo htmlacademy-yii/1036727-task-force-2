@@ -6,7 +6,7 @@ use app\models\City;
 
 class CityService
 {
-    public function getAllCities(): array
+    public function findAll(): array
     {
         return City::find()->limit(10)->all();
     }

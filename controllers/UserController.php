@@ -27,7 +27,7 @@ class UserController extends Controller
                         'roles' => ['?']
                     ],
                     [
-                        'actions' => ['logout', 'view'],
+                        'actions' => ['logout'],
                         'allow' => true,
                         'roles' => ['@']
                     ],
@@ -45,56 +45,45 @@ class UserController extends Controller
 
     public function actionSignup()
     {
-        $model = new SignupForm();
+        $signupForm = new SignupForm();
 
         if (Yii::$app->request->isPost) {
-            $model->load(Yii::$app->request->post());
+            $signupForm->load(Yii::$app->request->post());
 
-            if ($model->validate()) {
-                (new UserService())->signup($model);
+            if ($signupForm->validate()) {
+                (new UserService())->create($signupForm);
                 $this->goHome();
             }
         }
 
-        $cities = (new CityService())->getAllCities();
+        $cities = (new CityService())->findAll();
 
         return $this->render('signup', [
-            'model' => $model,
+            'model' => $signupForm,
             'cities' => $cities
         ]);
     }
 
     public function actionLogin()
     {
-        $model = new LoginForm();
+        $loginForm = new LoginForm();
 
         if (Yii::$app->request->isPost) {
-            $model->load(Yii::$app->request->post());
+            $loginForm->load(Yii::$app->request->post());
 
             if (Yii::$app->request->isAjax) {
                 Yii::$app->response->format = Response::FORMAT_JSON;
 
-                return ActiveForm::validate($model);
+                return ActiveForm::validate($loginForm);
             }
 
-            if ($model->validate()) {
-                Yii::$app->user->login((new UserService())->getUser($model->email));
+            if ($loginForm->validate()) {
+                Yii::$app->user->login((new UserService())->getUser($loginForm->email));
 
                 return $this->redirect(['tasks/index']);
             }
         }
 
         return $this->goHome();
-    }
-
-    public function actionView(int $id)
-    {
-        if (!$user = (new UserService())->getExecutor($id)) {
-            throw new NotFoundHttpException;
-        }
-
-        return $this->render('view', [
-            'user' => $user,
-        ]);
     }
 }

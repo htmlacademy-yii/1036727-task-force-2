@@ -13,13 +13,13 @@ use yii\db\ActiveRecord;
  * @property string $description
  * @property int|null $budget
  * @property string|null $expire
- * @property string|null $address
+ * @property string|null $location
  * @property float|null $latitude
  * @property float|null $longitude
  * @property int|null $city_id
  * @property int $status_id
  * @property int $category_id
- * @property int $executor_id
+ * @property int|null $executor_id
  * @property int $customer_id
  *
  * @property Category $category
@@ -37,7 +37,7 @@ class Task extends ActiveRecord
      */
     public static function tableName()
     {
-        return 'task';
+        return '{{task}}';
     }
 
     /**
@@ -46,16 +46,20 @@ class Task extends ActiveRecord
     public function rules()
     {
         return [
-            [['name', 'description', 'category_id', 'customer_id'], 'required'],
-            [['budget', 'city_id', 'status_id', 'category_id', 'executor_id', 'customer_id'], 'integer'],
-            [['latitude', 'longitude'], 'number'],
-            [['name', 'address'], 'string', 'max' => 128],
-            [['description'], 'string', 'max' => 255],
-            [['category_id'], 'exist', 'targetClass' => Category::class, 'targetAttribute' => ['category_id' => 'id']],
-            [['city_id'], 'exist', 'targetClass' => City::class, 'targetAttribute' => ['city_id' => 'id']],
-            [['customer_id'], 'exist', 'targetClass' => User::class, 'targetAttribute' => ['customer_id' => 'id']],
-            [['executor_id'], 'exist', 'targetClass' => User::class, 'targetAttribute' => ['executor_id' => 'id']],
-            [['status_id'], 'exist', 'targetClass' => TaskStatus::class, 'targetAttribute' => ['status_id' => 'id']],
+            [['name', 'description'], 'trim'],
+            [['name', 'description', 'status_id', 'category_id', 'customer_id'], 'required'],
+            [['name', 'location'], 'string', 'length' => [10, 128]],
+            [['description'], 'string', 'length' => [30, 255]],
+            [['budget'], 'integer', 'min' => 1],
+            [['expire'], 'date', 'format' => 'php:Y-m-d', 'min' => strtotime('today'),
+                'tooSmall' => 'Дата не может быть раньше текущего дня.'],
+            [['latitude', 'longitude'], 'double'],
+            [['city_id', 'status_id', 'category_id', 'executor_id', 'customer_id'], 'integer'],
+            [['city_id'], 'exist', 'targetClass' => City::class, 'targetAttribute' => 'id'],
+            [['status_id'], 'exist', 'targetClass' => TaskStatus::class, 'targetAttribute' => 'id'],
+            [['category_id'], 'exist', 'targetClass' => Category::class, 'targetAttribute' => 'id'],
+            [['executor_id'], 'exist', 'targetClass' => User::class, 'targetAttribute' => 'id'],
+            [['customer_id'], 'exist', 'targetClass' => User::class, 'targetAttribute' => 'id'],
         ];
     }
 
@@ -71,7 +75,7 @@ class Task extends ActiveRecord
             'description' => 'Description',
             'budget' => 'Budget',
             'expire' => 'Expire',
-            'address' => 'Address',
+            'location' => 'Location',
             'latitude' => 'Latitude',
             'longitude' => 'Longitude',
             'city_id' => 'City ID',

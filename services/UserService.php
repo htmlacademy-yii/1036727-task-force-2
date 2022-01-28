@@ -14,6 +14,28 @@ class UserService
 {
     const STATUS_WORK_ID = 3;
 
+    public function create(SignupForm $model): void
+    {
+        $hash = Yii::$app->getSecurity()->generatePasswordHash($model->password);
+
+        $user = new User();
+        $user->attributes = $model->attributes;
+        $user->password = $hash;
+
+        $transaction = Yii::$app->db->beginTransaction();
+        try {
+            $user->save();
+
+            $profile = new UserProfile();
+            $profile->user_id = $user->id;
+            $profile->save();
+
+            $transaction->commit();
+        } catch (\Throwable $e) {
+            $transaction->rollBack();
+        }
+    }
+
     public function getUser(string $email): ?UserIdentity
     {
         return UserIdentity::findOne(['email' => $email]);
@@ -22,6 +44,14 @@ class UserService
     public function getUserById(int $user_id): ?User
     {
         return User::findOne($user_id);
+    }
+
+    public function isCustomer(int $user_id): bool
+    {
+        $query = User::find()
+            ->where(['id' => $user_id, 'is_executor' => 0]);
+
+        return $query->exists();
     }
 
     public function getExecutor(int $user_id): ?User
@@ -57,30 +87,6 @@ class UserService
             ->andWhere(['status_id' => self::STATUS_WORK_ID]);
 
         return $query->count() ? 'Занят' : 'Открыт для новых заказов';
-    }
-
-    public function signup(SignupForm $model): void
-    {
-        $hash = Yii::$app->getSecurity()->generatePasswordHash($model->password);
-
-        $user = new User();
-        $user->name = $model->name;
-        $user->email = $model->email;
-        $user->password = $hash;
-        $user->is_executor = $model->is_executor;
-        $city = City::findOne($model->city_id);
-
-        $transaction = Yii::$app->db->beginTransaction();
-        try {
-            $user->link('city', $city);
-
-            $profile = new UserProfile();
-            $profile->link('user', $user);
-
-            $transaction->commit();
-        } catch (\Throwable $e) {
-            $transaction->rollBack();
-        }
     }
 
     // public function getUserCurrentRate(int $user_id): float

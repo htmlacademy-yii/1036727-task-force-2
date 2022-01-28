@@ -1,7 +1,7 @@
 <?php
 
-/* @var $this \yii\web\View */
-/* @var $task \app\models\Task */
+/* @var $this yii\web\View */
+/* @var $task app\models\Task */
 
 use yii\helpers\Html;
 use yii\helpers\Url;
@@ -19,7 +19,7 @@ use anatolev\helpers\FormatHelper;
     </p>
     <p class="task-text"><?= Html::encode($task->description) ?></p>
     <div class="footer-task">
-        <p class="info-text town-text"><?= Html::encode($task->address) ?></p>
+        <p class="info-text town-text"><?= Html::encode($task->location ?? '') ?></p>
         <p class="info-text category-text"><?= Html::encode($task->category->name) ?></p>
         <a href="<?= $href ?>" class="button button--black">Смотреть Задание</a>
     </div>

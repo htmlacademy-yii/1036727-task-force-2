@@ -12,7 +12,7 @@ $config = [
         '@bower' => '@vendor/bower-asset',
         '@data' => '@app/data',
         '@npm'   => '@vendor/npm-asset',
-        '@sql' => '@data/sql-dump'
+        '@sql' => '@data/sql-dump',
         '@tests' => '@app/tests',
     ],
     'components' => [

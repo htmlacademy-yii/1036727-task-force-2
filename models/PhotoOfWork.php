@@ -20,7 +20,7 @@ class PhotoOfWork extends ActiveRecord
      */
     public static function tableName()
     {
-        return 'photo_of_work';
+        return '{{photo_of_work}}';
     }
 
     /**

@@ -1,7 +1,7 @@
 <?php
 
-/* @var $this \yii\web\View */
-/* @var $task \app\models\Task */
+/* @var $this yii\web\View */
+/* @var $task app\models\Task */
 
 use yii\helpers\Html;
 use yii\helpers\Url;
@@ -13,14 +13,14 @@ use anatolev\helpers\UserHelper;
 <div class="left-column">
     <div class="head-wrapper">
         <h3 class="head-main"><?= Html::encode($task->name) ?></h3>
-        <p class="price price--big"><?= Html::encode($task->budget ?? '') ?></p>
+        <p class="price price--big"><?= Html::encode($task->budget ?? '') ?> &#8381;</p>
     </div>
     <p class="task-description"><?= Html::encode($task->description) ?></p>
     <a href="#" class="button button--blue">Откликнуться на задание</a>
     <div class="task-map">
         <img class="map" src="/img/map.png" width="725" height="346" alt="Новый арбат, 23, к. 1">
         <p class="map-address town"><?= Html::encode($task->city->name ?? '') ?></p>
-        <p class="map-address"><?= Html::encode($task->address ?? '') ?></p>
+        <p class="map-address"><?= Html::encode($task->location ?? '') ?></p>
     </div>
 
     <?php if (!empty($task->replies)): ?>
@@ -39,7 +39,7 @@ use anatolev\helpers\UserHelper;
 
                 <div class="feedback-wrapper">
                     <a
-                        href="<?= Url::to(['user/view', 'id' => $reply->author->id]) ?>"
+                        href="<?= Url::to(['profile/view', 'id' => $reply->author->id]) ?>"
                         class="link link--block link--big"
                     ><?= Html::encode($reply->author->name) ?></a>
                     <div class="response-wrapper">
@@ -104,7 +104,7 @@ use anatolev\helpers\UserHelper;
 
                     <li class="enumeration-item">
                         <a
-                            href="<?= Url::to([FileHelper::FILES_UPLOAD_DIR . '/' . $file->path]) ?>"
+                            href="<?= Url::to([Yii::getAlias('@files') . '/' . $file->path]) ?>"
                             class="link link--block link--clip"
                             download
                         ><?= Html::encode($file->path) ?></a>

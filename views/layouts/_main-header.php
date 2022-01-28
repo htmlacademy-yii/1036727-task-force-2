@@ -1,5 +1,7 @@
 <?php
 
+/* @var $this yii\web\View */
+
 use yii\helpers\Html;
 use yii\helpers\Url;
 use yii\widgets\Menu;
@@ -16,14 +18,19 @@ $user = $this->context->user;
 
         <?php if (!Yii::$app->user->isGuest): ?>
             <div class="nav-wrapper">
+                <?php
+                $items = [
+                    ['label' => 'Новое', 'url' => ['#']],
+                    ['label' => 'Новые задания','url' => ['tasks/index']],
+                    ['label' => 'Настройки', 'url' => ['#']]
+                ];
+
+                $item = ['label' => 'Создать задание', 'url' => ['tasks/create']];
+                $user->is_executor ?: array_splice($items, 2, 0, array($item));
+                ?>
 
                 <?= Menu::widget([
-                    'items' => [
-                        ['label' => 'Новое', 'url' => ['#']],
-                        ['label' => 'Новые задания','url' => ['tasks/index']],
-                        ['label' => 'Создать задание', 'url' => ['#']],
-                        ['label' => 'Настройки', 'url' => ['#']]
-                    ],
+                    'items' => $items,
                     'activeCssClass' => 'list-item--active',
                     'itemOptions' => ['class' => 'list-item'],
                     'labelTemplate' => '<a class="link link--nav">{label}</a>',
@@ -38,7 +45,7 @@ $user = $this->context->user;
 
     <?php if (!Yii::$app->user->isGuest): ?>
         <div class="user-block">
-            <a href="<?= $user->is_executor ? Url::to(['user/view', 'id' => $user->id]) : '#' ?>">
+            <a href="<?= $user->is_executor ? Url::to(['profile/view', 'id' => $user->id]) : '#' ?>">
                 <img
                     class="user-photo"
                     src="<?= Html::encode(UserHelper::getAvatar($user)) ?>"

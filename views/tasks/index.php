@@ -1,10 +1,10 @@
 <?php
 
-/* @var $this \yii\web\View */
+/* @var $this yii\web\View */
 /* @var $period_values array */
-/* @var $tasks \app\models\Task[] */
-/* @var $categories \app\models\Category[] */
-/* @var $model \app\models\forms\SearchForm */
+/* @var $tasks app\models\Task[] */
+/* @var $categories app\models\Category[] */
+/* @var $model app\models\forms\SearchForm */
 
 use yii\helpers\ArrayHelper;
 use yii\helpers\Html;
