@@ -1,8 +1,8 @@
 <?php
 
-/* @var $this \yii\web\View */
-/* @var $cities \app\models\City[] */
-/* @var $model \app\models\forms\SignupForm */
+/* @var $this yii\web\View */
+/* @var $cities app\models\City[] */
+/* @var $model app\models\forms\SignupForm */
 
 use yii\helpers\ArrayHelper;
 use yii\helpers\Html;

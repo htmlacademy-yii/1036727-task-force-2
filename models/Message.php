@@ -24,7 +24,7 @@ class Message extends ActiveRecord
      */
     public static function tableName()
     {
-        return 'message';
+        return '{{message}}';
     }
 
     /**

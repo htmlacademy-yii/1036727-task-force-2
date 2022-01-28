@@ -24,7 +24,7 @@ class Reply extends ActiveRecord
      */
     public static function tableName()
     {
-        return 'reply';
+        return '{{reply}}';
     }
 
     /**
