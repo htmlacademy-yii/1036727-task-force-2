@@ -9,13 +9,13 @@ use yii\db\ActiveRecord;
  *
  * @property int $id
  * @property string $dt_add
- * @property int|null $price
+ * @property int|null $payment
  * @property string|null $comment
  * @property int $task_id
- * @property int $author_id
+ * @property int $user_id
  *
- * @property User $author
  * @property Task $task
+ * @property User $user
  */
 class Reply extends ActiveRecord
 {
@@ -33,11 +33,13 @@ class Reply extends ActiveRecord
     public function rules()
     {
         return [
-            [['price', 'task_id', 'author_id'], 'integer'],
-            [['task_id', 'author_id'], 'required'],
+            [['task_id', 'user_id'], 'required'],
+            [['payment', 'task_id', 'user_id'], 'integer'],
             [['comment'], 'string', 'max' => 255],
-            [['author_id'], 'exist', 'targetClass' => User::class, 'targetAttribute' => ['author_id' => 'id']],
+            [['comment'], 'default', 'value' => null],
+            [['task_id'], 'unique', 'targetAttribute' => ['task_id', 'user_id']],
             [['task_id'], 'exist', 'targetClass' => Task::class, 'targetAttribute' => ['task_id' => 'id']],
+            [['user_id'], 'exist', 'targetClass' => User::class, 'targetAttribute' => ['user_id' => 'id']],
         ];
     }
 
@@ -49,21 +51,21 @@ class Reply extends ActiveRecord
         return [
             'id' => 'ID',
             'dt_add' => 'Dt Add',
-            'price' => 'Price',
+            'payment' => 'Payment',
             'comment' => 'Comment',
             'task_id' => 'Task ID',
-            'author_id' => 'Author ID',
+            'user_id' => 'User ID',
         ];
     }
 
     /**
-     * Gets query for [[Author]].
+     * Gets query for [[User]].
      *
      * @return \yii\db\ActiveQuery
      */
-    public function getAuthor()
+    public function getUser()
     {
-        return $this->hasOne(User::class, ['id' => 'author_id']);
+        return $this->hasOne(User::class, ['id' => 'user_id']);
     }
 
     /**

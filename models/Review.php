@@ -9,7 +9,7 @@ use yii\db\ActiveRecord;
  *
  * @property int $id
  * @property string $dt_add
- * @property int $rate
+ * @property int $rating
  * @property string $comment
  * @property int $task_id
  *
@@ -31,10 +31,11 @@ class Review extends ActiveRecord
     public function rules()
     {
         return [
-            [['rate', 'comment', 'task_id'], 'required'],
-            [['rate', 'task_id'], 'integer'],
+            [['rating', 'comment', 'task_id'], 'required'],
+            [['rating', 'task_id'], 'integer'],
             [['comment'], 'string', 'max' => 255],
             [['task_id'], 'exist', 'targetClass' => Task::class, 'targetAttribute' => ['task_id' => 'id']],
+            [['task_id'], 'unique'],
         ];
     }
 
@@ -46,7 +47,7 @@ class Review extends ActiveRecord
         return [
             'id' => 'ID',
             'dt_add' => 'Dt Add',
-            'rate' => 'Rate',
+            'rating' => 'Rating',
             'comment' => 'Comment',
             'task_id' => 'Task ID',
         ];

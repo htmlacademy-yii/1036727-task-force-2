@@ -4,15 +4,15 @@ namespace app\assets;
 
 use yii\web\AssetBundle;
 
-class MainAsset extends AssetBundle
+class ModalFormAsset extends AssetBundle
 {
     public $basePath = '@webroot';
 
     public $css = [
-        'css/style.css'
+        'css/modal-form.css'
     ];
 
     public $js = [
-        // 'js/main.js',
+        'js/modal-form.js',
     ];
 }

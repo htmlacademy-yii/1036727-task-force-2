@@ -1,7 +1,7 @@
 <?php
 
-/* @var $this yii\web\View */
-/* @var $task app\models\Task */
+/** @var yii\web\View $this */
+/** @var app\models\Task $task */
 
 use yii\helpers\Html;
 use yii\helpers\Url;

@@ -1,9 +1,10 @@
 <?php
 
-/* @var $this yii\web\View */
-/* @var $model app\models\forms\LoginForm */
+/** @var yii\web\View $this */
+/** @var app\models\forms\LoginForm $model */
 
 use yii\helpers\Html;
+use yii\helpers\Url;
 use yii\widgets\ActiveForm;
 
 ?>
@@ -11,8 +12,7 @@ use yii\widgets\ActiveForm;
     <h2>Вход на сайт</h2>
 
     <?php $form = ActiveForm::begin([
-        'id' => 'login-form',
-        'action' => 'login',
+        'action' => Url::to(['user/login']),
         'enableAjaxValidation' => true,
         'options' => ['autocomplete' => 'off'],
         'fieldConfig' => [

@@ -41,7 +41,7 @@ class UserService
         return UserIdentity::findOne(['email' => $email]);
     }
 
-    public function getUserById(int $user_id): ?User
+    public function findOne(int $user_id): ?User
     {
         return User::findOne($user_id);
     }
@@ -50,6 +50,14 @@ class UserService
     {
         $query = User::find()
             ->where(['id' => $user_id, 'is_executor' => 0]);
+
+        return $query->exists();
+    }
+
+    public function isExecutor(int $user_id): bool
+    {
+        $query = User::find()
+            ->where(['id' => $user_id, 'is_executor' => 1]);
 
         return $query->exists();
     }

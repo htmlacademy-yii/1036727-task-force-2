@@ -17,7 +17,7 @@ abstract class SecuredController extends Controller
             return false;
         }
 
-        $this->user = (new UserService())->getUserById(Yii::$app->user->id);
+        $this->user = (new UserService())->findOne(Yii::$app->user->id);
 
         return true;
     }

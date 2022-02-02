@@ -3,7 +3,7 @@
 use yii\db\Migration;
 
 /**
- * Handles the creation of table `{{%task_status}}`.
+ * Handles the update of table `{{%task}}`.
  */
 class m220127_000013_update_task_table extends Migration
 {
