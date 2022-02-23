@@ -25,7 +25,7 @@ class AddTaskForm extends Model
             [['name', 'description'], 'trim'],
             [['name', 'description', 'category_id'], 'required'],
             [['name'], 'string', 'length' => [10, 128]],
-            [['description'], 'string', 'length' => [30, 255]],
+            [['description'], 'string', 'length' => [30, 1000]],
             [['category_id'], 'integer'],
             [['category_id'], 'exist', 'targetClass' => Category::class, 'targetAttribute' => 'id'],
             [['location', 'city_name'], 'string'],

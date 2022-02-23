@@ -1,23 +1,24 @@
 <?php
 
-/* @var $this yii\web\View */
-/* @var $cities app\models\City[] */
-/* @var $model app\models\forms\SignupForm */
+/** @var yii\web\View $this */
+/** @var app\models\City[] $cities */
+/** @var app\models\forms\SignupForm $model */
 
 use yii\helpers\ArrayHelper;
 use yii\helpers\Html;
 use yii\widgets\ActiveForm;
+
+$this->title = 'Регистрация';
 
 ?>
 <div class="center-block">
     <div class="registration-form regular-form">
 
         <?php $form = ActiveForm::begin([
-            'id' => 'signup-form',
             'options' => ['autocomplete' => 'off']
         ]); ?>
 
-            <h3 class="head-main head-task">Регистрация нового пользователя</h3>
+            <?= Html::tag('h3', 'Регистрация нового пользователя', ['class' => 'head-main head-task']) ?>
 
             <?= $form->field($model, 'name')->textInput(); ?>
 

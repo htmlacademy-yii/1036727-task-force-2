@@ -1,7 +1,7 @@
 <?php
 
-/* @var $this yii\web\View */
-/* @var $content string */
+/** @var yii\web\View $this */
+/** @var string $content */
 
 use yii\helpers\Html;
 use app\assets\LandingAsset;
@@ -37,7 +37,7 @@ $this->registerMetaTag([
     </main>
 
     <?= $this->render('_landing-footer') ?>
-    <?= $this->render('//modals/_login-form', ['model' => new LoginForm]) ?>
+    <?= $this->render('//modals/_login-form', ['model' => new LoginForm()]) ?>
 
 </div>
 <div class="overlay"></div>

@@ -1,77 +1,58 @@
 <?php
 
-/* @var $this yii\web\View */
-/* @var $task app\models\Task */
+/** @var yii\web\View $this */
+/** @var app\models\Task $task */
+/** @var app\models\forms\CompleteForm $completeForm */
+/** @var app\models\forms\ResponseForm $responseForm */
+/** @var anatolev\service\TaskAction[] $availableActions */
 
 use yii\helpers\Html;
 use yii\helpers\Url;
+use app\assets\ModalFormAsset;
+use app\widgets\ModalForm;
 use anatolev\helpers\FileHelper;
 use anatolev\helpers\FormatHelper;
-use anatolev\helpers\UserHelper;
+use anatolev\helpers\TaskHelper;
+
+ModalFormAsset::register($this);
+
+$this->title = Html::encode($task->name);
 
 ?>
 <div class="left-column">
     <div class="head-wrapper">
         <h3 class="head-main"><?= Html::encode($task->name) ?></h3>
-        <p class="price price--big"><?= Html::encode($task->budget ?? '') ?> &#8381;</p>
+
+        <?php if (isset($task->budget)): ?>
+            <p class="price price--big"><?= Html::encode($task->budget) ?> &#8381;</p>
+        <?php endif; ?>
+
     </div>
     <p class="task-description"><?= Html::encode($task->description) ?></p>
-    <a href="#" class="button button--blue">Откликнуться на задание</a>
+
+    <?php foreach ($availableActions as $action): ?>
+        <a
+            href="#"
+            class="button button--blue open-modal"
+            data-for="<?= Html::encode($action::FORM_TYPE) ?>"
+        ><?= Html::encode($action->getName()) ?></a>
+    <?php endforeach; ?>
+
     <div class="task-map">
         <img class="map" src="/img/map.png" width="725" height="346" alt="Новый арбат, 23, к. 1">
         <p class="map-address town"><?= Html::encode($task->city->name ?? '') ?></p>
         <p class="map-address"><?= Html::encode($task->location ?? '') ?></p>
     </div>
 
-    <?php if (!empty($task->replies)): ?>
-        <h4 class="head-regular">Отклики на задание</h4>
+    <?php if ($replies = TaskHelper::getTaskReplies($task)): ?>
 
-        <?php foreach ($task->replies as $reply): ?>
-            <div class="response-card">
+        <h4 class="head-regular"><?= TaskHelper::getRepliesHeader($task, count($replies)) ?></h4>
+        <?php $isActualTask = TaskHelper::isActual($task); ?>
 
-                <img
-                    class="customer-photo"
-                    src="<?= Html::encode(UserHelper::getAvatar($reply->author)) ?>"
-                    width="146"
-                    height="156"
-                    alt="Фото заказчиков"
-                >
+        <?php foreach ($replies as $reply): ?>
 
-                <div class="feedback-wrapper">
-                    <a
-                        href="<?= Url::to(['profile/view', 'id' => $reply->author->id]) ?>"
-                        class="link link--block link--big"
-                    ><?= Html::encode($reply->author->name) ?></a>
-                    <div class="response-wrapper">
-                        <div class="stars-rating small">
+            <?= $this->render('_reply', ['reply' => $reply, 'isActualTask' => $isActualTask]) ?>
 
-                            <?php for ($i = 1; $i <= Yii::$app->params['maxUserRating']; $i++): ?>
-                                <span class="<?= $i <= $reply->author->profile->current_rate ? 'fill-star' : '' ?>">&nbsp;</span>
-                            <?php endfor; ?>
-
-                        </div>
-                        <?php
-
-                        $reviews = array_filter($reply->author->tasks0, fn($task) => $task?->review);
-                        $review_count = count($reviews);
-                        $review_word = FormatHelper::getNounPluralForm($review_count, 'отзыв', 'отзыва', 'отзывов');
-
-                        ?>
-                        <p class="reviews"><?= "{$review_count} {$review_word}" ?></p>
-                    </div>
-                    <p class="response-message"><?= Html::encode($reply->comment ?? '') ?></p>
-                </div>
-                <div class="feedback-wrapper">
-                    <p class="info-text">
-                        <span class="current-time"><?= FormatHelper::getRelativeTime($reply->dt_add) ?> </span>назад
-                    </p>
-                    <p class="price price--small"><?= Html::encode($reply->price ?? '') ?></p>
-                </div>
-                <div class="button-popup">
-                    <a href="#" class="button button--blue button--small">Принять</a>
-                    <a href="#" class="button button--orange button--small">Отказать</a>
-                </div>
-            </div>
         <?php endforeach; ?>
 
     <?php endif; ?>
@@ -82,6 +63,9 @@ use anatolev\helpers\UserHelper;
     <div class="right-card black info-card">
         <h4 class="head-card">Информация о задании</h4>
         <dl class="black-list">
+            <dt>Статус</dt>
+            <dd><?= Html::encode($task->status->name) ?></dd>
+
             <dt>Категория</dt>
             <dd><?= Html::encode($task->category->name) ?></dd>
 
@@ -98,6 +82,7 @@ use anatolev\helpers\UserHelper;
 
     <?php if ($files = FileHelper::getExist($task->files)): ?>
         <div class="right-card white file-card">
+            <h4 class="head-card">Файлы задания</h4>
             <ul class="enumeration-list">
 
                 <?php foreach ($files as $file): ?>
@@ -107,7 +92,7 @@ use anatolev\helpers\UserHelper;
                             href="<?= Url::to([Yii::getAlias('@files') . '/' . $file->path]) ?>"
                             class="link link--block link--clip"
                             download
-                        ><?= Html::encode($file->path) ?></a>
+                        ><?= Html::encode(FileHelper::getName($file->path)) ?></a>
                         <p class="file-size"><?= FileHelper::getSize($file->path) ?> Кб</p>
                     </li>
 
@@ -118,3 +103,10 @@ use anatolev\helpers\UserHelper;
     <?php endif; ?>
 
 </div>
+
+<?= ModalForm::widget(['formType' => 'cancel']) ?>
+<?= ModalForm::widget(['formType' => 'refuse']) ?>
+<?= ModalForm::widget(['formType' => 'complete', 'model' => $completeForm]) ?>
+<?= ModalForm::widget(['formType' => 'response', 'model' => $responseForm]) ?>
+
+<div style="display: none;" class="overlay"></div>
