@@ -131,7 +131,7 @@ class TasksController extends SecuredController
 
             if ($completeForm->validate()) {
                 (new TaskService())->complete($completeForm);
-                (new ReviewService())->create($completeForm);
+                // (new ReviewService())->create($completeForm);
 
                 return $this->redirect(['tasks/view', 'id' => $completeForm->task_id]);
             }
