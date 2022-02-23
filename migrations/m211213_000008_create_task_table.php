@@ -16,7 +16,7 @@ class m211213_000008_create_task_table extends Migration
             'id' => $this->primaryKey()->unsigned(),
             'dt_add' => $this->timestamp()->notNull()->defaultExpression('CURRENT_TIMESTAMP'),
             'name' => $this->string(128)->notNull(),
-            'description' => $this->string(255)->notNull(),
+            'description' => $this->text()->notNull(),
             'budget' => $this->integer()->unsigned()->null(),
             'expire' => $this->timestamp()->null(),
             'address' => $this->string(128)->null(),

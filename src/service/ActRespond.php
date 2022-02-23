@@ -2,10 +2,14 @@
 
 namespace anatolev\service;
 
+use app\services\UserService;
+use app\services\ReplyService;
+
 class ActRespond extends TaskAction
 {
-    private const NAME = 'Откликнуться';
-    private const INNER_NAME = 'act_respond';
+    const NAME = 'Откликнуться';
+    const INNER_NAME = 'act_respond';
+    const FORM_TYPE = 'respond-form';
 
     public function getName(): string
     {
@@ -17,8 +21,11 @@ class ActRespond extends TaskAction
         return self::INNER_NAME;
     }
 
-    public function checkUserRights(int $executor_id, int $customer_id, int $user_id): bool
+    public function checkUserRights(int $task_id, int $customer_id, ?int $executor_id, int $user_id): bool
     {
-        return $executor_id === $user_id;
+        $cond1 = (new ReplyService())->exist($task_id, $user_id);
+        $cond2 = (new UserService())->isExecutor($user_id);
+
+        return !$cond1 && $cond2;
     }
 }

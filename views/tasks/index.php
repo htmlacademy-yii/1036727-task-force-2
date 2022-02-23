@@ -1,10 +1,10 @@
 <?php
 
-/* @var $this yii\web\View */
-/* @var $period_values array */
-/* @var $tasks app\models\Task[] */
-/* @var $categories app\models\Category[] */
-/* @var $model app\models\forms\SearchForm */
+/** @var yii\web\View $this */
+/** @var array $period_values */
+/** @var app\models\Task[] $tasks */
+/** @var app\models\Category[] $categories */
+/** @var app\models\forms\SearchForm $model */
 
 use yii\helpers\ArrayHelper;
 use yii\helpers\Html;
@@ -47,14 +47,11 @@ $this->title = 'Новые задания';
         <div class="search-form">
 
             <?php $form = ActiveForm::begin([
-                'id' => 'search-form',
-                'fieldConfig' => [
-                    'template' => "{input}"
-                ]
+                'options' => ['autocomplete' => 'off'],
             ]) ?>
 
-                <h4 class="head-card">Категории</h4>
-                <?= $form->field($model, 'categories[]')->checkboxList(
+                <?= Html::tag('h4', 'Категории', ['class' => 'head-card']) ?>
+                <?= $form->field($model, 'categories[]', ['template' => '{input}'])->checkboxList(
                     ArrayHelper::map($categories, 'id', 'name'),
                     [
                         'separator' => '<br>',
@@ -68,13 +65,13 @@ $this->title = 'Новые задания';
                     ]
                 ) ?>
 
-                <h4 class="head-card">Дополнительно</h4>
+                <?= Html::tag('h4', 'Дополнительно', ['class' => 'head-card']) ?>
                 <?= $form
                     ->field($model, 'without_performer', ['template' => "{input}\n{label}"])
                     ->checkbox(enclosedByLabel: false) ?>
 
-                <h4 class="head-card">Период</h4>
-                <?= $form->field($model, 'period_value')->dropDownList($period_values) ?>
+                <?= Html::tag('h4', 'Период', ['class' => 'head-card']) ?>
+                <?= $form->field($model, 'period_value', ['template' => '{input}'])->dropDownList($period_values) ?>
 
                 <?= Html::submitButton('Искать', ['class' => 'button button--blue']) ?>
 

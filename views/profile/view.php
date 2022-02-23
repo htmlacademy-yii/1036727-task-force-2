@@ -1,12 +1,14 @@
 <?php
 
-/* @var $this yii\web\View */
-/* @var $user app\models\User */
+/** @var yii\web\View $this */
+/** @var app\models\User $user */
 
 use yii\helpers\Html;
 use yii\helpers\Url;
 use anatolev\helpers\FormatHelper;
 use anatolev\helpers\UserHelper;
+
+$this->title = Html::encode($user->name);
 
 ?>
 <div class="left-column">
@@ -67,7 +69,7 @@ use anatolev\helpers\UserHelper;
     </div>
 
     <?php if ($tasks = array_filter($user->tasks0, fn($task) => $task?->review)): ?>
-        <h4 class="head-regular">Отзывы заказчиков</h4>
+        <h4 class="head-regular">Отзывы заказчиков (<?= count($tasks) ?>)</h4>
 
         <?php foreach ($tasks as $task): ?>
             <div class="response-card">
@@ -94,7 +96,7 @@ use anatolev\helpers\UserHelper;
                     <div class="stars-rating small">
 
                         <?php for ($i = 1; $i <= \Yii::$app->params['maxUserRating']; $i++): ?>
-                            <span class="<?= $i <= $task->review->rate ? 'fill-star' : '' ?>">&nbsp;</span>
+                            <span class="<?= $i <= $task->review->rating ? 'fill-star' : '' ?>">&nbsp;</span>
                         <?php endfor; ?>
 
                     </div>

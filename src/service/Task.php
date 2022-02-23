@@ -14,11 +14,18 @@ class Task
     const STATUS_DONE = 'done';
     const STATUS_FAILED = 'failed';
 
+    const STATUS_NEW_ID = 1;
+    const STATUS_CANCEL_ID = 2;
+    const STATUS_WORK_ID = 3;
+    const STATUS_DONE_ID = 4;
+    const STATUS_FAILED_ID = 5;
+
     private array $actions = [];
 
     public function __construct(
-        private int $executor_id,
+        private int $task_id,
         private int $customer_id,
+        private ?int $executor_id,
         private string $status = self::STATUS_NEW
     ) {}
 
@@ -88,16 +95,15 @@ class Task
      * Возвращает массив доступных действий для указанного статуса
      * и пользователя
      *
-     * @param string $status Статус задания (внутреннее имя)
-     * @param int $user_id Идентификатор пользователя
+     * @param int $user_id Идентификатор аутентифицированного пользователя
      *
      * @throws StatusNotExistException
      *
      * @return array
      */
-    public function getAvailableActions(string $status, int $user_id): array
+    public function getAvailableActions(int $user_id): array
     {
-        if (!array_key_exists($status, $this->getStatusMap())) {
+        if (!array_key_exists($this->status, $this->getStatusMap())) {
             throw new StatusNotExistException("Статус не существует");
         }
 
@@ -117,9 +123,9 @@ class Task
         foreach ($array as $key => $actions) {
 
             foreach ($actions as $action) {
-                $ids = [$this->executor_id, $this->customer_id, $user_id];
+                $ids = [$this->task_id, $this->customer_id, $this->executor_id, $user_id];
 
-                if ($status === $key && $action->checkUserRights(...$ids)) {
+                if ($this->status === $key && $action->checkUserRights(...$ids)) {
                     $available_actions[] = $action;
                 }
             }

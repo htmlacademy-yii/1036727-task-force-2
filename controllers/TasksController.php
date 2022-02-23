@@ -9,11 +9,17 @@ use yii\web\NotFoundHttpException;
 use yii\web\Response;
 use yii\web\UploadedFile;
 use yii\widgets\ActiveForm;
+
 use app\models\forms\AddTaskForm;
 use app\models\forms\SearchForm;
-use app\services\TaskService;
+use app\models\forms\CompleteForm;
+use app\models\forms\ResponseForm;
+
 use app\services\CategoryService;
+use app\services\ReviewService;
+use app\services\TaskService;
 use app\services\UserService;
+use anatolev\service\Task;
 
 class TasksController extends SecuredController
 {
@@ -35,7 +41,46 @@ class TasksController extends SecuredController
                         'allow' => true,
                         'roles' => ['@'],
                         'actions' => ['index', 'view']
-                    ]
+                    ],
+                    [
+                        'allow' => true,
+                        'roles' => ['@'],
+                        'actions' => ['cancel'],
+                        'matchCallback' => function ($rule, $action) {
+                            $task_id = Yii::$app->request->get('task_id');
+                            $service = new TaskService();
+                            $taskStatus = $service->getStatus($task_id);
+                            $isCustomer = $service->isTaskCustomer($task_id, Yii::$app->user->id);
+
+                            return $taskStatus === Task::STATUS_NEW && $isCustomer;
+                        }
+                    ],
+                    [
+                        'allow' => true,
+                        'roles' => ['@'],
+                        'actions' => ['complete'],
+                        'matchCallback' => function ($rule, $action) {
+                            $task_id = Yii::$app->request->post('CompleteForm')['task_id'];
+                            $service = new TaskService();
+                            $taskStatus = $service->getStatus($task_id);
+                            $isCustomer = $service->isTaskCustomer($task_id, Yii::$app->user->id);
+
+                            return $taskStatus === Task::STATUS_WORK && $isCustomer;
+                        }
+                    ],
+                    [
+                        'allow' => true,
+                        'roles' => ['@'],
+                        'actions' => ['refuse'],
+                        'matchCallback' => function ($rule, $action) {
+                            $task_id = Yii::$app->request->get('task_id');
+                            $service = new TaskService();
+                            $taskStatus = $service->getStatus($task_id);
+                            $isExecutor = $service->isTaskExecutor($task_id, Yii::$app->user->id);
+
+                            return $taskStatus === Task::STATUS_WORK && $isExecutor;
+                        }
+                    ],
                 ]
             ]
         ];
@@ -57,7 +102,8 @@ class TasksController extends SecuredController
 
             if ($addTaskForm->validate()) {
                 $taskId = (new TaskService())->create($addTaskForm);
-                $this->redirect(['tasks/view', 'id' => $taskId]);
+
+                return $this->redirect(['tasks/view', 'id' => $taskId]);
             }
         }
 
@@ -69,6 +115,37 @@ class TasksController extends SecuredController
         ]);
     }
 
+    public function actionCancel(int $task_id)
+    {
+        (new TaskService())->cancel($task_id);
+
+        return $this->redirect(['tasks/view', 'id' => $task_id]);
+    }
+
+    public function actionComplete()
+    {
+        $completeForm = new CompleteForm();
+
+        if (Yii::$app->request->isPost) {
+            $completeForm->load(Yii::$app->request->post());
+
+            if ($completeForm->validate()) {
+                (new TaskService())->complete($completeForm);
+                (new ReviewService())->create($completeForm);
+
+                return $this->redirect(['tasks/view', 'id' => $completeForm->task_id]);
+            }
+        }
+    }
+
+    public function actionRefuse(int $task_id)
+    {
+        (new TaskService())->refuse($task_id);
+
+        return $this->redirect(['tasks/view', 'id' => $task_id]);
+    }
+
+    // разбить на 2 метода
     public function actionIndex(?string $category = null)
     {
         $searchForm = new SearchForm();
@@ -100,12 +177,21 @@ class TasksController extends SecuredController
 
     public function actionView(int $id)
     {
-        if (!$task = (new TaskService())->getTaskById($id)) {
+        if (!$task = (new TaskService())->findOne($id)) {
             throw new NotFoundHttpException;
         }
 
+        $completeForm = new CompleteForm();
+        $responseForm = new ResponseForm();
+
+        $taskObject = new Task($id, $task->customer_id, $task->executor_id, $task->status->inner_name);
+        $availableActions = $taskObject->getAvailableActions(Yii::$app->user->id);
+
         return $this->render('view', [
-            'task' => $task
+            'task' => $task,
+            'completeForm' => $completeForm,
+            'responseForm' => $responseForm,
+            'availableActions' => $availableActions
         ]);
     }
 }

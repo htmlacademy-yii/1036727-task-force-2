@@ -22,13 +22,14 @@ use yii\db\ActiveRecord;
  * @property int|null $executor_id
  * @property int $customer_id
  *
+ * @property bool $done
  * @property Category $category
  * @property City $city
  * @property User $customer
  * @property User $executor
  * @property Reply[] $replies
  * @property TaskStatus $status
- * @property TaskFile[] $Files
+ * @property TaskFile[] $files
  */
 class Task extends ActiveRecord
 {
@@ -48,11 +49,12 @@ class Task extends ActiveRecord
         return [
             [['name', 'description'], 'trim'],
             [['name', 'description', 'status_id', 'category_id', 'customer_id'], 'required'],
-            [['name', 'location'], 'string', 'length' => [10, 128]],
-            [['description'], 'string', 'length' => [30, 255]],
+            [['name'], 'string', 'length' => [10, 128]],
+            [['description'], 'string', 'length' => [30, 1000]],
             [['budget'], 'integer', 'min' => 1],
             [['expire'], 'date', 'format' => 'php:Y-m-d', 'min' => strtotime('today'),
-                'tooSmall' => 'Дата не может быть раньше текущего дня.'],
+            'tooSmall' => 'Дата не может быть раньше текущего дня.'],
+            [['location'], 'string'],
             [['latitude', 'longitude'], 'double'],
             [['city_id', 'status_id', 'category_id', 'executor_id', 'customer_id'], 'integer'],
             [['city_id'], 'exist', 'targetClass' => City::class, 'targetAttribute' => 'id'],

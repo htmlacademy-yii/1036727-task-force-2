@@ -9,13 +9,6 @@ class FileHelper
 {
     const BYTE_PER_KILOBYTE = 1024;
 
-    public static function getSize(string $file_path): int
-    {
-        $value = filesize(Yii::getAlias('@files') . '/' . $file_path) / self::BYTE_PER_KILOBYTE;
-
-        return ceil($value);
-    }
-
     public static function getExist(array $files): array
     {
         $callback = function ($file) {
@@ -27,5 +20,24 @@ class FileHelper
         };
 
         return array_filter($files, $callback);
+    }
+
+    public static function getName(string $filePath): string
+    {
+        return (explode('_', $filePath)[0] ?? '') . self::getExtension($filePath);
+    }
+
+    public static function getSize(string $filePath): int
+    {
+        $value = filesize(Yii::getAlias('@files') . '/' . $filePath) / self::BYTE_PER_KILOBYTE;
+
+        return ceil($value);
+    }
+
+    private static function getExtension(string $filePath): string
+    {
+        $filePathParts = explode('.', $filePath);
+
+        return '.' . array_pop($filePathParts);
     }
 }

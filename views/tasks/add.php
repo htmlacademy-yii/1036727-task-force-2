@@ -1,7 +1,7 @@
 <?php
 
-/* @var $this yii\web\View */
-/* @var $categories app\models\Category[] */
+/** @var yii\web\View $this */
+/** @var app\models\Category[] $categories */
 
 use yii\helpers\ArrayHelper;
 use yii\helpers\Html;
@@ -16,11 +16,10 @@ $this->params['mainClass'] = ' main-content--center';
 <div class="add-task-form regular-form">
 
     <?php $form = ActiveForm::begin([
-        'id' => 'add-task',
         'options' => ['autocomplete' => 'off'],
     ]); ?>
 
-        <h3 class="head-main">Публикация нового задания</h3>
+        <?= Html::tag('h3', 'Публикация нового задания', ['class' => 'head-main']) ?>
 
         <?= $form->field($model, 'name')->textInput() ?>
         <?= $form->field($model, 'description')->textarea() ?>
@@ -32,7 +31,7 @@ $this->params['mainClass'] = ' main-content--center';
             <?= $form->field($model, 'expire', ['enableAjaxValidation' => true])->input('date', ['placeholder' => 'гггг-мм-дд']) ?>
         </div>
 
-        <p class="form-label">Файлы</p>
+        <?= Html::tag('p', 'Файлы', ['class' => 'form-label']) ?>
         <div class="new-file">
             <?= $form
                 ->field($model, 'files[]', ['template' => "{input}{label}", 'labelOptions' => ['class' => 'add-file']])
