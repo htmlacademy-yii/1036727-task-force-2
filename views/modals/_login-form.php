@@ -9,7 +9,7 @@ use yii\widgets\ActiveForm;
 
 ?>
 <section class="modal enter-form form-modal" id="enter-form">
-    <h2>Вход на сайт</h2>
+    <?= Html::tag('h2', 'Вход на сайт') ?>
 
     <?php $form = ActiveForm::begin([
         'action' => Url::to(['user/login']),

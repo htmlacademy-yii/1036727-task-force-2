@@ -48,7 +48,7 @@ $user = $this->context->user;
             <a href="<?= $user->is_executor ? Url::to(['profile/view', 'id' => $user->id]) : '#' ?>">
                 <img
                     class="user-photo"
-                    src="<?= Html::encode(UserHelper::getAvatar($user)) ?>"
+                    src="<?= UserHelper::getAvatar($user) ?>"
                     width="55"
                     height="55"
                     alt="Аватар"

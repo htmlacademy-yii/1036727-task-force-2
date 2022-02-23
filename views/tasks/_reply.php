@@ -7,18 +7,17 @@
 use yii\helpers\Html;
 use yii\helpers\Url;
 use anatolev\helpers\FormatHelper;
+use anatolev\helpers\ReplyHelper;
 use anatolev\helpers\TaskHelper;
 use anatolev\helpers\UserHelper;
 use anatolev\service\Task;
-
-UserHelper::getAvatar($reply->user);
 
 ?>
 <div class="response-card">
 
     <img
         class="customer-photo"
-        src="<?= Html::encode(UserHelper::getAvatar($reply->user)) ?>"
+        src="<?= UserHelper::avatar($reply->user) ?>"
         width="146"
         height="156"
         alt="Фото заказчиков"
@@ -28,13 +27,11 @@ UserHelper::getAvatar($reply->user);
         <a
             href="<?= $reply->user->is_executor ? Url::to(['profile/view', 'id' => $reply->user->id]) : '#' ?>"
             class="link link--block link--big"
-        ><?= Html::encode($reply->user->name) ?></a>
+        ><?= ReplyHelper::author($reply) ?></a>
         <div class="response-wrapper">
             <div class="stars-rating small">
 
-                <?php for ($i = 1; $i <= Yii::$app->params['maxUserRating']; $i++): ?>
-                    <span class="<?= $i <= $reply->user->profile->current_rate ? 'fill-star' : '' ?>">&nbsp;</span>
-                <?php endfor; ?>
+                <?= $this->render('//_partials/_stars-rating', ['rating' => ReplyHelper::rating($reply)]) ?>
 
             </div>
             <?php

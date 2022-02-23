@@ -1,7 +1,6 @@
 <?php
 
 /** @var yii\web\View $this */
-/** @var app\models\forms\RefuseForm $model */
 
 use yii\helpers\Html;
 use yii\helpers\Url;

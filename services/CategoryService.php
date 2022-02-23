@@ -6,13 +6,20 @@ use app\models\Category;
 
 class CategoryService
 {
+    /**
+     * @return Category[]
+     */
     public function findAll(): array
     {
         return Category::find()->all();
     }
 
-    public function getByInnerName(string $inner_name): ?Category
+    /**
+     * @param string $innerName
+     * @return ?Category
+     */
+    public function getByInnerName(string $innerName): ?Category
     {
-        return Category::findOne(['inner_name' => $inner_name]);
+        return Category::findOne(['inner_name' => $innerName]);
     }
 }

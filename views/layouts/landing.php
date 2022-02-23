@@ -28,19 +28,19 @@ $this->registerMetaTag([
 <body class="landing">
 <?php $this->beginBody() ?>
 
-<div class="table-layout">
+    <div class="table-layout">
 
-    <?= $this->render('_landing-header') ?>
+        <?= $this->render('_landing-header') ?>
 
-    <main>
-        <?= $content ?>
-    </main>
+        <main>
+            <?= $content ?>
+        </main>
 
-    <?= $this->render('_landing-footer') ?>
-    <?= $this->render('//modals/_login-form', ['model' => new LoginForm()]) ?>
+        <?= $this->render('_landing-footer') ?>
+        <?= $this->render('//modals/_login-form', ['model' => new LoginForm()]) ?>
 
-</div>
-<div class="overlay"></div>
+    </div>
+    <div class="overlay"></div>
 
 <?php $this->endBody() ?>
 </body>

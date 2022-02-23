@@ -9,14 +9,23 @@ use anatolev\service\Task;
 
 class ReplyService
 {
-    public function create(ResponseForm $model): void
+    /**
+     * @param ResponseForm $model
+     * @return int
+     */
+    public function create(ResponseForm $model): int
     {
         $reply = new Reply();
         $reply->attributes = $model->attributes;
-
         $reply->save();
+
+        return $model->task_id;
     }
 
+    /**
+     * @param int $reply_id
+     * @return int
+     */
     public function accept(int $reply_id): int
     {
         $reply = Reply::findOne($reply_id);
@@ -29,6 +38,10 @@ class ReplyService
         return $reply->task_id;
     }
 
+    /**
+     * @param $reply_id
+     * @return int
+     */
     public function refuse(int $reply_id): int
     {
         $reply = Reply::findOne($reply_id);
@@ -38,11 +51,20 @@ class ReplyService
         return $reply->task_id;
     }
 
+    /**
+     * @param int $reply_id
+     * @return ?Reply
+     */
     public function findOne(int $reply_id): ?Reply
     {
         return Reply::findOne($reply_id);
     }
 
+    /**
+     * @param int $task_id
+     * @param int $user_id
+     * @return bool
+     */
     public function exist(int $task_id, int $user_id): bool
     {
         $condition = ['task_id' => $task_id, 'user_id' => $user_id];

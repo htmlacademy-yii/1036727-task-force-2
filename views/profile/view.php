@@ -6,6 +6,8 @@
 use yii\helpers\Html;
 use yii\helpers\Url;
 use anatolev\helpers\FormatHelper;
+use anatolev\helpers\ReviewHelper;
+use anatolev\helpers\TaskHelper;
 use anatolev\helpers\UserHelper;
 
 $this->title = Html::encode($user->name);
@@ -18,7 +20,7 @@ $this->title = Html::encode($user->name);
 
             <img
                 class="card-photo"
-                src="<?= Html::encode(UserHelper::getAvatar($user)) ?>"
+                src="<?= UserHelper::avatar($user) ?>"
                 width="191"
                 height="190"
                 alt="Фото пользователя"
@@ -27,15 +29,13 @@ $this->title = Html::encode($user->name);
             <div class="card-rate">
                 <div class="stars-rating big">
 
-                    <?php for ($i = 1; $i <= \Yii::$app->params['maxUserRating']; $i++): ?>
-                        <span class="<?= $i <= $user->profile->current_rate ? 'fill-star' : '' ?>">&nbsp;</span>
-                    <?php endfor; ?>
+                    <?= $this->render('//_partials/_stars-rating', ['rating' => UserHelper::rating($user)]) ?>
 
                 </div>
-                <span class="current-rate"><?= Html::encode($user->profile->current_rate) ?></span>
+                <span class="current-rate"><?= UserHelper::rating($user) ?></span>
             </div>
         </div>
-        <p class="user-description"><?= Html::encode($user->profile->about ?? '') ?></p>
+        <p class="user-description"><?= UserHelper::about($user) ?></p>
     </div>
     <div class="specialization-bio">
         <div class="specialization">
@@ -57,54 +57,24 @@ $this->title = Html::encode($user->name);
             <p class="head-info">Био</p>
             <p class="bio-info">
                 <span class="country-info">Россия</span>,
-                <span class="town-info"><?= Html::encode($user->city->name) ?></span>,
+                <span class="town-info"><?= UserHelper::city($user) ?></span>,
 
                 <?php if (isset($user->profile->birthday)): ?>
-                    <?php $age_info = explode(' ', FormatHelper::getRelativeTime($user->profile->birthday)); ?>
-                    <span class="age-info"><?= $age_info[0] ?></span> <?= $age_info[1] ?>
+                    <?php $ageInfo = explode(' ', FormatHelper::getRelativeTime($user->profile->birthday)); ?>
+                    <span class="age-info"><?= $ageInfo[0] ?></span> <?= $ageInfo[1] ?>
                 <?php endif; ?>
 
             </p>
         </div>
     </div>
 
-    <?php if ($tasks = array_filter($user->tasks0, fn($task) => $task?->review)): ?>
+    <?php if ($tasks = TaskHelper::getTasksWithReviews($user->tasks0)): ?>
         <h4 class="head-regular">Отзывы заказчиков (<?= count($tasks) ?>)</h4>
 
         <?php foreach ($tasks as $task): ?>
-            <div class="response-card">
 
-                <img
-                    class="customer-photo"
-                    src="<?= Html::encode(UserHelper::getAvatar($task->customer)) ?>"
-                    width="120"
-                    height="127"
-                    alt="Фото заказчиков"
-                >
+            <?= $this->render('_review', ['task' => $task]) ?>
 
-                <div class="feedback-wrapper">
-                    <p class="feedback"><?= Html::encode($task->review->comment) ?></p>
-                    <p class="task">
-                        Задание «<a
-                            href="<?= Url::to(['tasks/view', 'id' => $task->id]) ?>"
-                            class="link link--small"
-                        ><?= Html::encode($task->name) ?></a>»
-                        <?= $task->done ? 'выполнено' : 'провалено' ?>
-                    </p>
-                </div>
-                <div class="feedback-wrapper">
-                    <div class="stars-rating small">
-
-                        <?php for ($i = 1; $i <= \Yii::$app->params['maxUserRating']; $i++): ?>
-                            <span class="<?= $i <= $task->review->rating ? 'fill-star' : '' ?>">&nbsp;</span>
-                        <?php endfor; ?>
-
-                    </div>
-                    <p class="info-text">
-                        <span class="current-time"><?= FormatHelper::getRelativeTime($task->review->dt_add) ?> </span>назад
-                    </p>
-                </div>
-            </div>
         <?php endforeach; ?>
 
     <?php endif; ?>
@@ -116,18 +86,18 @@ $this->title = Html::encode($user->name);
         <dl class="black-list">
             <dt>Всего заказов</dt>
             <dd>
-                <?= Html::encode($user->profile->done_task_count) ?> выполнено,
-                <?= Html::encode($user->profile->failed_task_count) ?> провалено
+                <?= UserHelper::doneTaskCount($user) ?>,
+                <?= UserHelper::failedTaskCount($user) ?>
             </dd>
 
             <dt>Место в рейтинге</dt>
             <dd><?= Html::encode($user->place_in_rating) ?> место</dd>
 
             <dt>Дата регистрации</dt>
-            <dd><?= date('j F, H:i', strtotime($user->dt_add)) ?></dd>
+            <dd><?= UserHelper::registerDate($user) ?></dd>
 
             <dt>Статус</dt>
-            <dd><?= Html::encode($user->busy_status) ?></dd>
+            <dd><?= UserHelper::busyStatus($user) ?></dd>
         </dl>
     </div>
     <div class="right-card white">
@@ -135,7 +105,6 @@ $this->title = Html::encode($user->name);
         <ul class="enumeration-list">
 
             <?php
-
             $contacts = [
                 [
                     'property' => 'contact_phone',
@@ -153,7 +122,6 @@ $this->title = Html::encode($user->name);
                     'class_modifier' => 'tg'
                 ]
             ];
-
             ?>
 
             <?php foreach ($contacts as $contact): ?>

@@ -27,11 +27,11 @@ $this->registerMetaTag([
 <body>
 <?php $this->beginBody() ?>
 
-<?= $this->render('_main-header') ?>
+    <?= $this->render('_main-header') ?>
 
-<main class="main-content container<?= $this->params['mainClass'] ?? '' ?>">
-    <?= $content ?>
-</main>
+    <main class="main-content container<?= $this->params['mainClass'] ?? '' ?>">
+        <?= $content ?>
+    </main>
 
 <?php $this->endBody() ?>
 </body>

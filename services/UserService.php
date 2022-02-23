@@ -9,21 +9,23 @@ use app\models\User;
 use app\models\UserIdentity;
 use app\models\UserProfile;
 use app\models\forms\SignupForm;
+use anatolev\service\Task as Task2;
 
 class UserService
 {
-    const STATUS_WORK_ID = 3;
-
+    /**
+     * @param SignupForm $model
+     * @return void
+     */
     public function create(SignupForm $model): void
     {
         $hash = Yii::$app->getSecurity()->generatePasswordHash($model->password);
 
-        $user = new User();
-        $user->attributes = $model->attributes;
-        $user->password = $hash;
-
         $transaction = Yii::$app->db->beginTransaction();
         try {
+            $user = new User();
+            $user->attributes = $model->attributes;
+            $user->password = $hash;
             $user->save();
 
             $profile = new UserProfile();
@@ -36,16 +38,44 @@ class UserService
         }
     }
 
-    public function getUser(string $email): ?UserIdentity
-    {
-        return UserIdentity::findOne(['email' => $email]);
-    }
-
+    /**
+     * @param int $user_id
+     * @return ?User
+     */
     public function findOne(int $user_id): ?User
     {
         return User::findOne($user_id);
     }
 
+    /**
+     * @param int $user_id
+     * @return ?User $user
+     */
+    public function getExecutor(int $user_id): ?User
+    {
+        $user = User::findOne(['id' => $user_id, 'is_executor' => 1]);
+
+        if (isset($user)) {
+            $user->is_busy = $this->isBusy($user_id);
+            $user->place_in_rating = $this->getPlaceInRating($user_id);
+        }
+
+        return $user;
+    }
+
+    /**
+     * @param string $email
+     * @return ?UserIdentity
+     */
+    public function getUser(string $email): ?UserIdentity
+    {
+        return UserIdentity::findOne(['email' => $email]);
+    }
+
+    /**
+     * @param int $user_id
+     * @return bool
+     */
     public function isCustomer(int $user_id): bool
     {
         $query = User::find()
@@ -54,6 +84,10 @@ class UserService
         return $query->exists();
     }
 
+    /**
+     * @param int $user_id
+     * @return bool
+     */
     public function isExecutor(int $user_id): bool
     {
         $query = User::find()
@@ -62,20 +96,25 @@ class UserService
         return $query->exists();
     }
 
-    public function getExecutor(int $user_id): ?User
+    /**
+     * @param int $user_id
+     * @param int $status_id
+     * @return void
+     */
+    public function updateTaskCounter(int $user_id, int $status_id): void
     {
-        $query = User::find()
-            ->where(['id' => $user_id])
-            ->andWhere(['is_executor' => 1]);
+        $doneStatusId = Task2::STATUS_DONE_ID;
+        $counter = $status_id === $doneStatusId ? 'done' : 'failed';
 
-        if ($user = $query->one()) {
-            $user->busy_status = $this->getBusyStatus($user_id);
-            $user->place_in_rating = $this->getPlaceInRating($user_id);
-        }
-
-        return $user;
+        $user = UserProfile::findOne(['user_id' => $user_id]);
+        $user->updateCounters(["{$counter}_task_count" => 1]);
+        $user->save();
     }
 
+    /**
+     * @param int $user_id
+     * @return int
+     */
     private function getPlaceInRating(int $user_id): int
     {
         $query = User::find()
@@ -88,13 +127,15 @@ class UserService
         return array_search($user_id, array_column($users, 'id')) + 1;
     }
 
-    private function getBusyStatus(int $user_id): string
+    /**
+     * @param int $user_id
+     * @return bool
+     */
+    private function isBusy(int $user_id): bool
     {
-        $query = Task::find()
-            ->where(['executor_id' => $user_id])
-            ->andWhere(['status_id' => self::STATUS_WORK_ID]);
-
-        return $query->count() ? 'Занят' : 'Открыт для новых заказов';
+        $condition = ['executor_id' => $user_id, 'status_id' => Task2::STATUS_WORK_ID];
+        
+        return Task::find()->where($condition)->exists();
     }
 
     // public function getUserCurrentRate(int $user_id): float

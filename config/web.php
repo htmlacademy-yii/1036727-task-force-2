@@ -14,6 +14,9 @@ $config = [
         '@files' => 'uploads/files',
     ],
     'components' => [
+        'geocoder' => [
+            'class' => 'app\components\GeocoderClient'
+        ],
         'request' => [
             // !!! insert a secret key in the following (if it is empty) - this is required by cookie validation
             'cookieValidationKey' => 'M48085L3F3Oy7cV4U01mWd1We7OtSiiG',
@@ -52,6 +55,7 @@ $config = [
             'enableStrictParsing' => true,
             'rules' => [
                 '/' => 'landing/index',
+                'api/<geocode>' => 'api/index',
                 'login' => 'user/login',
                 'logout' => 'user/logout',
                 'reply/accept/<reply_id:\d+>' => 'reply/accept',
@@ -68,6 +72,11 @@ $config = [
                 'user/view/<id:\d+>' => 'profile/view',
             ],
         ],
+    ],
+    'modules' => [
+        'test' => [
+            'class' => 'app\modules\test\Test',
+        ]
     ],
     'params' => $params,
     'language' => 'ru',

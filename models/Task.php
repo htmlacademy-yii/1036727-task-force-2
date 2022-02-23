@@ -55,6 +55,7 @@ class Task extends ActiveRecord
             [['expire'], 'date', 'format' => 'php:Y-m-d', 'min' => strtotime('today'),
             'tooSmall' => 'Дата не может быть раньше текущего дня.'],
             [['location'], 'string'],
+            [['location'], 'default', 'value' => null],
             [['latitude', 'longitude'], 'double'],
             [['city_id', 'status_id', 'category_id', 'executor_id', 'customer_id'], 'integer'],
             [['city_id'], 'exist', 'targetClass' => City::class, 'targetAttribute' => 'id'],

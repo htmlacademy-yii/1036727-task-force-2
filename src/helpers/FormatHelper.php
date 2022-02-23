@@ -11,6 +11,10 @@ class FormatHelper
     const SECONDS_PER_MONTH = self::SECONDS_PER_DAY * 30;
     const SECONDS_PER_YEAR = self::SECONDS_PER_MONTH * 12;
 
+    /**
+     * @param string $date
+     * @return string
+     */
     public static function getRelativeTime(string $date): string
     {
 
@@ -44,6 +48,9 @@ class FormatHelper
         return $relative_time;
     }
 
+    /**
+     * @return string
+     */
     public static function getNounPluralForm(int $number, string $one, string $two, string $many): string
     {
         $number = (int)$number;

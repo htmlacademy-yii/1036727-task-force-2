@@ -3,13 +3,18 @@
 namespace anatolev\helpers;
 
 use Yii;
+use yii\helpers\Html;
 use app\models\TaskFile;
 
 class FileHelper
 {
     const BYTE_PER_KILOBYTE = 1024;
 
-    public static function getExist(array $files): array
+    /**
+     * @param array $files
+     * @return TaskFile[]
+     */
+    public static function getExists(array $files): array
     {
         $callback = function ($file) {
             if ($file instanceof TaskFile && file_exists(Yii::getAlias('@files') . '/' . $file->path)) {
@@ -22,21 +27,33 @@ class FileHelper
         return array_filter($files, $callback);
     }
 
-    public static function getName(string $filePath): string
+    /**
+     * @param TaskFile $file
+     * @return string
+     */
+    public static function getName(TaskFile $file): string
     {
-        return (explode('_', $filePath)[0] ?? '') . self::getExtension($filePath);
+        return Html::encode((explode('_', $file->path)[0] ?? '') . self::getExtension($file));
     }
 
-    public static function getSize(string $filePath): int
+    /**
+     * @param TaskFile $file
+     * @return int
+     */
+    public static function getSize(TaskFile $file): int
     {
-        $value = filesize(Yii::getAlias('@files') . '/' . $filePath) / self::BYTE_PER_KILOBYTE;
+        $value = filesize(Yii::getAlias('@files') . '/' . $file->path) / self::BYTE_PER_KILOBYTE;
 
         return ceil($value);
     }
 
-    private static function getExtension(string $filePath): string
+    /**
+     * @param TaskFile $file
+     * @return string
+     */
+    private static function getExtension(TaskFile $file): string
     {
-        $filePathParts = explode('.', $filePath);
+        $filePathParts = explode('.', $file->path);
 
         return '.' . array_pop($filePathParts);
     }
