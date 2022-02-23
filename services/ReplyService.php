@@ -24,7 +24,7 @@ class ReplyService
 
         $task->executor_id = $reply->user_id;
         $task->status_id = Task::STATUS_WORK_ID;
-        $task->save();
+        $task->save(attributeNames: ['executor_id', 'status_id']);
 
         return $reply->task_id;
     }
