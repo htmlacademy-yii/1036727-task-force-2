@@ -17,6 +17,7 @@ class AddTaskForm extends Model
     public $files;
     public $latitude;
     public $longitude;
+    public $city_name;
 
     public function rules()
     {
@@ -27,6 +28,8 @@ class AddTaskForm extends Model
             [['description'], 'string', 'length' => [30, 1000]],
             [['category_id'], 'integer'],
             [['category_id'], 'exist', 'targetClass' => Category::class, 'targetAttribute' => 'id'],
+            [['city_name'], 'exist', 'targetClass' => City::class, 'targetAttribute' => 'name',
+                'message' => 'Название города не найдено в таблице городов'],
             [['location'], 'string'],
             [['latitude', 'longitude'], 'double'],
             [['budget'], 'integer', 'min' => 1],

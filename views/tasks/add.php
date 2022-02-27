@@ -42,6 +42,7 @@ $this->params['mainClass'] = ' main-content--center';
 
         <?= $form->field($model, 'latitude', ['template' => '{input}'])->hiddenInput(['id' => 'lat']) ?>
         <?= $form->field($model, 'longitude', ['template' => '{input}'])->hiddenInput(['id' => 'long']) ?>
+        <?= $form->field($model, 'city_name', ['enableAjaxValidation' => true, 'template' => '{input}{error}'])->hiddenInput(['id' => 'city']) ?>
 
         <?= Html::submitInput('Опубликовать', ['class' => 'button button--blue']) ?>
 

@@ -27,6 +27,7 @@ const autoCompleteJS = new autoComplete({
 
                 document.getElementById('lat').value = selection.pos[1];
                 document.getElementById('long').value = selection.pos[0];
+                document.getElementById('city').value = selection.city ? selection.city : 0;
             }
         }
     }

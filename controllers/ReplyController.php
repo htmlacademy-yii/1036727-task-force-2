@@ -7,7 +7,7 @@ use yii\filters\AccessControl;
 use yii\web\Controller;
 use app\models\forms\ResponseForm;
 use app\services\ReplyService;
-use anatolev\helpers\TaskHelper;
+use app\services\TaskService;
 use anatolev\service\ActRespond;
 use anatolev\service\Task;
 
