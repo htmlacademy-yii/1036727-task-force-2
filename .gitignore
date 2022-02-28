@@ -33,6 +33,7 @@ tests/_support/_generated
 /.vagrant
 
 /config/db.php
+/config/params-local.php
 
 *.ai
 *.log

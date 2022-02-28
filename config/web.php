@@ -1,6 +1,9 @@
 <?php
 
-$params = require __DIR__ . '/params.php';
+$params = array_merge(
+    require __DIR__ . '/params.php',
+    require __DIR__ . '/params-local.php'
+);
 $db = require __DIR__ . '/db.php';
 
 $config = [
@@ -55,7 +58,7 @@ $config = [
             'enableStrictParsing' => true,
             'rules' => [
                 '/' => 'landing/index',
-                'api/<geocode>' => 'api/index',
+                'geoapi/<geocode>' => 'api/geocoder',
                 'login' => 'user/login',
                 'logout' => 'user/logout',
                 'reply/accept/<reply_id:\d+>' => 'reply/accept',

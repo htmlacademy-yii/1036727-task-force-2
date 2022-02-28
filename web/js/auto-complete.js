@@ -4,7 +4,8 @@ const autoCompleteJS = new autoComplete({
         src: async query => {
             try {
                 // Fetch Data from external Source
-                const source = await fetch(`http://localhost/api/${query}`);
+                const apiUrl = autoCompleteJS.input.dataset.apiUrl;
+                const source = await fetch(`${apiUrl}/${query}`);
                 // Data is array of `Objects` | `Strings`
                 const data = await source.json();
 

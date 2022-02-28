@@ -2,6 +2,7 @@
 
 namespace app\components;
 
+use Yii;
 use yii\base\Component;
 use app\services\CityService;
 use GuzzleHttp\Client;
@@ -12,7 +13,6 @@ use GuzzleHttp\Psr7\Request;
 
 class GeocoderClient extends Component
 {
-    const API_KEY = 'e666f398-c983-4bde-8f14-e3fec900592a';
     const BASE_URL = 'https://geocode-maps.yandex.ru/1.x/';
 
     /**
@@ -28,7 +28,7 @@ class GeocoderClient extends Component
             $response = $client->send($request, [
                 'query' => [
                     'geocode' => $geocode,
-                    'apikey' => self::API_KEY,
+                    'apikey' => Yii::$app->params['geocoderApiKey'],
                     'format' => 'json'
                 ]
             ]);

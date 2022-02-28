@@ -16,7 +16,7 @@ use anatolev\helpers\TaskHelper;
 
 ModalFormAsset::register($this);
 
-$apiKey = GeocoderClient::API_KEY;
+$apiKey = Yii::$app->params['geocoderApiKey'];
 $this->registerJsFile("https://api-maps.yandex.ru/2.1/?apikey={$apiKey}&lang=ru_RU");
 $this->registerJsFile('/js/yandex-map.js');
 
@@ -48,8 +48,8 @@ $this->title = Html::encode($task->name);
             <div
                 id="map"
                 style="width: 725px; height: 346px"
-                data-lat="<?= $task->latitude ?>"
-                data-long="<?= $task->longitude ?>"
+                data-lat="<?= Html::encode($task->latitude) ?>"
+                data-long="<?= Html::encode($task->longitude) ?>"
             ></div>
         <?php endif; ?>
 

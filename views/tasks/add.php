@@ -5,6 +5,7 @@
 
 use yii\helpers\ArrayHelper;
 use yii\helpers\Html;
+use yii\helpers\Url;
 use yii\widgets\ActiveForm;
 use app\assets\AutoCompleteAsset;
 
@@ -26,7 +27,7 @@ $this->params['mainClass'] = ' main-content--center';
         <?= $form->field($model, 'name')->textInput() ?>
         <?= $form->field($model, 'description')->textarea() ?>
         <?= $form->field($model, 'category_id')->dropDownList(ArrayHelper::map($categories, 'id', 'name')) ?>
-        <?= $form->field($model, 'location')->textInput(['id' => 'autoComplete', 'style' => 'padding-left: 50px;']) ?>
+        <?= $form->field($model, 'location')->textInput(['id' => 'autoComplete', 'style' => 'padding-left: 50px;', 'data-api-url' => Url::to(['/geoapi'])]) ?>
 
         <div class="half-wrapper">
             <?= $form->field($model, 'budget')->input('number') ?>

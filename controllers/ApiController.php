@@ -8,7 +8,7 @@ use yii\web\Response;
 
 class ApiController extends Controller
 {
-    public function actionIndex(string $geocode)
+    public function actionGeocoder(string $geocode)
     {
         Yii::$app->response->format = Response::FORMAT_JSON;
 
