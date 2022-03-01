@@ -2,7 +2,9 @@
 
 namespace app\controllers;
 
-class SiteController extends SecuredController
+use yii\web\Controller;
+
+class SiteController extends Controller
 {
     public function actions()
     {
@@ -11,10 +13,5 @@ class SiteController extends SecuredController
                 'class' => 'yii\web\ErrorAction',
             ],
         ];
-    }
-
-    public function actionIndex()
-    {
-        return $this->render('index');
     }
 }

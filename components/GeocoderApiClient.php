@@ -11,7 +11,7 @@ use GuzzleHttp\Exception\RequestException;
 use GuzzleHttp\Exception\ServerException;
 use GuzzleHttp\Psr7\Request;
 
-class GeocoderClient extends Component
+class GeocoderApiClient extends Component
 {
     const BASE_URL = 'https://geocode-maps.yandex.ru/1.x/';
 
@@ -54,13 +54,13 @@ class GeocoderClient extends Component
 
             foreach ($featureMembers as $i => $featureMember) {
                 $geoObject = $featureMember->GeoObject;
-                $GeocoderMetaData = $geoObject->metaDataProperty->GeocoderMetaData;
-                $components = $GeocoderMetaData->Address->Components;
+                $geocoderMetaData = $geoObject->metaDataProperty->GeocoderMetaData;
+                $components = $geocoderMetaData->Address->Components;
                 $locality = array_values(array_filter($components, fn($city) => $city->kind === 'locality'))[0] ?? null;
 
                 $result[$i] = [
                     'pos' => explode(' ', $geoObject->Point->pos),
-                    'text' => $GeocoderMetaData->text,
+                    'text' => $geocoderMetaData->text,
                     'city' => $locality?->name
                 ];
             }

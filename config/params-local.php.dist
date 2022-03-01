@@ -2,4 +2,6 @@
 
 return [
     'geocoderApiKey' => '',
+    'vkontakte_client_id' => '',
+    'vkontakte_client_secret' => '',
 ];

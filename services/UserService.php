@@ -17,7 +17,7 @@ class UserService
      * @param SignupForm $model
      * @return void
      */
-    public function create(SignupForm $model): void
+    public function create(SignupForm $model): ?User
     {
         $hash = Yii::$app->getSecurity()->generatePasswordHash($model->password);
 
@@ -33,9 +33,23 @@ class UserService
             $profile->save();
 
             $transaction->commit();
+
+            return $user;
+
         } catch (\Throwable $e) {
             $transaction->rollBack();
         }
+
+        return null;
+    }
+
+    /**
+     * @param string $email
+     * @return ?User
+     */
+    public function findByEmail(string $email): ?User
+    {
+        return User::findOne(['email' => $email]);
     }
 
     /**

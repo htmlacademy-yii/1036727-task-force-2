@@ -3,18 +3,74 @@
 namespace app\controllers;
 
 use Yii;
+use yii\authclient\ClientInterface;
 use yii\filters\AccessControl;
+use yii\helpers\ArrayHelper;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\web\Response;
 use yii\widgets\ActiveForm;
 use app\models\forms\LoginForm;
 use app\models\forms\SignupForm;
+use app\services\AuthService;
 use app\services\CityService;
 use app\services\UserService;
 
 class UserController extends Controller
 {
+    public function actions()
+    {
+        return [
+            'auth' => [
+                'class' => 'yii\authclient\AuthAction',
+                'successCallback' => [$this, 'onAuthSuccess'],
+            ],
+        ];
+    }
+
+    public function onAuthSuccess(ClientInterface $client)
+    {
+        $attributes = $client->getUserAttributes();
+
+        $email = ArrayHelper::getValue($attributes, 'email');
+        $sourceId = ArrayHelper::getValue($attributes, 'id');
+        $source = $client->getId();
+
+        if ($auth = (new AuthService())->findOne($source, $sourceId)) {
+            return $this->login($auth->user->email);
+        }
+
+        if ($email = ArrayHelper::getValue($attributes, 'email')) {
+
+            if ($user = (new UserService())->findByEmail($email)) {
+                (new AuthService())->create($user->id, $source, $sourceId);
+
+                return $this->login($email);
+            }
+
+            $signupForm = new SignupForm();
+
+            $signupForm->name = "{$attributes['first_name']} {$attributes['last_name']}";
+            $signupForm->email = $email;
+            $signupForm->city_id = (new CityService())->findByName($attributes['city']['title'])->id ?? 1;
+            $signupForm->password = $passwd = Yii::$app->security->generateRandomString();
+            $signupForm->password_repeat = $passwd;
+            $signupForm->is_executor = 1;
+
+            $transaction = Yii::$app->db->beginTransaction();
+            try {
+                $user = (new UserService())->create($signupForm);
+                (new AuthService())->create($user->id, $source, $sourceId);
+                $transaction->commit();
+                return $this->login($user->email);
+            } catch (\Throwable $e) {
+                $transaction->rollBack();
+            }
+        }
+
+        return $this->goHome();
+    }
+
     public function behaviors()
     {
         return [
@@ -22,7 +78,7 @@ class UserController extends Controller
                 'class' => AccessControl::class,
                 'rules' => [
                     [
-                        'actions' => ['login', 'signup'],
+                        'actions' => ['auth', 'login', 'signup'],
                         'allow' => true,
                         'roles' => ['?']
                     ],
@@ -52,7 +108,8 @@ class UserController extends Controller
 
             if ($signupForm->validate()) {
                 (new UserService())->create($signupForm);
-                $this->goHome();
+
+                return $this->goHome();
             }
         }
 
@@ -78,12 +135,18 @@ class UserController extends Controller
             }
 
             if ($loginForm->validate()) {
-                Yii::$app->user->login((new UserService())->getUser($loginForm->email));
-
-                return $this->redirect(['tasks/index']);
+                $this->login($loginForm->email);
             }
         }
 
         return $this->goHome();
+    }
+
+    private function login(string $email)
+    {
+        $user = (new UserService())->getUser($email);
+        Yii::$app->user->login($user);
+
+        return $this->redirect(['tasks/index']);
     }
 }

@@ -4,6 +4,7 @@
 /** @var app\models\City[] $cities */
 /** @var app\models\forms\SignupForm $model */
 
+use yii\authclient\widgets\AuthChoice;
 use yii\helpers\ArrayHelper;
 use yii\helpers\Html;
 use yii\widgets\ActiveForm;
@@ -35,6 +36,22 @@ $this->title = 'Регистрация';
                 'class' => 'button button--blue',
                 'style' => 'width: 642px; float: initial;'
             ]); ?>
+
+            <?php $authChoice = AuthChoice::begin([
+                'baseAuthUrl' => ['user/auth'],
+                'popupMode' => false
+            ]); ?>
+
+                <?= $authChoice->clientLink(
+                    $authChoice->getClients()['vkontakte'],
+                    'Вход через вконтакте',
+                    [
+                        'style' => 'box-sizing: border-box; width: 642px; padding: 15px 43px; font-size: 19px; text-align: center;',
+                        'class' => 'button button--blue',
+                    ]
+                ); ?>
+
+            <?php AuthChoice::end(); ?>
 
         <?php ActiveForm::end(); ?>
 

@@ -9,7 +9,7 @@ use app\models\UserProfile;
 use app\models\forms\AddTaskForm;
 use app\models\forms\CompleteForm;
 use app\models\forms\SearchForm;
-use app\service\ReplyService;
+use app\services\ReplyService;
 use app\services\ReviewService;
 use app\services\TaskFileService;
 use anatolev\helpers\TaskHelper;

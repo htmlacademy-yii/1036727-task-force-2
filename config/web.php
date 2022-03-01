@@ -17,8 +17,19 @@ $config = [
         '@files' => 'uploads/files',
     ],
     'components' => [
+        'authClientCollection' => [
+            'class' => 'yii\authclient\Collection',
+            'clients' => [
+                'vkontakte' => [
+                    'class' => 'yii\authclient\clients\VKontakte',
+                    'clientId' => $params['vkontakte_client_id'],
+                    'clientSecret' => $params['vkontakte_client_secret'],
+                    'scope' => 'email',
+                ],
+            ],
+        ],
         'geocoder' => [
-            'class' => 'app\components\GeocoderClient'
+            'class' => 'app\components\GeocoderApiClient'
         ],
         'request' => [
             // !!! insert a secret key in the following (if it is empty) - this is required by cookie validation
@@ -59,6 +70,7 @@ $config = [
             'rules' => [
                 '/' => 'landing/index',
                 'geoapi/<geocode>' => 'api/geocoder',
+                'user/auth' => 'user/auth',
                 'login' => 'user/login',
                 'logout' => 'user/logout',
                 'reply/accept/<reply_id:\d+>' => 'reply/accept',
@@ -75,11 +87,6 @@ $config = [
                 'user/view/<id:\d+>' => 'profile/view',
             ],
         ],
-    ],
-    'modules' => [
-        'test' => [
-            'class' => 'app\modules\test\Test',
-        ]
     ],
     'params' => $params,
     'language' => 'ru',
