@@ -12,12 +12,12 @@ class AddTaskForm extends Model
     public $description;
     public $category_id;
     public $location;
-    public $latitude;
-    public $longitude;
-    public $city_name;
     public $budget;
     public $expire;
     public $files;
+    public $latitude;
+    public $longitude;
+    public $city_name;
 
     public function rules()
     {
@@ -28,9 +28,10 @@ class AddTaskForm extends Model
             [['description'], 'string', 'length' => [30, 1000]],
             [['category_id'], 'integer'],
             [['category_id'], 'exist', 'targetClass' => Category::class, 'targetAttribute' => 'id'],
-            [['location', 'city_name'], 'string'],
+            [['city_name'], 'exist', 'targetClass' => City::class, 'targetAttribute' => 'name',
+                'message' => 'Название города не найдено в таблице городов'],
+            [['location'], 'string'],
             [['latitude', 'longitude'], 'double'],
-            [['city_name'], 'exist', 'targetClass' => City::class, 'targetAttribute' => 'name'],
             [['budget'], 'integer', 'min' => 1],
             [['expire'], 'date', 'format' => 'php:Y-m-d', 'min' => strtotime('today'),
                 'tooSmall' => 'Дата не может быть раньше текущего дня.'],
@@ -48,6 +49,8 @@ class AddTaskForm extends Model
             'budget' => 'Бюджет',
             'expire' => 'Срок исполнения',
             'files' => 'Добавить новый файл',
+            'latitude' => 'Широта',
+            'longitude' => 'Долгота',
         ];
     }
 }

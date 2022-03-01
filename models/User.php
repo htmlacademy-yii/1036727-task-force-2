@@ -26,7 +26,7 @@ use yii\db\ActiveRecord;
  */
 class User extends ActiveRecord
 {
-    public $busy_status;
+    public $is_busy;
     public $place_in_rating;
 
     /**

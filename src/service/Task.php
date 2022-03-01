@@ -5,6 +5,7 @@ namespace anatolev\service;
 use anatolev\exception\SourceFileException;
 use anatolev\exception\StatusNotExistException;
 use anatolev\exception\ActionNotExistException;
+use app\services\TaskService;
 
 class Task
 {
@@ -21,18 +22,13 @@ class Task
     const STATUS_FAILED_ID = 5;
 
     private array $actions = [];
+    private string $status;
 
     public function __construct(
-        private int $task_id,
-        private int $customer_id,
-        private ?int $executor_id,
-        private string $status = self::STATUS_NEW
+        private int $task_id
     ) {}
 
     /**
-     * Возвращает "карту" статусов
-     * [внутреннее имя => название статуса на русском]
-     *
      * @return array
      */
     public function getStatusMap(): array
@@ -47,9 +43,6 @@ class Task
     }
 
     /**
-     * Возвращает "карту" действий
-     * [внутреннее имя => название действия на русском]
-     *
      * @return array
      */
     public function getActionMap(): array
@@ -66,13 +59,8 @@ class Task
     }
 
     /**
-     * Возвращает статус, в который перейдёт задание после выполнения
-     * указанного действия
-     *
      * @param string $action Действие (внутреннее имя)
-     *
      * @throws ActionNotExistException
-     *
      * @return string
      */
     public function getNextStatus(string $action): string
@@ -92,17 +80,13 @@ class Task
     }
 
     /**
-     * Возвращает массив доступных действий для указанного статуса
-     * и пользователя
-     *
-     * @param int $user_id Идентификатор аутентифицированного пользователя
-     *
      * @throws StatusNotExistException
-     *
-     * @return array
+     * @return ?TaskAction
      */
-    public function getAvailableActions(int $user_id): array
+    public function getAvailableAction(): ?TaskAction
     {
+        $this->status = (new TaskService())->getStatus($this->task_id);
+
         if (!array_key_exists($this->status, $this->getStatusMap())) {
             throw new StatusNotExistException("Статус не существует");
         }
@@ -120,27 +104,19 @@ class Task
 
         $available_actions = [];
 
-        foreach ($array as $key => $actions) {
+        foreach ($array[$this->status] ?? [] as $action) {
 
-            foreach ($actions as $action) {
-                $ids = [$this->task_id, $this->customer_id, $this->executor_id, $user_id];
-
-                if ($this->status === $key && $action->checkUserRights(...$ids)) {
-                    $available_actions[] = $action;
-                }
+            if ($action->checkUserRights($this->task_id)) {
+                $available_actions[] = $action;
             }
         }
 
-        return $available_actions;
+        return $available_actions[0] ?? null;
     }
 
     /**
-     * Возвращает объект указанного действия
-     *
      * @param string $action Действие
-     *
      * @throws SourceFileException
-     *
      * @return TaskAction
      */
     private function getAction(string $action): TaskAction

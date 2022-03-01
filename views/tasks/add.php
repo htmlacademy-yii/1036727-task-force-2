@@ -5,10 +5,13 @@
 
 use yii\helpers\ArrayHelper;
 use yii\helpers\Html;
+use yii\helpers\Url;
 use yii\widgets\ActiveForm;
+use app\assets\AutoCompleteAsset;
 
-$this->registerJsFile('/js/fileInputHandler.js');
+AutoCompleteAsset::register($this);
 
+$this->registerJsFile('/js/file-input.js');
 $this->title = 'Создать задание';
 $this->params['mainClass'] = ' main-content--center';
 
@@ -24,7 +27,7 @@ $this->params['mainClass'] = ' main-content--center';
         <?= $form->field($model, 'name')->textInput() ?>
         <?= $form->field($model, 'description')->textarea() ?>
         <?= $form->field($model, 'category_id')->dropDownList(ArrayHelper::map($categories, 'id', 'name')) ?>
-        <?= $form->field($model, 'location')->textInput() ?>
+        <?= $form->field($model, 'location')->textInput(['id' => 'autoComplete', 'style' => 'padding-left: 50px;', 'data-api-url' => Url::to(['/geoapi'])]) ?>
 
         <div class="half-wrapper">
             <?= $form->field($model, 'budget')->input('number') ?>
@@ -38,9 +41,9 @@ $this->params['mainClass'] = ' main-content--center';
                 ->fileInput(['style' => 'display: none;', 'multiple' => true]) ?>
         </div>
 
-        <?= $form->field($model, 'latitude', ['template' => '{input}'])->hiddenInput() ?>
-        <?= $form->field($model, 'longitude', ['template' => '{input}'])->hiddenInput() ?>
-        <?= $form->field($model, 'city_name', ['template' => '{input}'])->hiddenInput() ?>
+        <?= $form->field($model, 'latitude', ['template' => '{input}'])->hiddenInput(['id' => 'lat']) ?>
+        <?= $form->field($model, 'longitude', ['template' => '{input}'])->hiddenInput(['id' => 'long']) ?>
+        <?= $form->field($model, 'city_name', ['enableAjaxValidation' => true, 'template' => '{input}{error}'])->hiddenInput(['id' => 'city']) ?>
 
         <?= Html::submitInput('Опубликовать', ['class' => 'button button--blue']) ?>
 

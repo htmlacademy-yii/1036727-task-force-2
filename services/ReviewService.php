@@ -7,7 +7,11 @@ use app\models\forms\CompleteForm;
 
 class ReviewService
 {
-    public function create(CompleteForm $model)
+    /**
+     * @param CompleteForm $model
+     * @return void
+     */
+    public function create(CompleteForm $model): void
     {
         $review = new Review();
         $review->attributes = $model->attributes;

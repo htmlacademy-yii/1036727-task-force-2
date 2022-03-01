@@ -5,14 +5,11 @@ namespace app\controllers;
 use Yii;
 use yii\filters\AccessControl;
 use yii\web\Controller;
-// use yii\web\Response;
-// use yii\widgets\ActiveForm;
 use app\models\forms\ResponseForm;
 use app\services\ReplyService;
 use app\services\TaskService;
-use app\services\UserService;
+use anatolev\service\ActRespond;
 use anatolev\service\Task;
-use anatolev\helpers\TaskHelper;
 
 class ReplyController extends Controller
 {
@@ -27,10 +24,9 @@ class ReplyController extends Controller
                         'roles' => ['@'],
                         'actions' => ['accept', 'refuse'],
                         'matchCallback' => function ($rule, $action) {
-                            $reply_id = Yii::$app->request->get('reply_id');
-                            $task = (new ReplyService())->findOne($reply_id)?->task;
+                            $replyId = Yii::$app->request->get('reply_id', 0);
 
-                            return $task && TaskHelper::isActual($task);
+                            return (new TaskService())->isActual($replyId);
                         }
                     ],
                     [
@@ -38,11 +34,9 @@ class ReplyController extends Controller
                         'roles' => ['@'],
                         'actions' => ['create'],
                         'matchCallback' => function ($rule, $action) {
-                            $task_id = Yii::$app->request->post('ResponseForm')['task_id'];
-                            $taskStatus = (new TaskService())->getStatus($task_id);
-                            $isExecutor = (new UserService())->isExecutor(Yii::$app->user->id);
+                            $id = Yii::$app->request->post('ResponseForm')['task_id'] ?? 0;
 
-                            return $taskStatus === Task::STATUS_NEW && $isExecutor;
+                            return (new Task($id))->getAvailableAction() instanceof ActRespond;
                         }
                     ]
                 ]
@@ -58,8 +52,7 @@ class ReplyController extends Controller
             $responseForm->load(Yii::$app->request->post());
 
             if ($responseForm->validate()) {
-                (new ReplyService())->create($responseForm);
-                $task_id = Yii::$app->request->post('ResponseForm')['task_id'];
+                $task_id = (new ReplyService())->create($responseForm);
 
                 return $this->redirect(['tasks/view', 'id' => $task_id]);
             }

@@ -20,6 +20,7 @@ const closeFormModal = () => {
 
 openModalButtons.forEach(button => {
     button.addEventListener('click', evt => {
+        evt.preventDefault();
         const modalElement = document.getElementById(evt.target.dataset.for);
         modalElement.style.display = 'block';
         overlayElement.style.display = 'block';

@@ -4,7 +4,6 @@ namespace app\controllers;
 
 use Yii;
 use yii\filters\AccessControl;
-use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\web\Response;
 use yii\web\UploadedFile;
@@ -14,11 +13,13 @@ use app\models\forms\AddTaskForm;
 use app\models\forms\SearchForm;
 use app\models\forms\CompleteForm;
 use app\models\forms\ResponseForm;
-
 use app\services\CategoryService;
-use app\services\ReviewService;
 use app\services\TaskService;
 use app\services\UserService;
+
+use anatolev\service\ActCancel;
+use anatolev\service\ActDone;
+use anatolev\service\ActRefuse;
 use anatolev\service\Task;
 
 class TasksController extends SecuredController
@@ -47,12 +48,9 @@ class TasksController extends SecuredController
                         'roles' => ['@'],
                         'actions' => ['cancel'],
                         'matchCallback' => function ($rule, $action) {
-                            $task_id = Yii::$app->request->get('task_id');
-                            $service = new TaskService();
-                            $taskStatus = $service->getStatus($task_id);
-                            $isCustomer = $service->isTaskCustomer($task_id, Yii::$app->user->id);
+                            $id = Yii::$app->request->get('task_id', 0);
 
-                            return $taskStatus === Task::STATUS_NEW && $isCustomer;
+                            return (new Task($id))->getAvailableAction() instanceof ActCancel;
                         }
                     ],
                     [
@@ -60,12 +58,9 @@ class TasksController extends SecuredController
                         'roles' => ['@'],
                         'actions' => ['complete'],
                         'matchCallback' => function ($rule, $action) {
-                            $task_id = Yii::$app->request->post('CompleteForm')['task_id'];
-                            $service = new TaskService();
-                            $taskStatus = $service->getStatus($task_id);
-                            $isCustomer = $service->isTaskCustomer($task_id, Yii::$app->user->id);
+                            $id = Yii::$app->request->post('CompleteForm')['task_id'] ?? 0;
 
-                            return $taskStatus === Task::STATUS_WORK && $isCustomer;
+                            return (new Task($id))->getAvailableAction() instanceof ActDone;
                         }
                     ],
                     [
@@ -73,12 +68,9 @@ class TasksController extends SecuredController
                         'roles' => ['@'],
                         'actions' => ['refuse'],
                         'matchCallback' => function ($rule, $action) {
-                            $task_id = Yii::$app->request->get('task_id');
-                            $service = new TaskService();
-                            $taskStatus = $service->getStatus($task_id);
-                            $isExecutor = $service->isTaskExecutor($task_id, Yii::$app->user->id);
+                            $id = Yii::$app->request->get('task_id', 0);
 
-                            return $taskStatus === Task::STATUS_WORK && $isExecutor;
+                            return (new Task($id))->getAvailableAction() instanceof ActRefuse;
                         }
                     ],
                 ]
@@ -131,7 +123,6 @@ class TasksController extends SecuredController
 
             if ($completeForm->validate()) {
                 (new TaskService())->complete($completeForm);
-                (new ReviewService())->create($completeForm);
 
                 return $this->redirect(['tasks/view', 'id' => $completeForm->task_id]);
             }
@@ -184,14 +175,13 @@ class TasksController extends SecuredController
         $completeForm = new CompleteForm();
         $responseForm = new ResponseForm();
 
-        $taskObject = new Task($id, $task->customer_id, $task->executor_id, $task->status->inner_name);
-        $availableActions = $taskObject->getAvailableActions(Yii::$app->user->id);
+        $availableAction = (new Task($id))->getAvailableAction();
 
         return $this->render('view', [
             'task' => $task,
             'completeForm' => $completeForm,
             'responseForm' => $responseForm,
-            'availableActions' => $availableActions
+            'availableAction' => $availableAction
         ]);
     }
 }
