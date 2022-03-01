@@ -28,14 +28,14 @@ class AddTaskForm extends Model
             [['description'], 'string', 'length' => [30, 1000]],
             [['category_id'], 'integer'],
             [['category_id'], 'exist', 'targetClass' => Category::class, 'targetAttribute' => 'id'],
-            [['city_name'], 'exist', 'targetClass' => City::class, 'targetAttribute' => 'name',
-                'message' => 'Название города не найдено в таблице городов'],
-            [['location'], 'string'],
-            [['latitude', 'longitude'], 'double'],
+            [['location', 'city_name'], 'string'],
             [['budget'], 'integer', 'min' => 1],
             [['expire'], 'date', 'format' => 'php:Y-m-d', 'min' => strtotime('today'),
-                'tooSmall' => 'Дата не может быть раньше текущего дня.'],
+            'tooSmall' => 'Дата не может быть раньше текущего дня.'],
             [['files'], 'file', 'maxFiles' => 10],
+            [['latitude', 'longitude'], 'double'],
+            [['city_name'], 'exist', 'targetClass' => City::class, 'targetAttribute' => 'name',
+                'message' => 'Название города не найдено в таблице городов'],
         ];
     }
 
