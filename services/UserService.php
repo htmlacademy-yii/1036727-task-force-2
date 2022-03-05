@@ -111,6 +111,15 @@ class UserService
     }
 
     /**
+     * @param string $email
+     * @return void
+     */
+    public function login(string $email): void
+    {
+        Yii::$app->user->login($this->getUser($email));
+    }
+
+    /**
      * @param int $user_id
      * @param int $status_id
      * @return void
@@ -139,6 +148,31 @@ class UserService
         $users = $query->asArray()->all();
 
         return array_search($user_id, array_column($users, 'id')) + 1;
+    }
+
+    public function signupVKUser(array $attributes, string $source): bool
+    {
+        $signupForm = new SignupForm();
+
+        $signupForm->name = "{$attributes['first_name']} {$attributes['last_name']}";
+        $signupForm->email = $attributes['email'];
+        $signupForm->city_id = (new CityService())->findByName($attributes['city']['title'])->id ?? 1;
+        $signupForm->password = $passwd = Yii::$app->security->generateRandomString();
+        $signupForm->password_repeat = $passwd;
+        $signupForm->is_executor = 1;
+
+        $transaction = Yii::$app->db->beginTransaction();
+        try {
+            $user = $this->create($signupForm);
+            (new AuthService())->create($user->id, $source, $attributes['id']);
+            $transaction->commit();
+
+            return true;
+        } catch (\Throwable $e) {
+            $transaction->rollBack();
+
+            return false;
+        }
     }
 
     /**

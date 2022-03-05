@@ -31,40 +31,18 @@ class UserController extends Controller
     public function onAuthSuccess(ClientInterface $client)
     {
         $attributes = $client->getUserAttributes();
-
-        $email = ArrayHelper::getValue($attributes, 'email');
         $sourceId = ArrayHelper::getValue($attributes, 'id');
         $source = $client->getId();
 
         if ($auth = (new AuthService())->findOne($source, $sourceId)) {
-            return $this->login($auth->user->email);
-        }
-
-        if ($email = ArrayHelper::getValue($attributes, 'email')) {
+            (new UserService())->login($auth->user->email);
+        } elseif ($email = ArrayHelper::getValue($attributes, 'email')) {
 
             if ($user = (new UserService())->findByEmail($email)) {
                 (new AuthService())->create($user->id, $source, $sourceId);
-
-                return $this->login($email);
-            }
-
-            $signupForm = new SignupForm();
-
-            $signupForm->name = "{$attributes['first_name']} {$attributes['last_name']}";
-            $signupForm->email = $email;
-            $signupForm->city_id = (new CityService())->findByName($attributes['city']['title'])->id ?? 1;
-            $signupForm->password = $passwd = Yii::$app->security->generateRandomString();
-            $signupForm->password_repeat = $passwd;
-            $signupForm->is_executor = 1;
-
-            $transaction = Yii::$app->db->beginTransaction();
-            try {
-                $user = (new UserService())->create($signupForm);
-                (new AuthService())->create($user->id, $source, $sourceId);
-                $transaction->commit();
-                return $this->login($user->email);
-            } catch (\Throwable $e) {
-                $transaction->rollBack();
+                (new UserService())->login($email);
+            } elseif ((new UserService())->signupVKUser($attributes, $source)) {
+                (new UserService())->login($email);
             }
         }
 
@@ -135,18 +113,12 @@ class UserController extends Controller
             }
 
             if ($loginForm->validate()) {
-                $this->login($loginForm->email);
+                (new UserService())->login($loginForm->email);
+
+                return $this->redirect(['tasks/index']);
             }
         }
 
         return $this->goHome();
-    }
-
-    private function login(string $email)
-    {
-        $user = (new UserService())->getUser($email);
-        Yii::$app->user->login($user);
-
-        return $this->redirect(['tasks/index']);
     }
 }

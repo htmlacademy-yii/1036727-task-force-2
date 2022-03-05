@@ -31,7 +31,7 @@ class AddTaskForm extends Model
             [['location', 'city_name'], 'string'],
             [['budget'], 'integer', 'min' => 1],
             [['expire'], 'date', 'format' => 'php:Y-m-d', 'min' => strtotime('today'),
-            'tooSmall' => 'Дата не может быть раньше текущего дня.'],
+                'tooSmall' => 'Дата не может быть раньше текущего дня.'],
             [['files'], 'file', 'maxFiles' => 10],
             [['latitude', 'longitude'], 'double'],
             [['city_name'], 'exist', 'targetClass' => City::class, 'targetAttribute' => 'name',
