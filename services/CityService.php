@@ -14,6 +14,11 @@ class CityService
         return City::find()->limit(10)->all();
     }
 
+    public function findByName(string $name): ?City
+    {
+        return City::findOne(['name' => $name]);
+    }
+
     /**
      * @param float $lat
      * @param float $long

@@ -3,18 +3,52 @@
 namespace app\controllers;
 
 use Yii;
+use yii\authclient\ClientInterface;
 use yii\filters\AccessControl;
+use yii\helpers\ArrayHelper;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\web\Response;
 use yii\widgets\ActiveForm;
 use app\models\forms\LoginForm;
 use app\models\forms\SignupForm;
+use app\services\AuthService;
 use app\services\CityService;
 use app\services\UserService;
 
 class UserController extends Controller
 {
+    public function actions()
+    {
+        return [
+            'auth' => [
+                'class' => 'yii\authclient\AuthAction',
+                'successCallback' => [$this, 'onAuthSuccess'],
+            ],
+        ];
+    }
+
+    public function onAuthSuccess(ClientInterface $client)
+    {
+        $attributes = $client->getUserAttributes();
+        $sourceId = ArrayHelper::getValue($attributes, 'id');
+        $source = $client->getId();
+
+        if ($auth = (new AuthService())->findOne($source, $sourceId)) {
+            (new UserService())->login($auth->user->email);
+        } elseif ($email = ArrayHelper::getValue($attributes, 'email')) {
+
+            if ($user = (new UserService())->findByEmail($email)) {
+                (new AuthService())->create($user->id, $source, $sourceId);
+                (new UserService())->login($email);
+            } elseif ((new UserService())->signupVKUser($attributes, $source)) {
+                (new UserService())->login($email);
+            }
+        }
+
+        return $this->goHome();
+    }
+
     public function behaviors()
     {
         return [
@@ -22,7 +56,7 @@ class UserController extends Controller
                 'class' => AccessControl::class,
                 'rules' => [
                     [
-                        'actions' => ['login', 'signup'],
+                        'actions' => ['auth', 'login', 'signup'],
                         'allow' => true,
                         'roles' => ['?']
                     ],
@@ -52,7 +86,8 @@ class UserController extends Controller
 
             if ($signupForm->validate()) {
                 (new UserService())->create($signupForm);
-                $this->goHome();
+
+                return $this->goHome();
             }
         }
 
@@ -78,7 +113,7 @@ class UserController extends Controller
             }
 
             if ($loginForm->validate()) {
-                Yii::$app->user->login((new UserService())->getUser($loginForm->email));
+                (new UserService())->login($loginForm->email);
 
                 return $this->redirect(['tasks/index']);
             }

@@ -3,6 +3,7 @@
 /** @var yii\web\View $this */
 /** @var app\models\forms\LoginForm $model */
 
+use yii\authclient\widgets\AuthChoice;
 use yii\helpers\Html;
 use yii\helpers\Url;
 use yii\widgets\ActiveForm;
@@ -24,7 +25,26 @@ use yii\widgets\ActiveForm;
         <?= $form->field($model, 'email')->input('email') ?>
         <?= $form->field($model, 'password')->passwordInput() ?>
 
-        <?= Html::submitButton('Войти', ['class' => 'button']) ?>
+        <div style="display: flex; flex-direction: column;">
+            <?= Html::submitButton('Войти', ['style' => 'align-self: stretch; margin-top: 35px;', 'class' => 'button']) ?>
+
+            <?php $authChoice = AuthChoice::begin([
+                'baseAuthUrl' => ['user/auth'],
+                'popupMode' => false
+            ]); ?>
+
+                <?= $authChoice->clientLink(
+                    $authChoice->getClients()['vkontakte'],
+                    'Вход через вконтакте',
+                    [
+                        'style' => 'align-self: stretch; margin-top: 15px; text-align: center;',
+                        'class' => 'button',
+                    ]
+                ); ?>
+
+            <?php AuthChoice::end(); ?>
+
+        </div>
 
     <?php ActiveForm::end(); ?>
 
