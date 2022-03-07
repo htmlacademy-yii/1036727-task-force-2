@@ -30,21 +30,7 @@ class UserController extends Controller
 
     public function onAuthSuccess(ClientInterface $client)
     {
-        $attributes = $client->getUserAttributes();
-        $sourceId = ArrayHelper::getValue($attributes, 'id');
-        $source = $client->getId();
-
-        if ($auth = (new AuthService())->findOne($source, $sourceId)) {
-            (new UserService())->login($auth->user->email);
-        } elseif ($email = ArrayHelper::getValue($attributes, 'email')) {
-
-            if ($user = (new UserService())->findByEmail($email)) {
-                (new AuthService())->create($user->id, $source, $sourceId);
-                (new UserService())->login($email);
-            } elseif ((new UserService())->signupVKUser($attributes, $source)) {
-                (new UserService())->login($email);
-            }
-        }
+        (new UserService())->authHandler($client);
 
         return $this->goHome();
     }

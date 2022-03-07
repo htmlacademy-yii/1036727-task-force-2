@@ -3,16 +3,60 @@
 namespace app\services;
 
 use Yii;
+use yii\authclient\ClientInterface;
+use yii\helpers\ArrayHelper;
 use app\models\City;
 use app\models\Task;
 use app\models\User;
 use app\models\UserIdentity;
 use app\models\UserProfile;
 use app\models\forms\SignupForm;
+use app\services\AuthService;
 use anatolev\service\Task as Task2;
 
 class UserService
 {
+    /**
+     * @param ClientInterface $client
+     * @return void
+     */
+    public function authHandler(ClientInterface $client): void
+    {
+        $attributes = $client->getUserAttributes();
+        $source = $client->getId();
+
+        $sourceId = ArrayHelper::getValue($attributes, 'id');
+
+        if ($auth = (new AuthService())->findOne($source, $sourceId)) {
+            $this->login($auth->user->email);
+        } elseif ($email = ArrayHelper::getValue($attributes, 'email')) {
+
+            if ($user = $this->findByEmail($email)) {
+                (new AuthService())->create($user->id, $source, $sourceId);
+                $this->login($email);
+            } else {
+                $signupForm = new SignupForm();
+
+                $signupForm->name = "{$attributes['first_name']} {$attributes['last_name']}";
+                $signupForm->email = $attributes['email'];
+                $signupForm->city_id = (new CityService())->findByName($attributes['city']['title'])->id ?? 1;
+                $signupForm->password = $passwd = Yii::$app->security->generateRandomString();
+                $signupForm->password_repeat = $passwd;
+                $signupForm->is_executor = 1;
+
+                $transaction = Yii::$app->db->beginTransaction();
+                try {
+                    $user = $this->create($signupForm);
+                    (new AuthService())->create($user->id, $source, $attributes['id']);
+                    $transaction->commit();
+                    $this->login($email);
+                } catch (\Throwable $e) {
+                    $transaction->rollBack();
+                }
+            }
+        }
+    }
+
     /**
      * @param SignupForm $model
      * @return void
