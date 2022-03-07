@@ -97,25 +97,25 @@ class UserService
     }
 
     /**
-     * @param int $user_id
+     * @param int $userId
      * @return ?User
      */
-    public function findOne(int $user_id): ?User
+    public function findOne(int $userId): ?User
     {
-        return User::findOne($user_id);
+        return User::findOne($userId);
     }
 
     /**
-     * @param int $user_id
+     * @param int $userId
      * @return ?User $user
      */
-    public function getExecutor(int $user_id): ?User
+    public function getExecutor(int $userId): ?User
     {
-        $user = User::findOne(['id' => $user_id, 'is_executor' => 1]);
+        $user = User::findOne(['id' => $userId, 'is_executor' => 1]);
 
         if (isset($user)) {
-            $user->is_busy = $this->isBusy($user_id);
-            $user->place_in_rating = $this->getPlaceInRating($user_id);
+            $user->is_busy = $this->isBusy($userId);
+            $user->place_in_rating = $this->getPlaceInRating($userId);
         }
 
         return $user;
@@ -131,25 +131,25 @@ class UserService
     }
 
     /**
-     * @param int $user_id
+     * @param int $userId
      * @return bool
      */
-    public function isCustomer(int $user_id): bool
+    public function isCustomer(int $userId): bool
     {
         $query = User::find()
-            ->where(['id' => $user_id, 'is_executor' => 0]);
+            ->where(['id' => $userId, 'is_executor' => 0]);
 
         return $query->exists();
     }
 
     /**
-     * @param int $user_id
+     * @param int $userId
      * @return bool
      */
-    public function isExecutor(int $user_id): bool
+    public function isExecutor(int $userId): bool
     {
         $query = User::find()
-            ->where(['id' => $user_id, 'is_executor' => 1]);
+            ->where(['id' => $userId, 'is_executor' => 1]);
 
         return $query->exists();
     }
@@ -164,25 +164,25 @@ class UserService
     }
 
     /**
-     * @param int $user_id
-     * @param int $status_id
+     * @param int $userId
+     * @param int $statusId
      * @return void
      */
-    public function updateTaskCounter(int $user_id, int $status_id): void
+    public function updateTaskCounter(int $userId, int $statusId): void
     {
         $doneStatusId = Task2::STATUS_DONE_ID;
-        $counter = $status_id === $doneStatusId ? 'done' : 'failed';
+        $counter = $statusId === $doneStatusId ? 'done' : 'failed';
 
-        $user = UserProfile::findOne(['user_id' => $user_id]);
+        $user = UserProfile::findOne(['user_id' => $userId]);
         $user->updateCounters(["{$counter}_task_count" => 1]);
         $user->save();
     }
 
     /**
-     * @param int $user_id
+     * @param int $userId
      * @return int
      */
-    private function getPlaceInRating(int $user_id): int
+    private function getPlaceInRating(int $userId): int
     {
         $query = User::find()
             ->joinWith('profile p')
@@ -191,41 +191,16 @@ class UserService
 
         $users = $query->asArray()->all();
 
-        return array_search($user_id, array_column($users, 'id')) + 1;
-    }
-
-    public function signupVKUser(array $attributes, string $source): bool
-    {
-        $signupForm = new SignupForm();
-
-        $signupForm->name = "{$attributes['first_name']} {$attributes['last_name']}";
-        $signupForm->email = $attributes['email'];
-        $signupForm->city_id = (new CityService())->findByName($attributes['city']['title'])->id ?? 1;
-        $signupForm->password = $passwd = Yii::$app->security->generateRandomString();
-        $signupForm->password_repeat = $passwd;
-        $signupForm->is_executor = 1;
-
-        $transaction = Yii::$app->db->beginTransaction();
-        try {
-            $user = $this->create($signupForm);
-            (new AuthService())->create($user->id, $source, $attributes['id']);
-            $transaction->commit();
-
-            return true;
-        } catch (\Throwable $e) {
-            $transaction->rollBack();
-
-            return false;
-        }
+        return array_search($userId, array_column($users, 'id')) + 1;
     }
 
     /**
-     * @param int $user_id
+     * @param int $userId
      * @return bool
      */
-    private function isBusy(int $user_id): bool
+    private function isBusy(int $userId): bool
     {
-        $condition = ['executor_id' => $user_id, 'status_id' => Task2::STATUS_WORK_ID];
+        $condition = ['executor_id' => $userId, 'status_id' => Task2::STATUS_WORK_ID];
         
         return Task::find()->where($condition)->exists();
     }

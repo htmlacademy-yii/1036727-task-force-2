@@ -7,9 +7,9 @@ abstract class Helper
     /**
      * @param string $name
      * @param array $arguments
-     * @return void
+     * @return mixed
      */
-    public static function __callStatic($name, $arguments)
+    public static function __callStatic($name, $arguments): mixed
     {
         $method = "get{$name}";
         return static::$method($arguments[0]);

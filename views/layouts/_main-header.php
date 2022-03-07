@@ -18,9 +18,10 @@ $user = $this->context->user;
 
         <?php if (!Yii::$app->user->isGuest): ?>
             <div class="nav-wrapper">
+
                 <?php
                 $items = [
-                    ['label' => 'Новое', 'url' => ['#']],
+                    ['label' => 'Мои задания', 'url' => ['tasks/user-tasks']],
                     ['label' => 'Новые задания','url' => ['tasks/index']],
                     ['label' => 'Настройки', 'url' => ['#']]
                 ];
@@ -45,7 +46,7 @@ $user = $this->context->user;
 
     <?php if (!Yii::$app->user->isGuest): ?>
         <div class="user-block">
-            <a href="<?= $user->is_executor ? Url::to(['profile/view', 'id' => $user->id]) : '#' ?>">
+            <a href="<?= $user->is_executor ? Url::to(['profile/view', 'userId' => $user->id]) : '#' ?>">
                 <img
                     class="user-photo"
                     src="<?= UserHelper::getAvatar($user) ?>"

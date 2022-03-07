@@ -59,7 +59,7 @@ class Task
     }
 
     /**
-     * @param string $action Действие (внутреннее имя)
+     * @param string $action
      * @throws ActionNotExistException
      * @return string
      */
@@ -115,7 +115,7 @@ class Task
     }
 
     /**
-     * @param string $action Действие
+     * @param string $action
      * @throws SourceFileException
      * @return TaskAction
      */

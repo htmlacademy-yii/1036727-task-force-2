@@ -41,7 +41,7 @@ class TasksController extends SecuredController
                     [
                         'allow' => true,
                         'roles' => ['@'],
-                        'actions' => ['index', 'view']
+                        'actions' => ['index', 'user-tasks', 'view']
                     ],
                     [
                         'allow' => true,
@@ -129,6 +129,24 @@ class TasksController extends SecuredController
         }
     }
 
+    public function actionUserTasks()
+    {
+        $filter = Yii::$app->request->get('filter');
+        $userId = Yii::$app->user->id;
+
+        if ($isExecutor = (new UserService())->isExecutor($userId)) {
+            $tasks = (new TaskService())->getExecutorTasks($userId, $filter);
+        } else {
+            $tasks = (new TaskService())->getCustomerTasks($userId, $filter);
+        }
+
+        return $this->render('user-tasks', [
+            'tasks' => $tasks,
+            'filter' => $filter,
+            'isExecutor' => $isExecutor
+        ]);
+    }
+
     public function actionRefuse(int $task_id)
     {
         (new TaskService())->refuse($task_id);
@@ -169,7 +187,7 @@ class TasksController extends SecuredController
     public function actionView(int $id)
     {
         if (!$task = (new TaskService())->findOne($id)) {
-            throw new NotFoundHttpException;
+            throw new NotFoundHttpException();
         }
 
         $completeForm = new CompleteForm();

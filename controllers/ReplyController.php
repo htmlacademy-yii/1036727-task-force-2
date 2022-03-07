@@ -22,7 +22,17 @@ class ReplyController extends Controller
                     [
                         'allow' => true,
                         'roles' => ['@'],
-                        'actions' => ['accept', 'refuse'],
+                        'actions' => ['accept'],
+                        'matchCallback' => function ($rule, $action) {
+                            $id = Yii::$app->request->post('ResponseForm')['task_id'] ?? 0;
+
+                            return (new TaskService())->acceptCallback($id);
+                        }
+                    ],
+                    [
+                        'allow' => true,
+                        'roles' => ['@'],
+                        'actions' => ['refuse'],
                         'matchCallback' => function ($rule, $action) {
                             $replyId = Yii::$app->request->get('reply_id', 0);
 
@@ -63,13 +73,13 @@ class ReplyController extends Controller
     {
         $task_id = (new ReplyService())->accept($reply_id);
 
-        $this->redirect(['tasks/view', 'id' => $task_id]);
+        return $this->redirect(['tasks/view', 'id' => $task_id]);
     }
 
     public function actionRefuse(int $reply_id)
     {
         $task_id = (new ReplyService())->refuse($reply_id);
 
-        $this->redirect(['tasks/view', 'id' => $task_id]);
+        return $this->redirect(['tasks/view', 'id' => $task_id]);
     }
 }

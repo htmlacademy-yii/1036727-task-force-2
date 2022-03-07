@@ -100,6 +100,21 @@ class TaskHelper extends Helper
     }
 
     /**
+     * @param ?string $filter
+     * @return string
+     */
+    public static function getFilterDesc($filter): string
+    {
+        return match ($filter) {
+            'new' => 'Новые',
+            'progress' => 'В процессе',
+            'overdue' => 'Просрочено',
+            'closed' => 'Закрытые',
+            default => 'Без фильтров'
+        };
+    }
+
+    /**
      * @param Task[]
      * @return Task[]
      */

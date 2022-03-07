@@ -31,7 +31,8 @@ use anatolev\service\Task;
 
                     return $input . $label;
                 }
-        ]); ?>
+            ]
+        ); ?>
 
         <?= $form->field($model, 'comment', ['labelOptions' => ['class' => 'form-modal-description']])
             ->textarea(['class' => 'input textarea', 'rows' => '4', 'placeholder' => 'Place your text']) ?>

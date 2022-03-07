@@ -5,14 +5,12 @@ namespace app\controllers;
 use Yii;
 use yii\authclient\ClientInterface;
 use yii\filters\AccessControl;
-use yii\helpers\ArrayHelper;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\web\Response;
 use yii\widgets\ActiveForm;
 use app\models\forms\LoginForm;
 use app\models\forms\SignupForm;
-use app\services\AuthService;
 use app\services\CityService;
 use app\services\UserService;
 

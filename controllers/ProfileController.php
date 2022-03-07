@@ -7,9 +7,14 @@ use app\services\UserService;
 
 class ProfileController extends SecuredController
 {
-    public function actionView(int $id)
+    public function actionUpdate(int $userId)
     {
-        if (!$user = (new UserService())->getExecutor($id)) {
+        
+    }
+
+    public function actionView(int $userId)
+    {
+        if (!$user = (new UserService())->getExecutor($userId)) {
             throw new NotFoundHttpException();
         }
 

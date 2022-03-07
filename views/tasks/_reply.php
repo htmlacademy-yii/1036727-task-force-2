@@ -25,7 +25,7 @@ use anatolev\service\Task;
 
     <div class="feedback-wrapper">
         <a
-            href="<?= $reply->user->is_executor ? Url::to(['profile/view', 'id' => $reply->user->id]) : '#' ?>"
+            href="<?= $reply->user->is_executor ? Url::to(['profile/view', 'userId' => $reply->user->id]) : '#' ?>"
             class="link link--block link--big"
         ><?= ReplyHelper::author($reply) ?></a>
         <div class="response-wrapper">

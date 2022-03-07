@@ -14,8 +14,6 @@ class DataController extends Controller
     const CSV_MIME_TYPES = ['application/csv', 'text/csv'];
 
     /**
-     * Импортирует данные из csv-файлов в бд
-     *
      * @return int Exit code
      */
     public function actionImport(): int
@@ -38,8 +36,6 @@ class DataController extends Controller
     }
 
     /**
-     * Конвертирует данные из csv-файлов в sql
-     *
      * @return int Exit code
      */
     public function actionConvert(): int
