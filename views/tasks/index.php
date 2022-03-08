@@ -63,7 +63,7 @@ $this->title = 'Новые задания';
                             return "<label>{$html}{$label}</label>";
                         }
                     ]
-            ); ?>
+                ); ?>
 
                 <?= Html::tag('h4', 'Дополнительно', ['class' => 'head-card']) ?>
                 <?= $form

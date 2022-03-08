@@ -85,6 +85,7 @@ $config = [
                 'tasks/refuse/<task_id:\d+>' => 'ЯЯtasks/refuse',
                 'tasks/view/<id:\d+>' => 'tasks/view',
                 'user/auth' => 'user/auth',
+                'settings' => 'profile/settings',
                 'user/view/<userId:\d+>' => 'profile/view',
             ],
         ],

@@ -5,11 +5,15 @@ namespace app\services;
 use Yii;
 use yii\authclient\ClientInterface;
 use yii\helpers\ArrayHelper;
+use yii\helpers\FileHelper;
 use app\models\City;
 use app\models\Task;
 use app\models\User;
+use app\models\UserCategory;
 use app\models\UserIdentity;
 use app\models\UserProfile;
+use app\models\forms\ProfileForm;
+use app\models\forms\SecurityForm;
 use app\models\forms\SignupForm;
 use app\services\AuthService;
 use anatolev\service\Task as Task2;
@@ -116,6 +120,7 @@ class UserService
         if (isset($user)) {
             $user->is_busy = $this->isBusy($userId);
             $user->place_in_rating = $this->getPlaceInRating($userId);
+            $user->showContacts = $this->showContacts($userId);
         }
 
         return $user;
@@ -164,6 +169,72 @@ class UserService
     }
 
     /**
+     * @param ProfileForm $model
+     * @return void
+     */
+    public function updateProfile(ProfileForm $model): void
+    {
+        $transaction = Yii::$app->db->beginTransaction();
+        try {
+            $user = User::findOne(Yii::$app->user->id);
+            $user->attributes = $model->attributes;
+            $user->save();
+
+            UserCategory::deleteAll(['user_id' => Yii::$app->user->id]);
+            foreach ($model->categories as $categoryId) {
+                $userCategory = new UserCategory();
+                $userCategory->category_id = $categoryId;
+                $userCategory->link('user', $user);
+            }
+
+            if (isset($model->avatar)) {
+                $files = FileHelper::findFiles(Yii::getAlias('@avatars'), [
+                    'filter' => fn($path) => strripos($path, $user->profile->avatar_path)
+                ]);
+
+                if ($avatar = array_values($files)[0] ?? null) {
+                    FileHelper::unlink($avatar);
+                }
+
+                $filePath = uniqid("{$model->avatar->baseName}_") . '.' . $model->avatar->extension;
+                $model->avatar->saveAs(Yii::getAlias('@avatars') . '/' . $filePath);
+                $user->profile->avatar_path = $filePath;
+            }
+
+            $user->profile->attributes = $model->attributes;
+            $user->profile->birthday = $model->birthday;
+            $user->profile->save();
+
+            $transaction->commit();
+        } catch (\Throwable $e) {
+            $transaction->rollBack();
+        }
+    }
+
+    /**
+     * @param SecurityForm $model
+     * @return void
+     */
+    public function updateSecurity(SecurityForm $model): void
+    {
+        $hash = Yii::$app->getSecurity()->generatePasswordHash($model->new_password);
+
+        $transaction = Yii::$app->db->beginTransaction();
+        try {
+            $user = User::findOne(Yii::$app->user->id);
+            $user->password = $hash;
+            $user->save();
+
+            $user->profile->private_contacts = $model->private_contacts;
+            $user->profile->save();
+
+            $transaction->commit();
+        } catch (\Throwable $e) {
+            $transaction->rollBack();
+        }
+    }
+
+    /**
      * @param int $userId
      * @param int $statusId
      * @return void
@@ -203,6 +274,19 @@ class UserService
         $condition = ['executor_id' => $userId, 'status_id' => Task2::STATUS_WORK_ID];
         
         return Task::find()->where($condition)->exists();
+    }
+
+    /**
+     * @param int $userId
+     * @return bool
+     */
+    private function showContacts(int $userId): bool
+    {
+        $privateContacts = !$this->findOne($userId)->profile->private_contacts;
+        $conditions = ['customer_id' => Yii::$app->user->id, 'executor_id' => $userId];
+        $isExecutor = Task::find()->where($conditions)->exists();
+
+        return $privateContacts || $isExecutor;
     }
 
     // public function getUserCurrentRate(int $user_id): float

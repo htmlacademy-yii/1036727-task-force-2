@@ -33,7 +33,7 @@ use anatolev\helpers\UserHelper;
     <div class="feedback-wrapper">
         <div class="stars-rating small">
 
-            <?= $this->render('//_partials/_stars-rating', ['rating' => $task->review->rating]) ?>
+            <?= $this->render('//_partials/stars-rating', ['rating' => $task->review->rating]) ?>
 
         </div>
         <p class="info-text">

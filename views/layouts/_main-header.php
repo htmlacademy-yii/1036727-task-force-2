@@ -20,18 +20,18 @@ $user = $this->context->user;
             <div class="nav-wrapper">
 
                 <?php
-                $items = [
+                $menuItems = [
                     ['label' => 'Мои задания', 'url' => ['tasks/user-tasks']],
                     ['label' => 'Новые задания','url' => ['tasks/index']],
-                    ['label' => 'Настройки', 'url' => ['#']]
+                    ['label' => 'Настройки', 'url' => ['profile/settings']]
                 ];
 
-                $item = ['label' => 'Создать задание', 'url' => ['tasks/create']];
-                $user->is_executor ?: array_splice($items, 2, 0, array($item));
+                $menuItem = ['label' => 'Создать задание', 'url' => ['tasks/create']];
+                !$user->is_executor && array_splice($menuItems, 2, 0, array($menuItem));
                 ?>
 
                 <?= Menu::widget([
-                    'items' => $items,
+                    'items' => $menuItems,
                     'activeCssClass' => 'list-item--active',
                     'itemOptions' => ['class' => 'list-item'],
                     'labelTemplate' => '<a class="link link--nav">{label}</a>',
@@ -49,7 +49,7 @@ $user = $this->context->user;
             <a href="<?= $user->is_executor ? Url::to(['profile/view', 'userId' => $user->id]) : '#' ?>">
                 <img
                     class="user-photo"
-                    src="<?= UserHelper::getAvatar($user) ?>"
+                    src="<?= $this->params['avatar'] ?? UserHelper::getAvatar($user) ?>"
                     width="55"
                     height="55"
                     alt="Аватар"

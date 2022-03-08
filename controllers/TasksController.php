@@ -134,7 +134,7 @@ class TasksController extends SecuredController
         $filter = Yii::$app->request->get('filter');
         $userId = Yii::$app->user->id;
 
-        if ($isExecutor = (new UserService())->isExecutor($userId)) {
+        if ((new UserService())->isExecutor($userId)) {
             $tasks = (new TaskService())->getExecutorTasks($userId, $filter);
         } else {
             $tasks = (new TaskService())->getCustomerTasks($userId, $filter);
@@ -143,7 +143,6 @@ class TasksController extends SecuredController
         return $this->render('user-tasks', [
             'tasks' => $tasks,
             'filter' => $filter,
-            'isExecutor' => $isExecutor
         ]);
     }
 

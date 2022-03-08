@@ -24,7 +24,7 @@ $this->title = 'Регистрация';
             <?= $form->field($model, 'name')->textInput(); ?>
 
             <div class="half-wrapper">
-                <?= $form->field($model, 'email')->input('email'); ?>
+                <?= $form->field($model, 'email', ['enableAjaxValidation' => true])->input('email'); ?>
                 <?= $form->field($model, 'city_id')->dropDownList(ArrayHelper::map($cities, 'id', 'name')); ?>
             </div>
 

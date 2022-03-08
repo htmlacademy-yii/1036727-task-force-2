@@ -2,12 +2,14 @@
 
 /** @var yii\web\View $this */
 /** @var ?string $filter */
-/** @var bool $isExecutor */
 /** @var app\models\Task[] $tasks */
 
 use yii\helpers\Url;
 use yii\widgets\Menu;
 use anatolev\helpers\TaskHelper;
+
+$user = $this->context->user;
+$this->title = 'Мои задания';
 
 ?>
 <div class="left-menu">
@@ -15,23 +17,21 @@ use anatolev\helpers\TaskHelper;
     <ul class="side-menu-list">
 
         <?php
-        if ($isExecutor):
-            $items = [
-                ['label' => 'В процессе', 'url' => ['tasks/user-tasks', 'filter' => 'progress']],
-                ['label' => 'Просрочено','url' => ['tasks/user-tasks', 'filter' => 'overdue']],
-                ['label' => 'Закрытые', 'url' => ['tasks/user-tasks', 'filter' => 'closed']]
-            ];
-        else:
-            $items = [
-                ['label' => 'Новые', 'url' => ['tasks/user-tasks', 'filter' => 'new']],
-                ['label' => 'В процессе','url' => ['tasks/user-tasks', 'filter' => 'progress']],
-                ['label' => 'Закрытые', 'url' => ['tasks/user-tasks', 'filter' => 'closed']]
-            ];
-        endif;
+        $menuItems = [
+            ['label' => 'В процессе', 'url' => ['tasks/user-tasks', 'filter' => 'progress']],
+            ['label' => 'Закрытые', 'url' => ['tasks/user-tasks', 'filter' => 'closed']]
+        ];
+
+        $newItem = ['label' => 'Новые', 'url' => ['tasks/user-tasks', 'filter' => 'new']];
+        $overdueItem = ['label' => 'Просрочено','url' => ['tasks/user-tasks', 'filter' => 'overdue']];
+
+        $user->is_executor
+            ? array_splice($menuItems, 1, 0, array($overdueItem))
+            : array_splice($menuItems, 0, 0, array($newItem));
         ?>
 
         <?= Menu::widget([
-            'items' => $items,
+            'items' => $menuItems,
             'activeCssClass' => 'side-menu-item--active',
             'itemOptions' => ['class' => 'side-menu-item'],
             'labelTemplate' => '<a class="link link--nav">{label}</a>',

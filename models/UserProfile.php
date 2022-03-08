@@ -8,18 +8,12 @@ use yii\db\ActiveRecord;
  * This is the model class for table "user_profile".
  *
  * @property int $id
- * @property string|null $address
  * @property string|null $birthday
  * @property string|null $about
  * @property string|null $avatar_path
  * @property string|null $contact_phone
- * @property string|null $contact_skype
  * @property string|null $contact_tg
- * @property bool $notice_message
- * @property bool $notice_actions
- * @property bool $notice_review
- * @property bool $show_contacts
- * @property bool $show_profile
+ * @property bool $private_contacts
  * @property float $current_rate
  * @property int $done_task_count
  * @property int $failed_task_count
@@ -45,14 +39,13 @@ class UserProfile extends ActiveRecord
     {
         return [
             [['user_id'], 'required'],
-            [['address', 'about', 'avatar_path', 'contact_skype'], 'string', 'max' => 128],
+            [['about', 'avatar_path'], 'string', 'max' => 128],
             [['avatar_path'], 'unique'],
             [['contact_phone'], 'string', 'length' => [11, 11]],
             [['contact_phone'], 'unique'],
-            [['contact_skype'], 'unique'],
             [['contact_tg'], 'unique'],
             [['contact_tg'], 'string', 'max' => 64],
-            [['notice_message', 'notice_actions', 'notice_review', 'show_contacts', 'show_profile'], 'boolean'],
+            [['private_contacts'], 'boolean'],
             [['done_task_count', 'failed_task_count', 'user_id'], 'integer'],
             [['user_id'], 'exist', 'targetClass' => User::class, 'targetAttribute' => 'id'],
         ];
@@ -65,21 +58,12 @@ class UserProfile extends ActiveRecord
     {
         return [
             'id' => 'ID',
-            'address' => 'Address',
             'birthday' => 'Birthday',
             'about' => 'About',
             'avatar_path' => 'Avatar Path',
-
             'contact_phone' => 'Contact Phone',
-            'contact_skype' => 'Contact Skype',
             'contact_tg' => 'Contact Tg',
-
-            'notice_message' => 'Notice Message',
-            'notice_actions' => 'Notice Actions',
-            'notice_review' => 'Notice Review',
-
-            'show_contacts' => 'Show Contacts',
-            'show_profile' => 'Show Profile',
+            'private_contacts' => 'Private Contacts',
             'current_rate' => 'Current Rate',
             'done_task_count' => 'Done Task Count',
             'failed_task_count' => 'Failed Task Count',

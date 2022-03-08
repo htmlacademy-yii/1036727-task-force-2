@@ -28,6 +28,7 @@ class User extends ActiveRecord
 {
     public $is_busy;
     public $place_in_rating;
+    public $showContacts;
 
     /**
      * {@inheritdoc}

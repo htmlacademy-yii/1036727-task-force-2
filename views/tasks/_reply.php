@@ -31,7 +31,7 @@ use anatolev\service\Task;
         <div class="response-wrapper">
             <div class="stars-rating small">
 
-                <?= $this->render('//_partials/_stars-rating', ['rating' => ReplyHelper::rating($reply)]) ?>
+                <?= $this->render('//_partials/stars-rating', ['rating' => ReplyHelper::rating($reply)]) ?>
 
             </div>
             <?php

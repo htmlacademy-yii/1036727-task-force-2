@@ -21,9 +21,9 @@ class SearchForm extends Model
     public function rules(): array
     {
         return [
-            ['categories', 'exist', 'targetClass' => Category::class, 'targetAttribute' => 'id', 'allowArray' => true],
-            ['without_performer', 'boolean'],
-            ['period_value', 'in', 'range' => array_keys(self::PERIOD_VALUES)]
+            [['categories'], 'exist', 'targetClass' => Category::class, 'targetAttribute' => 'id', 'allowArray' => true],
+            [['without_performer'], 'boolean'],
+            [['period_value'], 'in', 'range' => array_keys(self::PERIOD_VALUES)]
         ];
     }
 
