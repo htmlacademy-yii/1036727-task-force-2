@@ -16,13 +16,14 @@ class TaskService
 {
     /**
      * @param int $taskId
+     * @param int $userId
      * @return bool
      */
-    public function acceptCallback(int $taskId): bool
+    public function canChangeReplyStatus(int $taskId, int $userId): bool
     {
-        $isActual = $this->isActual($id);
-        $taskStatus = $this->getStatus($id);
-        $isCustomer = $this->isTaskCustomer($id, Yii::$app->user->id);
+        $isActual = $this->isActual($taskId);
+        $taskStatus = $this->getStatus($taskId);
+        $isCustomer = $this->isTaskCustomer($taskId, $userId);
 
         return $isActual && $taskStatus === Task2::STATUS_NEW && $isCustomer;
     }
@@ -186,9 +187,9 @@ class TaskService
      * @param int $replyId
      * @return bool
      */
-    public function isActual(int $replyId): bool
+    public function isActual(int $taskId): bool
     {
-        $task = (new ReplyService())->findOne($replyId)?->task;
+        $task = $this->findOne($taskId);
 
         return $task && TaskHelper::isActual($task);
     }

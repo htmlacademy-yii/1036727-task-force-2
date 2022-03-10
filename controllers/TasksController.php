@@ -32,11 +32,8 @@ class TasksController extends SecuredController
                 'rules' => [
                     [
                         'allow' => true,
-                        'roles' => ['@'],
-                        'actions' => ['create'],
-                        'matchCallback' => function ($rule, $action) {
-                            return (new UserService())->isCustomer(Yii::$app->user->id);
-                        }
+                        'roles' => ['createTask'],
+                        'actions' => ['create']
                     ],
                     [
                         'allow' => true,
@@ -45,33 +42,21 @@ class TasksController extends SecuredController
                     ],
                     [
                         'allow' => true,
-                        'roles' => ['@'],
                         'actions' => ['cancel'],
-                        'matchCallback' => function ($rule, $action) {
-                            $id = Yii::$app->request->get('task_id', 0);
-
-                            return (new Task($id))->getAvailableAction() instanceof ActCancel;
-                        }
+                        'roles' => ['cancelOwnTask'],
+                        'roleParams' => ['id' => Yii::$app->request->get('id', 0)]
                     ],
                     [
                         'allow' => true,
-                        'roles' => ['@'],
                         'actions' => ['complete'],
-                        'matchCallback' => function ($rule, $action) {
-                            $id = Yii::$app->request->post('CompleteForm')['task_id'] ?? 0;
-
-                            return (new Task($id))->getAvailableAction() instanceof ActDone;
-                        }
+                        'roles' => ['completeOwnTask'],
+                        'roleParams' => ['id' => Yii::$app->request->post('CompleteForm')['task_id'] ?? 0]
                     ],
                     [
                         'allow' => true,
-                        'roles' => ['@'],
                         'actions' => ['refuse'],
-                        'matchCallback' => function ($rule, $action) {
-                            $id = Yii::$app->request->get('task_id', 0);
-
-                            return (new Task($id))->getAvailableAction() instanceof ActRefuse;
-                        }
+                        'roles' => ['refuseOwnTask'],
+                        'roleParams' => ['id' => Yii::$app->request->get('id', 0)]
                     ],
                 ]
             ]
@@ -107,11 +92,11 @@ class TasksController extends SecuredController
         ]);
     }
 
-    public function actionCancel(int $task_id)
+    public function actionCancel(int $id)
     {
-        (new TaskService())->cancel($task_id);
+        (new TaskService())->cancel($id);
 
-        return $this->redirect(['tasks/view', 'id' => $task_id]);
+        return $this->redirect(['tasks/view', 'id' => $id]);
     }
 
     public function actionComplete()
@@ -146,16 +131,19 @@ class TasksController extends SecuredController
         ]);
     }
 
-    public function actionRefuse(int $task_id)
+    public function actionRefuse(int $id)
     {
-        (new TaskService())->refuse($task_id);
+        (new TaskService())->refuse($id);
 
-        return $this->redirect(['tasks/view', 'id' => $task_id]);
+        return $this->redirect(['tasks/view', 'id' => $id]);
     }
 
     // разбить на 2 метода
     public function actionIndex(?string $category = null)
     {
+        // Yii::$app->authManager->assign(Yii::$app->authManager->getRole('customer'), 7);
+        // var_dump(Yii::$app->user->can('refuseOwnReply', ['replyId' => 4]));
+        // exit;
         $searchForm = new SearchForm();
         $tasks = [];
 

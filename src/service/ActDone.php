@@ -31,11 +31,11 @@ class ActDone extends TaskAction
     /**
      * {@inheritdoc}
      */
-    public function checkUserRights(int $task_id): bool
+    public function checkUserRights(int $taskId, int $userId): bool
     {
         $service = new TaskService();
-        $taskStatus = $service->getStatus($task_id);
-        $isCustomer = $service->isTaskCustomer($task_id, Yii::$app->user->id);
+        $taskStatus = $service->getStatus($taskId);
+        $isCustomer = $service->isTaskCustomer($taskId, $userId);
 
         return $taskStatus === Task::STATUS_WORK && $isCustomer;
     }

@@ -68,13 +68,20 @@ class UserService
     public function create(SignupForm $model): ?User
     {
         $hash = Yii::$app->getSecurity()->generatePasswordHash($model->password);
-
+        
         $transaction = Yii::$app->db->beginTransaction();
         try {
             $user = new User();
             $user->attributes = $model->attributes;
             $user->password = $hash;
             $user->save();
+            
+            $auth = Yii::$app->authManager;
+            $userRole = $user->is_executor
+                ? $auth->getRole('executor')
+                : $auth->getRole('customer');
+
+            $auth->assign($userRole, $user->id);
 
             $profile = new UserProfile();
             $profile->user_id = $user->id;
