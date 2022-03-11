@@ -21,7 +21,7 @@ const autoCompleteJS = new autoComplete({
         highlight: true
     },
     resultsList: {
-        maxResults: 100
+        maxResults: 10
     },
     events: {
         input: {
