@@ -64,6 +64,16 @@ class TaskHelper extends Helper
     }
 
     /**
+     * @return string
+     */
+    public static function getRandomModifier(): string
+    {
+        $modifiers = ['courier', 'cargo', 'neo', 'flat'];
+
+        return $modifiers[rand(0, count($modifiers) - 1)];
+    }
+
+    /**
      * @param Task $task
      * @param int $repliesCount
      * @return string

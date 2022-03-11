@@ -242,8 +242,7 @@ class UserService
     }
 
     /**
-     * @param int $userId
-     * @param int $statusId
+     * @param Task $task
      * @return void
      */
     public function updateTaskCounter(Task $task): void

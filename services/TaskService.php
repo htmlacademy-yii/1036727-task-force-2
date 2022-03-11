@@ -184,6 +184,20 @@ class TaskService
     }
 
     /**
+     * @param int $limit
+     * @return Task[]
+     */
+    public function getNewTasks(int $limit): array
+    {
+        $query = Task::find()
+            ->where(['status_id' => Task2::STATUS_NEW_ID])
+            ->orderBy('dt_add DESC')
+            ->limit($limit);
+
+        return $query->all();
+    }
+
+    /**
      * @param int $replyId
      * @return bool
      */
