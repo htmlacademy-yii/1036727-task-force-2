@@ -14,7 +14,7 @@ class m220202_000020_update_user_profile_table extends Migration
     {
         $this->alterColumn('{{user_profile}}', 'birthday', $this->date()->null());
         $this->renameColumn('{{user_profile}}', 'show_contacts', 'private_contacts');
-        $this->alterColumn('{{user_profile}}', 'private_contacts', $this->boolean()->notNull()->dafaultValue(0));
+        $this->alterColumn('{{user_profile}}', 'private_contacts', $this->boolean()->notNull()->defaultValue(0));
         $this->dropColumn('{{user_profile}}', 'address');
         $this->dropColumn('{{user_profile}}', 'contact_skype');
         $this->dropColumn('{{user_profile}}', 'notice_message');
@@ -29,7 +29,7 @@ class m220202_000020_update_user_profile_table extends Migration
     public function safeDown()
     {
         $this->alterColumn('{{user_profile}}', 'birthday', $this->timestamp()->null());
-        $this->alterColumn('{{user_profile}}', 'private_contacts', $this->boolean()->notNull()->dafaultValue(1));
+        $this->alterColumn('{{user_profile}}', 'private_contacts', $this->boolean()->notNull()->defaultValue(1));
         $this->renameColumn('{{user_profile}}', 'private_contacts', 'show_contacts');
         $this->addColumn('{{user_profile}}', 'address', $this->string(128)->null());
         $this->addColumn('{{user_profile}}', 'contact_skype', $this->string(128)->null()->unique());
