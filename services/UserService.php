@@ -3,16 +3,64 @@
 namespace app\services;
 
 use Yii;
+use yii\authclient\ClientInterface;
+use yii\helpers\ArrayHelper;
+use yii\helpers\FileHelper;
 use app\models\City;
 use app\models\Task;
 use app\models\User;
+use app\models\UserCategory;
 use app\models\UserIdentity;
 use app\models\UserProfile;
+use app\models\forms\ProfileForm;
+use app\models\forms\SecurityForm;
 use app\models\forms\SignupForm;
+use app\services\AuthService;
 use anatolev\service\Task as Task2;
 
 class UserService
 {
+    /**
+     * @param ClientInterface $client
+     * @return void
+     */
+    public function authHandler(ClientInterface $client): void
+    {
+        $attributes = $client->getUserAttributes();
+        $source = $client->getId();
+
+        $sourceId = ArrayHelper::getValue($attributes, 'id');
+
+        if ($auth = (new AuthService())->findOne($source, $sourceId)) {
+            $this->login($auth->user->email);
+        } elseif ($email = ArrayHelper::getValue($attributes, 'email')) {
+
+            if ($user = $this->findByEmail($email)) {
+                (new AuthService())->create($user->id, $source, $sourceId);
+                $this->login($email);
+            } else {
+                $signupForm = new SignupForm();
+
+                $signupForm->name = "{$attributes['first_name']} {$attributes['last_name']}";
+                $signupForm->email = $attributes['email'];
+                $signupForm->city_id = (new CityService())->findByName($attributes['city']['title'])->id ?? 1;
+                $signupForm->password = $passwd = Yii::$app->security->generateRandomString();
+                $signupForm->password_repeat = $passwd;
+                $signupForm->is_executor = 1;
+
+                $transaction = Yii::$app->db->beginTransaction();
+                try {
+                    $user = $this->create($signupForm);
+                    (new AuthService())->create($user->id, $source, $attributes['id']);
+                    $transaction->commit();
+                    $this->login($email);
+                } catch (\Throwable $e) {
+                    $transaction->rollBack();
+                }
+            }
+        }
+    }
+
     /**
      * @param SignupForm $model
      * @return void
@@ -20,13 +68,20 @@ class UserService
     public function create(SignupForm $model): ?User
     {
         $hash = Yii::$app->getSecurity()->generatePasswordHash($model->password);
-
+        
         $transaction = Yii::$app->db->beginTransaction();
         try {
             $user = new User();
             $user->attributes = $model->attributes;
             $user->password = $hash;
             $user->save();
+            
+            $auth = Yii::$app->authManager;
+            $userRole = $user->is_executor
+                ? $auth->getRole('executor')
+                : $auth->getRole('customer');
+
+            $auth->assign($userRole, $user->id);
 
             $profile = new UserProfile();
             $profile->user_id = $user->id;
@@ -53,25 +108,26 @@ class UserService
     }
 
     /**
-     * @param int $user_id
+     * @param int $userId
      * @return ?User
      */
-    public function findOne(int $user_id): ?User
+    public function findOne(int $userId): ?User
     {
-        return User::findOne($user_id);
+        return User::findOne($userId);
     }
 
     /**
-     * @param int $user_id
+     * @param int $userId
      * @return ?User $user
      */
-    public function getExecutor(int $user_id): ?User
+    public function getExecutor(int $userId): ?User
     {
-        $user = User::findOne(['id' => $user_id, 'is_executor' => 1]);
+        $user = User::findOne(['id' => $userId, 'is_executor' => 1]);
 
         if (isset($user)) {
-            $user->is_busy = $this->isBusy($user_id);
-            $user->place_in_rating = $this->getPlaceInRating($user_id);
+            $user->is_busy = $this->isBusy($userId);
+            $user->place_in_rating = $this->getPlaceInRating($userId);
+            $user->showContacts = $this->showContacts($userId);
         }
 
         return $user;
@@ -87,25 +143,25 @@ class UserService
     }
 
     /**
-     * @param int $user_id
+     * @param int $userId
      * @return bool
      */
-    public function isCustomer(int $user_id): bool
+    public function isCustomer(int $userId): bool
     {
         $query = User::find()
-            ->where(['id' => $user_id, 'is_executor' => 0]);
+            ->where(['id' => $userId, 'is_executor' => 0]);
 
         return $query->exists();
     }
 
     /**
-     * @param int $user_id
+     * @param int $userId
      * @return bool
      */
-    public function isExecutor(int $user_id): bool
+    public function isExecutor(int $userId): bool
     {
         $query = User::find()
-            ->where(['id' => $user_id, 'is_executor' => 1]);
+            ->where(['id' => $userId, 'is_executor' => 1]);
 
         return $query->exists();
     }
@@ -120,25 +176,92 @@ class UserService
     }
 
     /**
-     * @param int $user_id
-     * @param int $status_id
+     * @param ProfileForm $model
      * @return void
      */
-    public function updateTaskCounter(int $user_id, int $status_id): void
+    public function updateProfile(ProfileForm $model): void
     {
-        $doneStatusId = Task2::STATUS_DONE_ID;
-        $counter = $status_id === $doneStatusId ? 'done' : 'failed';
+        $transaction = Yii::$app->db->beginTransaction();
+        try {
+            $user = User::findOne(Yii::$app->user->id);
+            $user->attributes = $model->attributes;
+            $user->save();
 
-        $user = UserProfile::findOne(['user_id' => $user_id]);
-        $user->updateCounters(["{$counter}_task_count" => 1]);
-        $user->save();
+            UserCategory::deleteAll(['user_id' => Yii::$app->user->id]);
+            foreach ($model->categories as $categoryId) {
+                $userCategory = new UserCategory();
+                $userCategory->category_id = $categoryId;
+                $userCategory->link('user', $user);
+            }
+
+            if (isset($model->avatar)) {
+                $files = FileHelper::findFiles(Yii::getAlias('@avatars'), [
+                    'filter' => fn($path) => strripos($path, $user->profile->avatar_path)
+                ]);
+
+                if ($avatar = array_values($files)[0] ?? null) {
+                    FileHelper::unlink($avatar);
+                }
+
+                $filePath = uniqid("{$model->avatar->baseName}_") . '.' . $model->avatar->extension;
+                $model->avatar->saveAs(Yii::getAlias('@avatars') . '/' . $filePath);
+                $user->profile->avatar_path = $filePath;
+            }
+
+            $user->profile->attributes = $model->attributes;
+            $user->profile->birthday = $model->birthday;
+            $user->profile->save();
+
+            $transaction->commit();
+        } catch (\Throwable $e) {
+            $transaction->rollBack();
+        }
     }
 
     /**
-     * @param int $user_id
+     * @param SecurityForm $model
+     * @return void
+     */
+    public function updateSecurity(SecurityForm $model): void
+    {
+        $hash = Yii::$app->getSecurity()->generatePasswordHash($model->new_password);
+
+        $transaction = Yii::$app->db->beginTransaction();
+        try {
+            $user = User::findOne(Yii::$app->user->id);
+            $user->password = $hash;
+            $user->save();
+
+            $user->profile->private_contacts = $model->private_contacts;
+            $user->profile->save();
+
+            $transaction->commit();
+        } catch (\Throwable $e) {
+            $transaction->rollBack();
+        }
+    }
+
+    /**
+     * @param Task $task
+     * @return void
+     */
+    public function updateTaskCounter(Task $task): void
+    {
+        if ($task instanceof Task) {
+            $doneStatusId = Task2::STATUS_DONE_ID;
+            $counter = $task->status_id === $doneStatusId ? 'done' : 'failed';
+
+            $user = UserProfile::findOne(['user_id' => $task->executor_id]);
+            $user->updateCounters(["{$counter}_task_count" => 1]);
+            $user->save();
+        }
+    }
+
+    /**
+     * @param int $userId
      * @return int
      */
-    private function getPlaceInRating(int $user_id): int
+    private function getPlaceInRating(int $userId): int
     {
         $query = User::find()
             ->joinWith('profile p')
@@ -147,43 +270,31 @@ class UserService
 
         $users = $query->asArray()->all();
 
-        return array_search($user_id, array_column($users, 'id')) + 1;
-    }
-
-    public function signupVKUser(array $attributes, string $source): bool
-    {
-        $signupForm = new SignupForm();
-
-        $signupForm->name = "{$attributes['first_name']} {$attributes['last_name']}";
-        $signupForm->email = $attributes['email'];
-        $signupForm->city_id = (new CityService())->findByName($attributes['city']['title'])->id ?? 1;
-        $signupForm->password = $passwd = Yii::$app->security->generateRandomString();
-        $signupForm->password_repeat = $passwd;
-        $signupForm->is_executor = 1;
-
-        $transaction = Yii::$app->db->beginTransaction();
-        try {
-            $user = $this->create($signupForm);
-            (new AuthService())->create($user->id, $source, $attributes['id']);
-            $transaction->commit();
-
-            return true;
-        } catch (\Throwable $e) {
-            $transaction->rollBack();
-
-            return false;
-        }
+        return array_search($userId, array_column($users, 'id')) + 1;
     }
 
     /**
-     * @param int $user_id
+     * @param int $userId
      * @return bool
      */
-    private function isBusy(int $user_id): bool
+    private function isBusy(int $userId): bool
     {
-        $condition = ['executor_id' => $user_id, 'status_id' => Task2::STATUS_WORK_ID];
+        $condition = ['executor_id' => $userId, 'status_id' => Task2::STATUS_WORK_ID];
         
         return Task::find()->where($condition)->exists();
+    }
+
+    /**
+     * @param int $userId
+     * @return bool
+     */
+    private function showContacts(int $userId): bool
+    {
+        $privateContacts = !$this->findOne($userId)->profile->private_contacts;
+        $conditions = ['customer_id' => Yii::$app->user->id, 'executor_id' => $userId];
+        $isExecutor = Task::find()->where($conditions)->exists();
+
+        return $privateContacts || $isExecutor;
     }
 
     // public function getUserCurrentRate(int $user_id): float

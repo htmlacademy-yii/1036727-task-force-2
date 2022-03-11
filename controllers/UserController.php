@@ -5,14 +5,12 @@ namespace app\controllers;
 use Yii;
 use yii\authclient\ClientInterface;
 use yii\filters\AccessControl;
-use yii\helpers\ArrayHelper;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\web\Response;
 use yii\widgets\ActiveForm;
 use app\models\forms\LoginForm;
 use app\models\forms\SignupForm;
-use app\services\AuthService;
 use app\services\CityService;
 use app\services\UserService;
 
@@ -30,21 +28,7 @@ class UserController extends Controller
 
     public function onAuthSuccess(ClientInterface $client)
     {
-        $attributes = $client->getUserAttributes();
-        $sourceId = ArrayHelper::getValue($attributes, 'id');
-        $source = $client->getId();
-
-        if ($auth = (new AuthService())->findOne($source, $sourceId)) {
-            (new UserService())->login($auth->user->email);
-        } elseif ($email = ArrayHelper::getValue($attributes, 'email')) {
-
-            if ($user = (new UserService())->findByEmail($email)) {
-                (new AuthService())->create($user->id, $source, $sourceId);
-                (new UserService())->login($email);
-            } elseif ((new UserService())->signupVKUser($attributes, $source)) {
-                (new UserService())->login($email);
-            }
-        }
+        (new UserService())->authHandler($client);
 
         return $this->goHome();
     }
@@ -83,6 +67,12 @@ class UserController extends Controller
 
         if (Yii::$app->request->isPost) {
             $signupForm->load(Yii::$app->request->post());
+
+            if (Yii::$app->request->isAjax) {
+                Yii::$app->response->format = Response::FORMAT_JSON;
+
+                return ActiveForm::validate($signupForm);
+            }
 
             if ($signupForm->validate()) {
                 (new UserService())->create($signupForm);

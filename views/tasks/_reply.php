@@ -25,13 +25,13 @@ use anatolev\service\Task;
 
     <div class="feedback-wrapper">
         <a
-            href="<?= $reply->user->is_executor ? Url::to(['profile/view', 'id' => $reply->user->id]) : '#' ?>"
+            href="<?= $reply->user->is_executor ? Url::to(['profile/view', 'userId' => $reply->user->id]) : '#' ?>"
             class="link link--block link--big"
         ><?= ReplyHelper::author($reply) ?></a>
         <div class="response-wrapper">
             <div class="stars-rating small">
 
-                <?= $this->render('//_partials/_stars-rating', ['rating' => ReplyHelper::rating($reply)]) ?>
+                <?= $this->render('//_partials/stars-rating', ['rating' => ReplyHelper::rating($reply)]) ?>
 
             </div>
             <?php
@@ -68,12 +68,12 @@ use anatolev\service\Task;
     ): ?>
         <div class="button-popup">
             <a
-                href="<?= Url::to(['reply/accept', 'reply_id' => $reply->id]) ?>"
+                href="<?= Url::to(['reply/accept', 'id' => $reply->id]) ?>"
                 class="button button--blue button--small"
             >Принять</a>
 
             <a
-                href="<?= Url::to(['reply/refuse', 'reply_id' => $reply->id]) ?>"
+                href="<?= Url::to(['reply/refuse', 'id' => $reply->id]) ?>"
                 class="button button--orange button--small"
             >Отказать</a>
         </div>

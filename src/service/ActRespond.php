@@ -32,12 +32,12 @@ class ActRespond extends TaskAction
     /**
      * {@inheritdoc}
      */
-    public function checkUserRights(int $task_id): bool
+    public function checkUserRights(int $taskId, int $userId): bool
     {
-        $taskStatus = (new TaskService())->getStatus($task_id);
-        $isExecutor = (new UserService())->isExecutor(Yii::$app->user->id);
-        $replyExist = (new ReplyService())->exist($task_id, Yii::$app->user->id);
+        $taskStatus = (new TaskService())->getStatus($taskId);
+        // $isExecutor = (new UserService())->isExecutor($userId);
+        $replyExist = (new ReplyService())->exist($taskId, $userId);
 
-        return !$replyExist && $taskStatus === Task::STATUS_NEW && $isExecutor;
+        return !$replyExist && $taskStatus === Task::STATUS_NEW;
     }
 }

@@ -5,6 +5,7 @@ namespace app\controllers;
 use Yii;
 use yii\filters\AccessControl;
 use yii\web\Controller;
+use app\services\TaskService;
 
 class LandingController extends Controller
 {
@@ -30,6 +31,10 @@ class LandingController extends Controller
 
     public function actionIndex()
     {
-        return $this->render('index');
+        $tasks = (new TaskService())->getNewTasks(4);
+
+        return $this->render('index', [
+            'tasks' => $tasks
+        ]);
     }
 }

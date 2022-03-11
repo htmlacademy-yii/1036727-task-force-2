@@ -6,7 +6,6 @@
 use yii\helpers\Html;
 use yii\helpers\Url;
 use yii\widgets\ActiveForm;
-use anatolev\service\Task;
 
 ?>
 <section style="display: none;" class="modal form-modal completion-form" id="complete-form">
@@ -16,22 +15,6 @@ use anatolev\service\Task;
         'action' => Url::to(['tasks/complete']),
         'options' => ['autocomplete' => false],
     ]); ?>
-
-        <?= Html::tag('p', 'Задание выполнено?', ['class' => 'form-modal-description']) ?>
-        <?= $form->field($model, 'task_status', ['template' => '{input}{error}'])->radioList(
-            [Task::STATUS_DONE_ID => 'Да', Task::STATUS_FAILED_ID => 'Возникли проблемы'],
-            [
-                'item' => function ($index, $label, $name, $checked, $value) {
-                    $classModifier = $value == Task::STATUS_DONE_ID ? 'yes' : 'difficult';
-                    $inputClass = "visually-hidden completion-input completion-input--{$classModifier}";
-                    $input = "<input class=\"{$inputClass}\" type=\"radio\" id=\"completion-radio--{$classModifier}\" name=\"{$name}\" value=\"{$value}\">";
-
-                    $labelClass = "completion-label completion-label--{$classModifier}";
-                    $label = "<label class=\"{$labelClass}\" for=\"completion-radio--{$classModifier}\">{$label}</label>";
-
-                    return $input . $label;
-                }
-        ]); ?>
 
         <?= $form->field($model, 'comment', ['labelOptions' => ['class' => 'form-modal-description']])
             ->textarea(['class' => 'input textarea', 'rows' => '4', 'placeholder' => 'Place your text']) ?>

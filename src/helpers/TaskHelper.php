@@ -64,6 +64,16 @@ class TaskHelper extends Helper
     }
 
     /**
+     * @return string
+     */
+    public static function getRandomModifier(): string
+    {
+        $modifiers = ['courier', 'cargo', 'neo', 'flat'];
+
+        return $modifiers[rand(0, count($modifiers) - 1)];
+    }
+
+    /**
      * @param Task $task
      * @param int $repliesCount
      * @return string
@@ -97,6 +107,21 @@ class TaskHelper extends Helper
         $callback = fn($reply) => $reply->user_id === Yii::$app->user->id;
 
         return array_filter($task->replies, $callback);
+    }
+
+    /**
+     * @param ?string $filter
+     * @return string
+     */
+    public static function getFilterDesc($filter): string
+    {
+        return match ($filter) {
+            'new' => 'Новые',
+            'progress' => 'В процессе',
+            'overdue' => 'Просрочено',
+            'closed' => 'Закрытые',
+            default => 'Без фильтров'
+        };
     }
 
     /**

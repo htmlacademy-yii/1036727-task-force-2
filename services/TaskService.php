@@ -15,12 +15,26 @@ use anatolev\service\Task as Task2;
 class TaskService
 {
     /**
-     * @param int $task_id
+     * @param int $taskId
+     * @param int $userId
+     * @return bool
+     */
+    public function canChangeReplyStatus(int $taskId, int $userId): bool
+    {
+        $isActual = $this->isActual($taskId);
+        $taskStatus = $this->getStatus($taskId);
+        $isCustomer = $this->isTaskCustomer($taskId, $userId);
+
+        return $isActual && $taskStatus === Task2::STATUS_NEW && $isCustomer;
+    }
+
+    /**
+     * @param int $taskId
      * @return void
      */
-    public function cancel(int $task_id): void
+    public function cancel(int $taskId): void
     {
-        $task = Task::findOne($task_id);
+        $task = Task::findOne($taskId);
         $task->status_id = Task2::STATUS_CANCEL_ID;
 
         $task->save();
@@ -56,10 +70,10 @@ class TaskService
         $transaction = Yii::$app->db->beginTransaction();
         try {
             $task = Task::findOne($model->task_id);
-            $task->status_id = $model->task_status;
+            $task->status_id = Task2::STATUS_DONE_ID;
             $task->save();
-            
-            (new UserService())->updateTaskCounter($task->executor_id, $task->status_id);
+
+            (new UserService())->updateTaskCounter($task);
             (new ReviewService())->create($model);
 
             $transaction->commit();
@@ -69,31 +83,42 @@ class TaskService
     }
 
     /**
-     * @param int $task_id
+     * @param int $taskId
      * @return ?Task
      */
-    public function findOne(int $task_id): ?Task
+    public function findOne(int $taskId): ?Task
     {
-        return Task::findOne($task_id);
+        return Task::findOne($taskId);
     }
 
     /**
      * @param SearchForm $model
+     * @param int $cityId
      * @return Task[]
      */
-    public function getFilteredTasks(SearchForm $model): array
+    public function getFiltered(SearchForm $model, int $cityId): array
     {
-        $query = Task::find()
-            ->joinWith('category')
-            ->where(['status_id' => Task2::STATUS_NEW_ID])
-            ->orderBy('task.dt_add DESC');
+        $query = Task::find()->select(['task.*'])->joinWith('category');
+
+        if ($model->isTelework) {
+            $query->where(['task.city_id' => null]);
+        } else {
+            $query->where(['task.city_id' => null]);
+            $query->orWhere(['task.city_id' => $cityId]);
+        }
+
+        $query->andWhere(['status_id' => Task2::STATUS_NEW_ID])
+            ->orderBy('task.dt_add DESC')
+            ->groupBy('task.id');
 
         if ($model->categories) {
             $query->andWhere(['in', 'task.category_id', $model->categories]);
         }
 
-        if ($model->without_performer) {
-            $query->andWhere(['task.executor_id' => null]);
+        if ($model->no_response) {
+            $query->joinWith('replies r')
+                ->addSelect('COUNT(r.id) AS count')
+                ->having(['count' => 0]);
         }
 
         if (intval($model->period_value) > 0) {
@@ -105,58 +130,128 @@ class TaskService
     }
 
     /**
-     * @param int $task_id
+     * @param int $taskId
      * @return ?string
      */
-    public function getStatus(int $task_id): ?string
+    public function getStatus(int $taskId): ?string
     {
-        return Task::findOne($task_id)?->status->inner_name;
+        return Task::findOne($taskId)?->status->inner_name;
     }
 
     /**
-     * @param int $reply_id
+     * @param int $userId
+     * @param string $filter
+     * @return Task[]
+     */
+    public function getCustomerTasks(int $userId, ?string $filter = null): array
+    {
+        $query = Task::find()->where(['customer_id' => $userId]);
+
+        switch ($filter) {
+            case 'new':
+                $query->andWhere(['status_id' => Task2::STATUS_NEW_ID]);
+                break;
+
+            case 'progress':
+                $query->andWhere(['status_id' => Task2::STATUS_WORK_ID]);
+                break;
+
+            case 'closed':
+                $ids = [Task2::STATUS_CANCEL_ID, Task2::STATUS_DONE_ID, Task2::STATUS_FAILED_ID];
+                $query->andWhere(['in', 'status_id', $ids]);
+                break;
+        }
+
+        return $query->all();
+    }
+
+    /**
+     * @param int $userId
+     * @param string $filter
+     * @return Task[]
+     */
+    public function getExecutorTasks(int $userId, ?string $filter = null): array
+    {
+        $query = Task::find()->joinWith('replies r')->where(['r.user_id' => $userId]);
+
+        switch ($filter) {
+            case 'progress':
+                $query->andWhere(['task.status_id' => Task2::STATUS_WORK_ID]);
+                break;
+
+            case 'overdue':
+                $query
+                    ->andWhere(['task.status_id' => Task2::STATUS_WORK_ID])
+                    ->andWhere(['<', 'task.expire', new Expression('CURRENT_DATE()')]);
+                break;
+
+            case 'closed':
+                $ids = [Task2::STATUS_DONE_ID, Task2::STATUS_FAILED_ID];
+                $query->andWhere(['in', 'task.status_id', $ids]);
+                break;
+        }
+
+        return $query->all();
+    }
+
+    /**
+     * @param int $limit
+     * @return Task[]
+     */
+    public function getNewTasks(int $limit): array
+    {
+        $query = Task::find()
+            ->where(['status_id' => Task2::STATUS_NEW_ID])
+            ->orderBy('dt_add DESC')
+            ->limit($limit);
+
+        return $query->all();
+    }
+
+    /**
+     * @param int $replyId
      * @return bool
      */
-    public function isActual(int $reply_id): bool
+    public function isActual(int $taskId): bool
     {
-        $task = (new ReplyService())->findOne($reply_id)?->task;
+        $task = $this->findOne($taskId);
 
         return $task && TaskHelper::isActual($task);
     }
 
     /**
-     * @param int $task_id
-     * @param int $user_id
+     * @param int $taskId
+     * @param int $userId
      * @return bool
      */
-    public function isTaskCustomer(int $task_id, int $user_id): bool
+    public function isTaskCustomer(int $taskId, int $userId): bool
     {
-        $condition = ['id' => $task_id, 'customer_id' => $user_id];
+        $condition = ['id' => $taskId, 'customer_id' => $userId];
 
         return Task::find()->where($condition)->exists();
     }
 
     /**
-     * @param int $task_id
-     * @param int $user_id
+     * @param int $taskId
+     * @param int $userId
      * @return bool
      */
-    public function isTaskExecutor(int $task_id, int $user_id): bool
+    public function isTaskExecutor(int $taskId, int $userId): bool
     {
-        $condition = ['id' => $task_id, 'executor_id' => $user_id];
+        $condition = ['id' => $taskId, 'executor_id' => $userId];
 
         return Task::find()->where($condition)->exists();
     }
 
     /**
-     * @param int $task_id
+     * @param int $taskId
      * @return void
      */
-    public function refuse(int $task_id): void
+    public function refuse(int $taskId): void
     {
         $transaction = Yii::$app->db->beginTransaction();
         try {
-            $task = Task::findOne($task_id);
+            $task = Task::findOne($taskId);
             $task->status_id = Task2::STATUS_FAILED_ID;
             $task->save();
 
@@ -172,16 +267,16 @@ class TaskService
 
     /**
      * @param AddTaskForm $model
-     * @param int $task_id
+     * @param int $taskId
      * @return void
      */
-    private function upload(AddTaskForm $model, int $task_id): void
+    private function upload(AddTaskForm $model, int $taskId): void
     {
         foreach ($model->files as $file) {
-            $file_path = uniqid("{$file->baseName}_") . '.' . $file->extension;
-            $file->saveAs(Yii::getAlias('@files') . '/' . $file_path);
+            $filePath = uniqid("{$file->baseName}_") . '.' . $file->extension;
+            $file->saveAs(Yii::getAlias('@files') . '/' . $filePath);
 
-            (new TaskFileService())->create($file_path, $task_id);
+            (new TaskFileService())->create($filePath, $taskId);
         }
     }
 }

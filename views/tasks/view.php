@@ -42,26 +42,21 @@ $this->title = Html::encode($task->name);
         ><?= Html::encode($availableAction->getName()) ?></a>
     <?php endif; ?>
 
-    <div class="task-map">
+    <?php if (isset($task->location, $task->latitude, $task->longitude, $task->city)): ?>
+        <div class="task-map">
 
-        <?php if (isset($task->latitude, $task->longitude)): ?>
             <div
                 id="map"
                 style="width: 725px; height: 346px"
                 data-lat="<?= Html::encode($task->latitude) ?>"
                 data-long="<?= Html::encode($task->longitude) ?>"
             ></div>
-        <?php endif; ?>
 
-        <?php if (isset($task->city)): ?>
             <p class="map-address town"><?= TaskHelper::city($task) ?></p>
-        <?php endif; ?>
-
-        <?php if (isset($task->location)): ?>
             <p class="map-address"><?= Html::encode($task->location) ?></p>
-        <?php endif; ?>
 
-    </div>
+        </div>
+    <?php endif; ?>
 
     <?php if ($replies = TaskHelper::getReplies($task)): ?>
         <h4 class="head-regular"><?= TaskHelper::getRepliesHeader($task, count($replies)) ?></h4>

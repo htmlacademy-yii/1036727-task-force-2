@@ -29,7 +29,7 @@ $this->title = Html::encode($user->name);
             <div class="card-rate">
                 <div class="stars-rating big">
 
-                    <?= $this->render('//_partials/_stars-rating', ['rating' => UserHelper::rating($user)]) ?>
+                    <?= $this->render('//_partials/stars-rating', ['rating' => UserHelper::rating($user)]) ?>
 
                 </div>
                 <span class="current-rate"><?= UserHelper::rating($user) ?></span>
@@ -56,8 +56,8 @@ $this->title = Html::encode($user->name);
         <div class="bio">
             <p class="head-info">Био</p>
             <p class="bio-info">
-                <span class="country-info">Россия</span>,
-                <span class="town-info"><?= UserHelper::city($user) ?></span>,
+                <!-- <span class="country-info">Россия</span>, -->
+                <span class="town-info"><?= UserHelper::city($user) ?></span>
 
                 <?php if (isset($user->profile->birthday)): ?>
                     <?php $ageInfo = explode(' ', FormatHelper::getRelativeTime($user->profile->birthday)); ?>
@@ -100,43 +100,47 @@ $this->title = Html::encode($user->name);
             <dd><?= UserHelper::busyStatus($user) ?></dd>
         </dl>
     </div>
-    <div class="right-card white">
-        <h4 class="head-card">Контакты</h4>
-        <ul class="enumeration-list">
 
-            <?php
-            $contacts = [
-                [
-                    'property' => 'contact_phone',
-                    'protocol' => 'tel:',
-                    'class_modifier' => 'phone'
-                ],
-                [
-                    'property' => 'email',
-                    'protocol' => 'mailto:',
-                    'class_modifier' => 'email'
-                ],
-                [
-                    'property' => 'contact_tg',
-                    'protocol' => 'https://t.me/',
-                    'class_modifier' => 'tg'
-                ]
-            ];
-            ?>
+    <?php if ($user->showContacts): ?>
+        <div class="right-card white">
+            <h4 class="head-card">Контакты</h4>
+            <ul class="enumeration-list">
 
-            <?php foreach ($contacts as $contact): ?>
+                <?php
+                $contacts = [
+                    [
+                        'property' => 'contact_phone',
+                        'protocol' => 'tel:',
+                        'class_modifier' => 'phone'
+                    ],
+                    [
+                        'property' => 'email',
+                        'protocol' => 'mailto:',
+                        'class_modifier' => 'email'
+                    ],
+                    [
+                        'property' => 'contact_tg',
+                        'protocol' => 'https://t.me/',
+                        'class_modifier' => 'tg'
+                    ]
+                ];
+                ?>
 
-                <?php if ($value = $user->profile->{$contact['property']} ?? $user->{$contact['property']} ?? null): ?>
-                    <li class="enumeration-item">
-                        <a
-                            href="<?= $contact['protocol'] ?><?= Html::encode($value) ?>"
-                            class="link link--block link--<?= $contact['class_modifier'] ?>"
-                        ><?= Html::encode($value) ?></a>
-                    </li>
-                <?php endif; ?>
+                <?php foreach ($contacts as $contact): ?>
 
-            <?php endforeach; ?>
+                    <?php if ($value = $user->profile->{$contact['property']} ?? $user->{$contact['property']} ?? null): ?>
+                        <li class="enumeration-item">
+                            <a
+                                href="<?= $contact['protocol'] ?><?= Html::encode($value) ?>"
+                                class="link link--block link--<?= $contact['class_modifier'] ?>"
+                            ><?= Html::encode($value) ?></a>
+                        </li>
+                    <?php endif; ?>
 
-        </ul>
-    </div>
+                <?php endforeach; ?>
+
+            </ul>
+        </div>
+    <?php endif; ?>
+
 </div>

@@ -1,8 +1,12 @@
 <?php
 
 /** @var yii\web\View $this */
+/** @var app\models\Task[] $tasks */
 
+use yii\helpers\Html;
 use yii\helpers\Url;
+use anatolev\helpers\FormatHelper;
+use anatolev\helpers\TaskHelper;
 
 $this->title = 'Главная';
 
@@ -108,5 +112,38 @@ $this->title = 'Главная';
         </div>
 
     </div>
+
+    <?php if (!empty($tasks)): ?>
+        <div class="landing-bottom">
+            <div class="landing-bottom-container">
+                <h2>Последние задания на сайте</h2>
+
+                <?php foreach ($tasks as $task): ?>
+                    <div class="landing-task">
+                        <div class="landing-task-top task-<?= TaskHelper::getRandomModifier() ?>"></div>
+                        <div class="landing-task-description">
+                            <h3><a href="#" class="link-regular"><?= Html::encode($task->name) ?></a></h3>
+                            <p><?= Html::encode($task->description) ?></p>
+                        </div>
+                        <div class="landing-task-info">
+                            <div class="task-info-left">
+                                <p><a href="#" class="link-regular"><?= TaskHelper::category($task) ?></a></p>
+                                <p><?= FormatHelper::getRelativeTime($task->dt_add) ?> назад</p>
+                            </div>
+
+                            <?php if (isset($task->budget)): ?>
+                                <span><?= Html::encode($task->budget) ?> <b>&#8381;</b></span>
+                            <?php endif; ?>
+
+                        </div>
+                    </div>
+                <?php endforeach; ?>
+
+            </div>
+            <div class="landing-bottom-container">
+                <a href="<?= Url::to(['user/signup']) ?>" class="button red-button">Смотреть все задания</a>
+            </div>
+        </div>
+    <?php endif; ?>
 
 </div>

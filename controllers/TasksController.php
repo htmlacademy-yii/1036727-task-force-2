@@ -32,46 +32,31 @@ class TasksController extends SecuredController
                 'rules' => [
                     [
                         'allow' => true,
-                        'roles' => ['@'],
-                        'actions' => ['create'],
-                        'matchCallback' => function ($rule, $action) {
-                            return (new UserService())->isCustomer(Yii::$app->user->id);
-                        }
+                        'roles' => ['createTask'],
+                        'actions' => ['create']
                     ],
                     [
                         'allow' => true,
                         'roles' => ['@'],
-                        'actions' => ['index', 'view']
+                        'actions' => ['index', 'user-tasks', 'view']
                     ],
                     [
                         'allow' => true,
-                        'roles' => ['@'],
                         'actions' => ['cancel'],
-                        'matchCallback' => function ($rule, $action) {
-                            $id = Yii::$app->request->get('task_id', 0);
-
-                            return (new Task($id))->getAvailableAction() instanceof ActCancel;
-                        }
+                        'roles' => ['cancelOwnTask'],
+                        'roleParams' => ['id' => Yii::$app->request->get('id', 0)]
                     ],
                     [
                         'allow' => true,
-                        'roles' => ['@'],
                         'actions' => ['complete'],
-                        'matchCallback' => function ($rule, $action) {
-                            $id = Yii::$app->request->post('CompleteForm')['task_id'] ?? 0;
-
-                            return (new Task($id))->getAvailableAction() instanceof ActDone;
-                        }
+                        'roles' => ['completeOwnTask'],
+                        'roleParams' => ['id' => Yii::$app->request->post('CompleteForm')['task_id'] ?? 0]
                     ],
                     [
                         'allow' => true,
-                        'roles' => ['@'],
                         'actions' => ['refuse'],
-                        'matchCallback' => function ($rule, $action) {
-                            $id = Yii::$app->request->get('task_id', 0);
-
-                            return (new Task($id))->getAvailableAction() instanceof ActRefuse;
-                        }
+                        'roles' => ['refuseOwnTask'],
+                        'roleParams' => ['id' => Yii::$app->request->get('id', 0)]
                     ],
                 ]
             ]
@@ -107,11 +92,11 @@ class TasksController extends SecuredController
         ]);
     }
 
-    public function actionCancel(int $task_id)
+    public function actionCancel(int $id)
     {
-        (new TaskService())->cancel($task_id);
+        (new TaskService())->cancel($id);
 
-        return $this->redirect(['tasks/view', 'id' => $task_id]);
+        return $this->redirect(['tasks/view', 'id' => $id]);
     }
 
     public function actionComplete()
@@ -129,11 +114,28 @@ class TasksController extends SecuredController
         }
     }
 
-    public function actionRefuse(int $task_id)
+    public function actionUserTasks()
     {
-        (new TaskService())->refuse($task_id);
+        $filter = Yii::$app->request->get('filter');
+        $userId = Yii::$app->user->id;
 
-        return $this->redirect(['tasks/view', 'id' => $task_id]);
+        if ((new UserService())->isExecutor($userId)) {
+            $tasks = (new TaskService())->getExecutorTasks($userId, $filter);
+        } else {
+            $tasks = (new TaskService())->getCustomerTasks($userId, $filter);
+        }
+
+        return $this->render('user-tasks', [
+            'tasks' => $tasks,
+            'filter' => $filter,
+        ]);
+    }
+
+    public function actionRefuse(int $id)
+    {
+        (new TaskService())->refuse($id);
+
+        return $this->redirect(['tasks/view', 'id' => $id]);
     }
 
     // разбить на 2 метода
@@ -153,7 +155,8 @@ class TasksController extends SecuredController
         }
 
         if ($searchForm->validate()) {
-            $tasks = (new TaskService())->getFilteredTasks($searchForm);
+            $cityId = $this->user->city_id;
+            $tasks = (new TaskService())->getFiltered($searchForm, $cityId);
         }
 
         $categories = (new CategoryService())->findAll();
@@ -169,7 +172,7 @@ class TasksController extends SecuredController
     public function actionView(int $id)
     {
         if (!$task = (new TaskService())->findOne($id)) {
-            throw new NotFoundHttpException;
+            throw new NotFoundHttpException();
         }
 
         $completeForm = new CompleteForm();

@@ -7,7 +7,11 @@
 use yii\authclient\widgets\AuthChoice;
 use yii\helpers\ArrayHelper;
 use yii\helpers\Html;
+use yii\helpers\Url;
 use yii\widgets\ActiveForm;
+use app\assets\AutoCompleteAsset;
+
+AutoCompleteAsset::register($this);
 
 $this->title = 'Регистрация';
 
@@ -24,8 +28,9 @@ $this->title = 'Регистрация';
             <?= $form->field($model, 'name')->textInput(); ?>
 
             <div class="half-wrapper">
-                <?= $form->field($model, 'email')->input('email'); ?>
-                <?= $form->field($model, 'city_id')->dropDownList(ArrayHelper::map($cities, 'id', 'name')); ?>
+                <?= $form->field($model, 'email', ['enableAjaxValidation' => true])->input('email'); ?>
+                <?= $form->field($model, 'location')->textInput(['id' => 'autoComplete', 'style' => 'padding-left: 50px;', 'data-api-url' => Url::to(['/api'])]) ?>
+                <?= $form->field($model, 'city_id', ['template' => '{input}'])->hiddenInput(['id' => 'city']); ?>
             </div>
 
             <?= $form->field($model, 'password')->passwordInput(); ?>

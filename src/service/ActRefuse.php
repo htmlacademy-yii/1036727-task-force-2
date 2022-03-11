@@ -31,11 +31,11 @@ class ActRefuse extends TaskAction
     /**
      * {@inheritdoc}
      */
-    public function checkUserRights(int $task_id): bool
+    public function checkUserRights(int $taskId, int $userId): bool
     {
         $service = new TaskService();
-        $taskStatus = $service->getStatus($task_id);
-        $isExecutor = $service->isTaskExecutor($task_id, Yii::$app->user->id);
+        $taskStatus = $service->getStatus($taskId);
+        $isExecutor = $service->isTaskExecutor($taskId, $userId);
 
         return $taskStatus === Task::STATUS_WORK && $isExecutor;
     }

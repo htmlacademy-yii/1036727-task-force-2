@@ -2,6 +2,7 @@
 
 namespace anatolev\service;
 
+use Yii;
 use anatolev\exception\SourceFileException;
 use anatolev\exception\StatusNotExistException;
 use anatolev\exception\ActionNotExistException;
@@ -59,7 +60,7 @@ class Task
     }
 
     /**
-     * @param string $action Действие (внутреннее имя)
+     * @param string $action
      * @throws ActionNotExistException
      * @return string
      */
@@ -106,7 +107,7 @@ class Task
 
         foreach ($array[$this->status] ?? [] as $action) {
 
-            if ($action->checkUserRights($this->task_id)) {
+            if ($action->checkUserRights($this->task_id, Yii::$app->user->id)) {
                 $available_actions[] = $action;
             }
         }
@@ -115,7 +116,7 @@ class Task
     }
 
     /**
-     * @param string $action Действие
+     * @param string $action
      * @throws SourceFileException
      * @return TaskAction
      */

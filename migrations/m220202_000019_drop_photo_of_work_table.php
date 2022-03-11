@@ -3,7 +3,7 @@
 use yii\db\Migration;
 
 /**
- * Handles the creation of table `{{%photo_of_work}}`.
+ * Handles the deletion of table `{{%photo_of_work}}`.
  */
 class m220202_000019_drop_photo_of_work_table extends Migration
 {
