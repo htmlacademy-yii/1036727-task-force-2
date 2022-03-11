@@ -15,20 +15,30 @@ const autoCompleteJS = new autoComplete({
             }
         },
         // Data 'Object' key to be searched
-        keys: ['text']
+        keys: document.location.href.includes('signup') ? ['name'] : ['text']
     },
     resultItem: {
         highlight: true
+    },
+    resultsList: {
+        maxResults: 100
     },
     events: {
         input: {
             selection: event => {
                 const selection = event.detail.selection.value;
-                autoCompleteJS.input.value = selection.text;
 
-                document.getElementById('lat').value = selection.pos[1];
-                document.getElementById('long').value = selection.pos[0];
-                document.getElementById('city').value = selection.city ? selection.city : 0;
+                if (document.location.href.includes('signup')) {
+                    autoCompleteJS.input.value = selection.name;
+
+                    document.getElementById('city').value = selection.id;
+                } else {
+                    autoCompleteJS.input.value = selection.text;
+
+                    document.getElementById('lat').value = selection.pos[1];
+                    document.getElementById('long').value = selection.pos[0];
+                    document.getElementById('city').value = selection.city ? selection.city : 0;
+                }
             }
         }
     }

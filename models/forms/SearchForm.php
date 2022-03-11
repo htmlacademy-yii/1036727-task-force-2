@@ -8,7 +8,8 @@ use app\models\Category;
 class SearchForm extends Model
 {
     public $categories;
-    public $without_performer;
+    public $isTelework;
+    public $no_response;
     public $period_value;
 
     const PERIOD_VALUES = [
@@ -22,7 +23,7 @@ class SearchForm extends Model
     {
         return [
             [['categories'], 'exist', 'targetClass' => Category::class, 'targetAttribute' => 'id', 'allowArray' => true],
-            [['without_performer'], 'boolean'],
+            [['isTelework', 'no_response'], 'boolean'],
             [['period_value'], 'in', 'range' => array_keys(self::PERIOD_VALUES)]
         ];
     }
@@ -30,7 +31,8 @@ class SearchForm extends Model
     public function attributeLabels(): array
     {
         return [
-            'without_performer' => 'Без исполнителя'
+            'isTelework' => 'Удалённая работа',
+            'no_response' => 'Без откликов'
         ];
     }
 }
