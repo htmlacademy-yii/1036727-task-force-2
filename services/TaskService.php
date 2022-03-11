@@ -70,10 +70,10 @@ class TaskService
         $transaction = Yii::$app->db->beginTransaction();
         try {
             $task = Task::findOne($model->task_id);
-            $task->status_id = $model->task_status;
+            $task->status_id = Task2::STATUS_DONE_ID;
             $task->save();
-            
-            (new UserService())->updateTaskCounter($task->executor_id, $task->status_id);
+
+            (new UserService())->updateTaskCounter($task);
             (new ReviewService())->create($model);
 
             $transaction->commit();

@@ -246,14 +246,16 @@ class UserService
      * @param int $statusId
      * @return void
      */
-    public function updateTaskCounter(int $userId, int $statusId): void
+    public function updateTaskCounter(Task $task): void
     {
-        $doneStatusId = Task2::STATUS_DONE_ID;
-        $counter = $statusId === $doneStatusId ? 'done' : 'failed';
+        if ($task instanceof Task) {
+            $doneStatusId = Task2::STATUS_DONE_ID;
+            $counter = $task->status_id === $doneStatusId ? 'done' : 'failed';
 
-        $user = UserProfile::findOne(['user_id' => $userId]);
-        $user->updateCounters(["{$counter}_task_count" => 1]);
-        $user->save();
+            $user = UserProfile::findOne(['user_id' => $task->executor_id]);
+            $user->updateCounters(["{$counter}_task_count" => 1]);
+            $user->save();
+        }
     }
 
     /**
