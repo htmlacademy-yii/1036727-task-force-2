@@ -31,4 +31,13 @@ class CityService
 
         return City::find()->where($condition1)->andWhere($condition2)->one();
     }
+
+    /**
+     * @param string $query
+     * @return City[]
+     */
+    public function findByQuery(string $query): array
+    {
+        return City::find()->where(['LIKE', 'name', $query])->all();
+    }
 }

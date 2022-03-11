@@ -73,6 +73,7 @@ $config = [
             'rules' => [
                 '/' => 'landing/index',
                 'geoapi/<geocode>' => 'geo/index',
+                'api/<query>' => 'geo/cities',
                 'login' => 'user/login',
                 'logout' => 'user/logout',
                 'my-tasks' => 'tasks/user-tasks',

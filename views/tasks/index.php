@@ -67,7 +67,11 @@ $this->title = 'Новые задания';
 
                 <?= Html::tag('h4', 'Дополнительно', ['class' => 'head-card']) ?>
                 <?= $form
-                    ->field($model, 'without_performer', ['template' => "{input}\n{label}"])
+                    ->field($model, 'isTelework', ['template' => "{input}\n{label}"])
+                    ->checkbox(enclosedByLabel: false) ?>
+
+                <?= $form
+                    ->field($model, 'no_response', ['template' => "{input}\n{label}"])
                     ->checkbox(enclosedByLabel: false) ?>
 
                 <?= Html::tag('h4', 'Период', ['class' => 'head-card']) ?>

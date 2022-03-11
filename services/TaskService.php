@@ -93,21 +93,32 @@ class TaskService
 
     /**
      * @param SearchForm $model
+     * @param int $cityId
      * @return Task[]
      */
-    public function getFilteredTasks(SearchForm $model): array
+    public function getFiltered(SearchForm $model, int $cityId): array
     {
-        $query = Task::find()
-            ->joinWith('category')
-            ->where(['status_id' => Task2::STATUS_NEW_ID])
-            ->orderBy('task.dt_add DESC');
+        $query = Task::find()->select(['task.*'])->joinWith('category');
+
+        if ($model->isTelework) {
+            $query->where(['task.city_id' => null]);
+        } else {
+            $query->where(['task.city_id' => null]);
+            $query->orWhere(['task.city_id' => $cityId]);
+        }
+
+        $query->andWhere(['status_id' => Task2::STATUS_NEW_ID])
+            ->orderBy('task.dt_add DESC')
+            ->groupBy('task.id');
 
         if ($model->categories) {
             $query->andWhere(['in', 'task.category_id', $model->categories]);
         }
 
-        if ($model->without_performer) {
-            $query->andWhere(['task.executor_id' => null]);
+        if ($model->no_response) {
+            $query->joinWith('replies r')
+                ->addSelect('COUNT(r.id) AS count')
+                ->having(['count' => 0]);
         }
 
         if (intval($model->period_value) > 0) {

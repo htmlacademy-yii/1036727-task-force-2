@@ -10,10 +10,11 @@ class SignupForm extends Model
 {
     public $name;
     public $email;
-    public $city_id;
+    public $location;
     public $password;
     public $password_repeat;
     public $is_executor;
+    public $city_id;
 
     public function rules(): array
     {
@@ -23,12 +24,13 @@ class SignupForm extends Model
             [['email'], 'string', 'max' => 128],
             [['email'], 'email'],
             [['email'], 'unique', 'targetClass' => User::class],
+            [['location'], 'string'],
             [['name'], 'string', 'length' => [2, 128]],
             [['password'], 'string', 'length' => [6, 255]],
             [['password_repeat'], 'compare', 'compareAttribute' => 'password'],
+            [['is_executor'], 'boolean'],
             [['city_id'], 'integer'],
             [['city_id'], 'exist', 'targetClass' => City::class, 'targetAttribute' => 'id'],
-            [['is_executor'], 'boolean']
         ];
     }
 

@@ -141,9 +141,6 @@ class TasksController extends SecuredController
     // разбить на 2 метода
     public function actionIndex(?string $category = null)
     {
-        // Yii::$app->authManager->assign(Yii::$app->authManager->getRole('customer'), 7);
-        // var_dump(Yii::$app->user->can('refuseOwnReply', ['replyId' => 4]));
-        // exit;
         $searchForm = new SearchForm();
         $tasks = [];
 
@@ -158,7 +155,8 @@ class TasksController extends SecuredController
         }
 
         if ($searchForm->validate()) {
-            $tasks = (new TaskService())->getFilteredTasks($searchForm);
+            $cityId = $this->user->city_id;
+            $tasks = (new TaskService())->getFiltered($searchForm, $cityId);
         }
 
         $categories = (new CategoryService())->findAll();

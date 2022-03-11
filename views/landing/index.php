@@ -141,7 +141,7 @@ $this->title = 'Главная';
 
             </div>
             <div class="landing-bottom-container">
-                <a href="<?= Url::to(['user/signup']) ?>" class="button red-button">смотреть все задания</a>
+                <a href="<?= Url::to(['user/signup']) ?>" class="button red-button">Смотреть все задания</a>
             </div>
         </div>
     <?php endif; ?>
