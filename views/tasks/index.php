@@ -1,46 +1,40 @@
 <?php
 
 /** @var yii\web\View $this */
-/** @var yii\data\ActiveDataProvider $dataProvider */
 /** @var array $period_values */
-/** @var app\models\Task[] $tasks */
 /** @var app\models\Category[] $categories */
 /** @var app\models\forms\SearchForm $model */
+/** @var yii\data\ActiveDataProvider $dataProvider */
 
 use yii\helpers\ArrayHelper;
 use yii\helpers\Html;
 use yii\widgets\ActiveForm;
+use yii\widgets\ListView;
 
 $this->title = 'Новые задания';
 
 ?>
 <div class="left-column">
     <h3 class="head-main head-task">Новые задания</h3>
-    
+
     <?= ListView::widget([
         'dataProvider' => $dataProvider,
-        'itemView' => '//tasks/_task'
+        'itemView' => '//tasks/_task',
+        'pager' => [
+            'prevPageLabel' => '',
+            'nextPageLabel' => '',
+            'pageCssClass' => 'pagination-item',
+            'prevPageCssClass' => 'pagination-item mark',
+            'nextPageCssClass' => 'pagination-item mark',
+            'activePageCssClass' => 'pagination-item--active',
+            'options' => ['class' => 'pagination-list'],
+            'linkOptions' => ['class' => 'link link--page'],
+            'options' => [
+                'class' => 'pagination-list',
+            ],
+        ],
     ]) ?>
 
-    <div class="pagination-wrapper">
-        <ul class="pagination-list">
-            <li class="pagination-item mark">
-                <a href="#" class="link link--page"></a>
-            </li>
-            <li class="pagination-item">
-                <a href="#" class="link link--page">1</a>
-            </li>
-            <li class="pagination-item pagination-item--active">
-                <a href="#" class="link link--page">2</a>
-            </li>
-            <li class="pagination-item">
-                <a href="#" class="link link--page">3</a>
-            </li>
-            <li class="pagination-item mark">
-                <a href="#" class="link link--page"></a>
-            </li>
-        </ul>
-    </div>
 </div>
 <div class="right-column">
     <div class="right-card black">

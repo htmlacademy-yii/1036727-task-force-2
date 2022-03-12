@@ -121,14 +121,20 @@ class TasksController extends SecuredController
         $userId = Yii::$app->user->id;
 
         if ((new UserService())->isExecutor($userId)) {
-            $tasks = (new TaskService())->getExecutorTasks($userId, $filter);
+            $query = (new TaskService())->getExecutorTasks($userId, $filter);
         } else {
-            $tasks = (new TaskService())->getCustomerTasks($userId, $filter);
+            $query = (new TaskService())->getCustomerTasks($userId, $filter);
         }
 
+        $dataProvider = new ActiveDataProvider([
+            'query' => $query,
+            'pagination' => ['pageSize' => 5]
+        ]);
+
         return $this->render('user-tasks', [
-            'tasks' => $tasks,
+            'query' => $query,
             'filter' => $filter,
+            'dataProvider' => $dataProvider
         ]);
     }
 
@@ -143,7 +149,6 @@ class TasksController extends SecuredController
     public function actionIndex(?string $category = null)
     {
         $searchForm = new SearchForm();
-        $tasks = [];
 
         if (Yii::$app->request->isPost) {
             $searchForm->load(Yii::$app->request->post());
@@ -155,22 +160,24 @@ class TasksController extends SecuredController
             }
         }
 
+        $query = (new TaskService())->getAllQuery();
+
         if ($searchForm->validate()) {
             $cityId = $this->user->city_id;
-            $query = (new TaskService())->getFiltered($searchForm, $cityId);
+            $query = (new TaskService())->getFilterQuery($searchForm, $cityId);
         }
 
         $categories = (new CategoryService())->findAll();
         
         $dataProvider = new ActiveDataProvider([
-            'query' => $query
-            'pagination' => ['pageSize' => 5],
+            'query' => $query,
+            'pagination' => ['pageSize' => 5]
         ]);
 
         return $this->render('index', [
             'model' => $searchForm,
-            // 'tasks' => $tasks,
             'categories' => $categories,
+            'dataProvider' => $dataProvider,
             'period_values' => SearchForm::PERIOD_VALUES
         ]);
     }

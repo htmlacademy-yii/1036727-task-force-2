@@ -75,6 +75,7 @@ class TaskService
             $task->save();
 
             (new UserService())->updateTaskCounter($task);
+            (new UserService())->updateCurrentRate($task);
             (new ReviewService())->create($model);
 
             $transaction->commit();
@@ -93,11 +94,19 @@ class TaskService
     }
 
     /**
+     * @return ActiveQuery
+     */
+    public function getAllQuery(): ActiveQuery
+    {
+        return Task::find()->select(['task.*']);
+    }
+
+    /**
      * @param SearchForm $model
      * @param int $cityId
      * @return ActiveQuery
      */
-    public function getFiltered(SearchForm $model, int $cityId): ActiveQuery
+    public function getFilterQuery(SearchForm $model, int $cityId): ActiveQuery
     {
         $query = Task::find()->select(['task.*'])->joinWith('category');
 
@@ -142,9 +151,9 @@ class TaskService
     /**
      * @param int $userId
      * @param string $filter
-     * @return Task[]
+     * @return ActiveQuery
      */
-    public function getCustomerTasks(int $userId, ?string $filter = null): array
+    public function getCustomerTasks(int $userId, ?string $filter = null): ActiveQuery
     {
         $query = Task::find()->where(['customer_id' => $userId]);
 
@@ -163,15 +172,15 @@ class TaskService
                 break;
         }
 
-        return $query->all();
+        return $query;
     }
 
     /**
      * @param int $userId
      * @param string $filter
-     * @return Task[]
+     * @return ActiveQuery
      */
-    public function getExecutorTasks(int $userId, ?string $filter = null): array
+    public function getExecutorTasks(int $userId, ?string $filter = null): ActiveQuery
     {
         $query = Task::find()->joinWith('replies r')->where(['r.user_id' => $userId]);
 
@@ -192,7 +201,7 @@ class TaskService
                 break;
         }
 
-        return $query->all();
+        return $query;
     }
 
     /**

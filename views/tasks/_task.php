@@ -1,12 +1,14 @@
 <?php
 
 /** @var yii\web\View $this */
-/** @var app\models\Task $task */
+/** @var app\models\Task $model */
 
 use yii\helpers\Html;
 use yii\helpers\Url;
 use anatolev\helpers\FormatHelper;
 use anatolev\helpers\TaskHelper;
+
+$model = isset($task) ? $task : $model;
 
 ?>
 <div class="task-card">
