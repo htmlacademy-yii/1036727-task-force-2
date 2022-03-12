@@ -29,7 +29,7 @@ class SecurityForm extends Model
             ],
             [['new_password'], 'string', 'length' => [6, 255],
                 'whenClient' => "function (attribute, value) {
-                    return $('#securityform-old_password').attr('aria-invalid') !== 'true';
+                    return !$('#securityform-old_password').attr('aria-invalid');
                 }"
             ],
             [['new_password_repeat'], 'required',
@@ -39,7 +39,7 @@ class SecurityForm extends Model
             ],
             [['new_password_repeat'], 'compare', 'compareAttribute' => 'new_password',
                 'whenClient' => "function (attribute, value) {
-                    return $('#securityform-new_password').attr('aria-invalid') !== 'true';
+                    return !$('#securityform-new_password').attr('aria-invalid');
                 }"
             ],
         ];
