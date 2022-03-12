@@ -3,6 +3,7 @@
 namespace app\controllers;
 
 use Yii;
+use yii\data\ActiveDataProvider;
 use yii\filters\AccessControl;
 use yii\web\NotFoundHttpException;
 use yii\web\Response;
@@ -156,14 +157,19 @@ class TasksController extends SecuredController
 
         if ($searchForm->validate()) {
             $cityId = $this->user->city_id;
-            $tasks = (new TaskService())->getFiltered($searchForm, $cityId);
+            $query = (new TaskService())->getFiltered($searchForm, $cityId);
         }
 
         $categories = (new CategoryService())->findAll();
+        
+        $dataProvider = new ActiveDataProvider([
+            'query' => $query
+            'pagination' => ['pageSize' => 5],
+        ]);
 
         return $this->render('index', [
             'model' => $searchForm,
-            'tasks' => $tasks,
+            // 'tasks' => $tasks,
             'categories' => $categories,
             'period_values' => SearchForm::PERIOD_VALUES
         ]);
