@@ -18,16 +18,30 @@ class SecurityForm extends Model
     public function rules()
     {
         return [
-            [['old_password', 'new_password', 'new_password_repeat'], 'required'],
+            [['old_password'], 'required'],
             [['private_contacts'], 'boolean'],
             [['old_password'], 'string', 'length' => [6, 255]],
             [['old_password'], 'validatePassword'],
-            [['new_password'], 'string', 'length' => [6, 255], 'whenClient' => "function (attribute, value) {
-                return $('#securityform-old_password').attr('aria-invalid') !== 'true';
-            }"],
-            [['new_password_repeat'], 'compare', 'compareAttribute' => 'new_password', 'whenClient' => "function (attribute, value) {
-                return $('#securityform-new_password').attr('aria-invalid') !== 'true';
-            }"],
+            [['new_password'], 'required',
+                'whenClient' => "function (attribute, value) {
+                    return !$('#securityform-old_password').attr('aria-invalid');
+                }"
+            ],
+            [['new_password'], 'string', 'length' => [6, 255],
+                'whenClient' => "function (attribute, value) {
+                    return $('#securityform-old_password').attr('aria-invalid') !== 'true';
+                }"
+            ],
+            [['new_password_repeat'], 'required',
+                'whenClient' => "function (attribute, value) {
+                    return !$('#securityform-new_password').attr('aria-invalid');
+                }"
+            ],
+            [['new_password_repeat'], 'compare', 'compareAttribute' => 'new_password',
+                'whenClient' => "function (attribute, value) {
+                    return $('#securityform-new_password').attr('aria-invalid') !== 'true';
+                }"
+            ],
         ];
     }
 
