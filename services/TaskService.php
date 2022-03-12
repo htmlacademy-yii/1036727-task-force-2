@@ -3,6 +3,7 @@
 namespace app\services;
 
 use Yii;
+use yii\db\ActiveQuery;
 use yii\db\Expression;
 use app\models\Task;
 use app\models\UserProfile;
@@ -94,9 +95,9 @@ class TaskService
     /**
      * @param SearchForm $model
      * @param int $cityId
-     * @return Task[]
+     * @return ActiveQuery
      */
-    public function getFiltered(SearchForm $model, int $cityId): array
+    public function getFiltered(SearchForm $model, int $cityId): ActiveQuery
     {
         $query = Task::find()->select(['task.*'])->joinWith('category');
 
@@ -126,7 +127,7 @@ class TaskService
             $query->andWhere(['>', 'task.dt_add', $exp]);
         }
 
-        return $query->all();
+        return $query;
     }
 
     /**
