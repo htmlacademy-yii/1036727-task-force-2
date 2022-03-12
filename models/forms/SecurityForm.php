@@ -23,9 +23,6 @@ class SecurityForm extends Model
             [['old_password'], 'string', 'length' => [6, 255]],
             [['old_password'], 'validatePassword'],
             [['new_password'], 'required',
-                'when' => function ($model) {
-                    return !$model->hasErrors('old_password');
-                },
                 'whenClient' => "function (attribute, value) {
                     return !$('#securityform-old_password').attr('aria-invalid');
                 }"
