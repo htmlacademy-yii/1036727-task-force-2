@@ -24,7 +24,7 @@ class SecurityForm extends Model
             [['old_password'], 'validatePassword'],
             [['new_password'], 'required',
                 'whenClient' => "function (attribute, value) {
-                    return !$('#securityform-old_password').attr('aria-invalid');
+                    return $('#securityform-old_password').value;
                 }"
             ],
             [['new_password'], 'string', 'length' => [6, 255],
@@ -34,7 +34,7 @@ class SecurityForm extends Model
             ],
             [['new_password_repeat'], 'required',
                 'whenClient' => "function (attribute, value) {
-                    return !$('#securityform-new_password').attr('aria-invalid');
+                    return $('#securityform-new_password').value;
                 }"
             ],
             [['new_password_repeat'], 'compare', 'compareAttribute' => 'new_password',
