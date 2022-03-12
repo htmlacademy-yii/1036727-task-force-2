@@ -1,6 +1,7 @@
 <?php
 
 /** @var yii\web\View $this */
+/** @var yii\data\ActiveDataProvider $dataProvider */
 /** @var array $period_values */
 /** @var app\models\Task[] $tasks */
 /** @var app\models\Category[] $categories */
@@ -15,12 +16,11 @@ $this->title = 'Новые задания';
 ?>
 <div class="left-column">
     <h3 class="head-main head-task">Новые задания</h3>
-
-    <?php foreach ($tasks as $task): ?>
-
-        <?= $this->render('_task', ['task' => $task]) ?>
-
-    <?php endforeach; ?>
+    
+    <?= ListView::widget([
+        'dataProvider' => $dataProvider,
+        'itemView' => '//tasks/_task'
+    ]) ?>
 
     <div class="pagination-wrapper">
         <ul class="pagination-list">
