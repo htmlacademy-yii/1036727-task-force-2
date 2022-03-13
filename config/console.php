@@ -15,6 +15,16 @@ $config = [
         '@sql' => '@data/sql-dump',
         '@tests' => '@app/tests',
     ],
+    'controllerMap' => [
+        'migrate' => [
+            'class' => 'yii\console\controllers\MigrateController',
+            'migrationTable' => 'migration',
+            'migrationPath' => [
+                '@app/migrations',
+                '@yii/rbac/migrations',
+            ],
+        ],
+    ],
     'components' => [
         'authManager' => [
             'class' => 'yii\rbac\DbManager',
