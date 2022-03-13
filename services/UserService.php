@@ -7,6 +7,7 @@ use yii\authclient\ClientInterface;
 use yii\helpers\ArrayHelper;
 use yii\helpers\FileHelper;
 use app\models\City;
+use app\models\Review;
 use app\models\Task;
 use app\models\User;
 use app\models\UserCategory;
@@ -242,19 +243,15 @@ class UserService
     }
 
     /**
-     * @param Task $task
+     * @param int $userId
      * @return void
      */
-    public function updateTaskCounter(Task $task): void
+    public function updateTaskCounter(int $userId): void
     {
-        if ($task instanceof Task) {
-            $doneStatusId = Task2::STATUS_DONE_ID;
-            $counter = $task->status_id === $doneStatusId ? 'done' : 'failed';
+        $user = UserProfile::findOne($userId);
+        $user->updateCounters(["done_task_count" => 1]);
 
-            $user = UserProfile::findOne(['user_id' => $task->executor_id]);
-            $user->updateCounters(["{$counter}_task_count" => 1]);
-            $user->save();
-        }
+        $user->save();
     }
 
     /**
@@ -290,20 +287,22 @@ class UserService
      */
     private function showContacts(int $userId): bool
     {
-        $privateContacts = !$this->findOne($userId)->profile->private_contacts;
+        $privateContacts = $this->findOne($userId)->profile->private_contacts;
         $conditions = ['customer_id' => Yii::$app->user->id, 'executor_id' => $userId];
         $isExecutor = Task::find()->where($conditions)->exists();
 
-        return $privateContacts || $isExecutor;
+        return !$privateContacts || $isExecutor;
     }
 
     /**
      * @param int $userId;
      */
-    public function updateUserCurrentRate(int $userId): float
+    public function updateCurrentRate(int $userId): void
     {
-        $query = Review::find()->where(['user_id' => $userId]);
-        $overall_rating = $query->sum('rate');
+        $query = Review::find()
+            ->joinWith('task t')
+            ->where(['t.executor_id' => $userId]);
+        $overall_rating = $query->sum('rating');
         $review_count = $query->count();
 
         $query = UserProfile::find()->where(['id' => $userId]);
@@ -312,6 +311,9 @@ class UserService
         $devider = $review_count + $failed_task_count;
         $current_rate = $devider ? $overall_rating / $devider : 0;
 
-        return round($current_rate, 2);
+        $user = User::findOne($userId);
+        $user->profile->current_rate = round($current_rate, 2);
+
+        $user->profile->save();
     }
 }

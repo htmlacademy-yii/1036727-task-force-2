@@ -74,9 +74,10 @@ class TaskService
             $task->status_id = Task2::STATUS_DONE_ID;
             $task->save();
 
-            (new UserService())->updateTaskCounter($task);
-            // (new UserService())->updateCurrentRate($task);
             (new ReviewService())->create($model);
+
+            (new UserService())->updateTaskCounter($task->executor_id);
+            (new UserService())->updateCurrentRate($task->executor_id);
 
             $transaction->commit();
         } catch (\Throwable $e) {
