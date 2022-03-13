@@ -75,7 +75,7 @@ class TaskService
             $task->save();
 
             (new UserService())->updateTaskCounter($task);
-            (new UserService())->updateCurrentRate($task);
+            // (new UserService())->updateCurrentRate($task);
             (new ReviewService())->create($model);
 
             $transaction->commit();
