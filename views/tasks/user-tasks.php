@@ -2,9 +2,9 @@
 
 /** @var yii\web\View $this */
 /** @var ?string $filter */
-/** @var app\models\Task[] $tasks */
+/** @var yii\data\ActiveDataProvider $dataProvider */
 
-use yii\helpers\Url;
+use yii\widgets\ListView;
 use yii\widgets\Menu;
 use anatolev\helpers\TaskHelper;
 
@@ -44,10 +44,22 @@ $this->title = 'Мои задания';
 <div class="left-column left-column--task">
     <h3 class="head-main head-regular"><?= TaskHelper::getFilterDesc($filter) ?></h3>
 
-    <?php foreach ($tasks as $task): ?>
-
-        <?= $this->render('_task', ['task' => $task]) ?>
-
-    <?php endforeach; ?>
+    <?= ListView::widget([
+        'dataProvider' => $dataProvider,
+        'itemView' => '//tasks/_task',
+        'pager' => [
+            'prevPageLabel' => '',
+            'nextPageLabel' => '',
+            'pageCssClass' => 'pagination-item',
+            'prevPageCssClass' => 'pagination-item mark',
+            'nextPageCssClass' => 'pagination-item mark',
+            'activePageCssClass' => 'pagination-item--active',
+            'options' => ['class' => 'pagination-list'],
+            'linkOptions' => ['class' => 'link link--page'],
+            'options' => [
+                'class' => 'pagination-list',
+            ],
+        ],
+    ]) ?>
 
 </div>

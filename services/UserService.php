@@ -297,18 +297,21 @@ class UserService
         return $privateContacts || $isExecutor;
     }
 
-    // public function getUserCurrentRate(int $user_id): float
-    // {
-    //     $query = Review::find()->where(['user_id' => $user_id]);
-    //     $overall_rating = $query->sum('rate');
-    //     $review_count = $query->count();
+    /**
+     * @param int $userId;
+     */
+    public function updateUserCurrentRate(int $userId): float
+    {
+        $query = Review::find()->where(['user_id' => $userId]);
+        $overall_rating = $query->sum('rate');
+        $review_count = $query->count();
 
-    //     $query = UserProfile::find()->where(['id' => $user_id]);
-    //     $failed_task_count = $query->one()->failed_task_count;
+        $query = UserProfile::find()->where(['id' => $userId]);
+        $failed_task_count = $query->one()->failed_task_count;
 
-    //     $devider = $review_count + $failed_task_count;
-    //     $current_rate = $devider ? $overall_rating / $devider : 0;
+        $devider = $review_count + $failed_task_count;
+        $current_rate = $devider ? $overall_rating / $devider : 0;
 
-    //     return round($current_rate, 2);
-    // }
+        return round($current_rate, 2);
+    }
 }
