@@ -32,8 +32,8 @@ class City extends ActiveRecord
     {
         return [
             [['name', 'latitude', 'longitude'], 'required'],
-            [['latitude', 'longitude'], 'number'],
             [['name'], 'string', 'max' => 128],
+            [['latitude', 'longitude'], 'double'],
         ];
     }
 

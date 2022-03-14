@@ -34,7 +34,7 @@ class Review extends ActiveRecord
             [['rating', 'comment', 'task_id'], 'required'],
             [['rating', 'task_id'], 'integer'],
             [['comment'], 'string', 'max' => 255],
-            [['task_id'], 'exist', 'targetClass' => Task::class, 'targetAttribute' => ['task_id' => 'id']],
+            [['task_id'], 'exist', 'targetClass' => Task::class, 'targetAttribute' => 'id'],
             [['task_id'], 'unique'],
         ];
     }

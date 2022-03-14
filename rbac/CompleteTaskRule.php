@@ -17,8 +17,8 @@ class CompleteTaskRule extends Rule
      */
     public function execute($user, $item, $params)
     {
-        return isset($params['id'])
-            ? (new ActDone())->checkUserRights($params['id'], $user)
+        return isset($params['taskId'])
+            ? (new ActDone())->checkUserRights($params['taskId'], $user)
             : false;
     }
 }

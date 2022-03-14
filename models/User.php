@@ -26,8 +26,8 @@ use yii\db\ActiveRecord;
  */
 class User extends ActiveRecord
 {
-    public $is_busy;
-    public $place_in_rating;
+    public $isBusy;
+    public $placeInRating;
     public $showContacts;
 
     /**
@@ -44,8 +44,8 @@ class User extends ActiveRecord
     public function rules()
     {
         return [
-            [['email', 'name', 'password'], 'trim'],
-            [['email', 'name', 'password', 'city_id'], 'required'],
+            [['email', 'name'], 'trim'],
+            [['email', 'name', 'city_id'], 'required'],
             [['email'], 'string', 'max' => 128],
             [['email'], 'email'],
             [['email'], 'unique'],
@@ -53,7 +53,7 @@ class User extends ActiveRecord
             [['password'], 'string', 'max' => 255],
             [['city_id'], 'integer'],
             [['city_id'], 'exist', 'targetClass' => City::class, 'targetAttribute' => 'id'],
-            [['is_executor'], 'boolean']
+            [['is_executor'], 'boolean'],
         ];
     }
 

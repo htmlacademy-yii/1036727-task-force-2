@@ -1,7 +1,7 @@
 <?php
 
 /** @var yii\web\View $this */
-/** @var bool $isActualTask */
+/** @var bool $isExpiredTask */
 /** @var app\models\Reply $reply */
 
 use yii\helpers\Html;
@@ -61,7 +61,7 @@ use anatolev\service\Task;
     </div>
 
     <?php if (
-        $isActualTask
+        !$isExpiredTask
         && !$reply->denied
         && $reply->task->customer_id === Yii::$app->user->id
         && $reply->task->status_id === Task::STATUS_NEW_ID

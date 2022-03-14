@@ -18,11 +18,8 @@ class ProfileController extends SecuredController
     {
         $tab = Yii::$app->request->get('tab');
 
-        $profileForm = new ProfileForm();
-        $profileForm->loadCurrentValues($this->user);
-
-        $securityForm = new SecurityForm();
-        $securityForm->loadCurrentValues($this->user);
+        $profileForm = new ProfileForm($this->user);
+        $securityForm = new SecurityForm($this->user);
 
         if (Yii::$app->request->isPost) {
             $profileForm->load(Yii::$app->request->post());
@@ -35,24 +32,18 @@ class ProfileController extends SecuredController
                 return ActiveForm::validate($profileForm);
             }
 
-            if ($profileForm->validate() && isset($tab) && $tab === 'profile') {
-                (new UserService())->updateProfile($profileForm);
-                $userId = Yii::$app->user->id;
+            if (in_array($tab, ['profile', 'security'])) {
+                [$model, $method] = ["{$tab}Form", "update{$tab}"];
 
-                return match (true) {
-                    !$this->user->is_executor => $this->refresh(),
-                    default => $this->redirect(['profile/view', 'userId' => $userId])
-                };
-            }
+                if ($$model->validate()) {
+                    (new UserService())->{$method}($$model);
+                    $userId = Yii::$app->user->id;
 
-            if ($securityForm->validate() && isset($tab) && $tab === 'security') {
-                (new UserService())->updateSecurity($securityForm);
-                $userId = Yii::$app->user->id;
-
-                return match (true) {
-                    !$this->user->is_executor => $this->refresh(),
-                    default => $this->redirect(['profile/view', 'userId' => $userId])
-                };
+                    return match (true) {
+                        !$this->user->is_executor => $this->refresh(),
+                        default => $this->redirect(['profile/view', 'userId' => $userId])
+                    };
+                }
             }
         }
 

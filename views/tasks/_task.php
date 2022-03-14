@@ -8,8 +8,6 @@ use yii\helpers\Url;
 use anatolev\helpers\FormatHelper;
 use anatolev\helpers\TaskHelper;
 
-$model = isset($task) ? $task : $model;
-
 ?>
 <div class="task-card">
     <div class="header-task">

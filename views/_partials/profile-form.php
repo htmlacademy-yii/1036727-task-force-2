@@ -1,15 +1,16 @@
 <?php
 
 /** @var yii\web\View $this */
-/** @var app\models\forms\ProfileForm $model */
 /** @var app\models\Category[] $categories */
+/** @var app\models\forms\ProfileForm $model */
 
 use yii\helpers\ArrayHelper;
 use yii\helpers\Html;
 use yii\widgets\ActiveForm;
+use app\assets\FileInputAsset;
 use anatolev\helpers\UserHelper;
 
-$this->registerJsFile('/js/file-input.js');
+FileInputAsset::register($this);
 
 $user = $this->context->user;
 $this->params['avatar'] = $avatar = UserHelper::getAvatar($user);

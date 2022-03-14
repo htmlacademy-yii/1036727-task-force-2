@@ -17,8 +17,8 @@ class RefuseTaskRule extends Rule
      */
     public function execute($user, $item, $params)
     {
-        return isset($params['id'])
-            ? (new ActRefuse())->checkUserRights($params['id'], $user)
+        return isset($params['taskId'])
+            ? (new ActRefuse())->checkUserRights($params['taskId'], $user)
             : false;
     }
 }

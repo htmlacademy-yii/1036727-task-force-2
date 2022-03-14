@@ -22,23 +22,11 @@ class TaskService
      */
     public function canChangeReplyStatus(int $taskId, int $userId): bool
     {
-        $isActual = $this->isActual($taskId);
+        $isExpired = $this->isExpired($taskId);
         $taskStatus = $this->getStatus($taskId);
         $isCustomer = $this->isTaskCustomer($taskId, $userId);
 
-        return $isActual && $taskStatus === Task2::STATUS_NEW && $isCustomer;
-    }
-
-    /**
-     * @param int $taskId
-     * @return void
-     */
-    public function cancel(int $taskId): void
-    {
-        $task = Task::findOne($taskId);
-        $task->status_id = Task2::STATUS_CANCEL_ID;
-
-        $task->save();
+        return !$isExpired && $taskStatus === Task2::STATUS_NEW && $isCustomer;
     }
 
     /**
@@ -60,6 +48,40 @@ class TaskService
         $this->upload($model, $task->id);
 
         return $task->id;
+    }
+
+    /**
+     * @param int $taskId
+     * @return void
+     */
+    public function cancel(int $taskId): void
+    {
+        $task = Task::findOne($taskId);
+        $task->status_id = Task2::STATUS_CANCEL_ID;
+
+        $task->save();
+    }
+
+    /**
+     * @param int $taskId
+     * @return void
+     */
+    public function refuse(int $taskId): void
+    {
+        $transaction = Yii::$app->db->beginTransaction();
+        try {
+            $task = Task::findOne($taskId);
+            $task->status_id = Task2::STATUS_FAILED_ID;
+            $task->save();
+
+            $user = UserProfile::findOne(['user_id' => $task->executor_id]);
+            $user->updateCounters(['failed_task_count' => 1]);
+            $user->save();
+
+            $transaction->commit();
+        } catch (\Throwable $e) {
+            $transaction->rollBack();
+        }
     }
 
     /**
@@ -100,53 +122,6 @@ class TaskService
     public function getAllQuery(): ActiveQuery
     {
         return Task::find()->select(['task.*']);
-    }
-
-    /**
-     * @param SearchForm $model
-     * @param int $cityId
-     * @return ActiveQuery
-     */
-    public function getFilterQuery(SearchForm $model, int $cityId): ActiveQuery
-    {
-        $query = Task::find()->select(['task.*'])->joinWith('category');
-
-        if ($model->isTelework) {
-            $query->where(['task.city_id' => null]);
-        } else {
-            $query->where(['task.city_id' => null]);
-            $query->orWhere(['task.city_id' => $cityId]);
-        }
-
-        $query->andWhere(['status_id' => Task2::STATUS_NEW_ID])
-            ->orderBy('task.dt_add DESC')
-            ->groupBy('task.id');
-
-        if ($model->categories) {
-            $query->andWhere(['in', 'task.category_id', $model->categories]);
-        }
-
-        if ($model->no_response) {
-            $query->joinWith('replies r')
-                ->addSelect('COUNT(r.id) AS count')
-                ->having(['count' => 0]);
-        }
-
-        if (intval($model->period_value) > 0) {
-            $exp = new Expression("DATE_SUB(NOW(), INTERVAL {$model->period_value} HOUR)");
-            $query->andWhere(['>', 'task.dt_add', $exp]);
-        }
-
-        return $query;
-    }
-
-    /**
-     * @param int $taskId
-     * @return ?string
-     */
-    public function getStatus(int $taskId): ?string
-    {
-        return Task::findOne($taskId)?->status->inner_name;
     }
 
     /**
@@ -206,6 +181,44 @@ class TaskService
     }
 
     /**
+     * @param SearchForm $model
+     * @param int $cityId
+     * @return ActiveQuery
+     */
+    public function getFilterQuery(SearchForm $model, int $cityId): ActiveQuery
+    {
+        $query = Task::find()->select(['task.*'])->joinWith('category');
+
+        if ($model->isTelework) {
+            $query->where(['task.city_id' => null]);
+        } else {
+            $query->where(['task.city_id' => null]);
+            $query->orWhere(['task.city_id' => $cityId]);
+        }
+
+        $query->andWhere(['status_id' => Task2::STATUS_NEW_ID])
+            ->orderBy('task.dt_add DESC')
+            ->groupBy('task.id');
+
+        if ($model->categories) {
+            $query->andWhere(['in', 'task.category_id', $model->categories]);
+        }
+
+        if ($model->no_response) {
+            $query->joinWith('replies r')
+                ->addSelect('COUNT(r.id) AS count')
+                ->having(['count' => 0]);
+        }
+
+        if (intval($model->period_value) > 0) {
+            $exp = new Expression("DATE_SUB(NOW(), INTERVAL {$model->period_value} HOUR)");
+            $query->andWhere(['>', 'task.dt_add', $exp]);
+        }
+
+        return $query;
+    }
+
+    /**
      * @param int $limit
      * @return Task[]
      */
@@ -220,14 +233,23 @@ class TaskService
     }
 
     /**
+     * @param int $taskId
+     * @return ?string
+     */
+    public function getStatus(int $taskId): ?string
+    {
+        return Task::findOne($taskId)?->status->inner_name;
+    }
+
+    /**
      * @param int $replyId
      * @return bool
      */
-    public function isActual(int $taskId): bool
+    public function isExpired(int $taskId): bool
     {
         $task = $this->findOne($taskId);
 
-        return $task && TaskHelper::isActual($task);
+        return !$task || TaskHelper::isExpired($task);
     }
 
     /**
@@ -252,28 +274,6 @@ class TaskService
         $condition = ['id' => $taskId, 'executor_id' => $userId];
 
         return Task::find()->where($condition)->exists();
-    }
-
-    /**
-     * @param int $taskId
-     * @return void
-     */
-    public function refuse(int $taskId): void
-    {
-        $transaction = Yii::$app->db->beginTransaction();
-        try {
-            $task = Task::findOne($taskId);
-            $task->status_id = Task2::STATUS_FAILED_ID;
-            $task->save();
-
-            $user = UserProfile::findOne(['user_id' => $task->executor_id]);
-            $user->updateCounters(['failed_task_count' => 1]);
-            $user->save();
-
-            $transaction->commit();
-        } catch (\Throwable $e) {
-            $transaction->rollBack();
-        }
     }
 
     /**

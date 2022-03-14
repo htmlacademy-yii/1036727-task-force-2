@@ -8,11 +8,6 @@ use app\assets\MainAsset;
 
 MainAsset::register($this);
 
-$this->registerMetaTag([
-    'name' => 'description',
-    'content' => Yii::$app->params['description']
-]);
-
 ?>
 <?php $this->beginPage() ?>
 <!DOCTYPE html>

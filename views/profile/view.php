@@ -91,7 +91,7 @@ $this->title = Html::encode($user->name);
             </dd>
 
             <dt>Место в рейтинге</dt>
-            <dd><?= Html::encode($user->place_in_rating) ?> место</dd>
+            <dd><?= Html::encode($user->placeInRating) ?> место</dd>
 
             <dt>Дата регистрации</dt>
             <dd><?= UserHelper::registerDate($user) ?></dd>

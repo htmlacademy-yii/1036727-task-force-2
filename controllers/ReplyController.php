@@ -22,14 +22,14 @@ class ReplyController extends Controller
                     [
                         'allow' => true,
                         'actions' => ['accept'],
-                        'roles' => ['acceptOwnReply'],
-                        'roleParams' => ['id' => Yii::$app->request->get('id', 0)],
+                        'roles' => ['changeOwnReplyStatus'],
+                        'roleParams' => ['replyId' => Yii::$app->request->get('id', 0)],
                     ],
                     [
                         'allow' => true,
                         'actions' => ['refuse'],
-                        'roles' => ['refuseOwnReply'],
-                        'roleParams' => ['id' => Yii::$app->request->get('id', 0)],
+                        'roles' => ['changeOwnReplyStatus'],
+                        'roleParams' => ['replyId' => Yii::$app->request->get('id', 0)],
                     ],
                     [
                         'allow' => true,
@@ -61,14 +61,14 @@ class ReplyController extends Controller
 
     public function actionAccept(int $id)
     {
-        $taskId = (new ReplyService())->accept($id);
+        $taskId = (new ReplyService())->accept(replyId: $id);
 
         return $this->redirect(['tasks/view', 'id' => $taskId]);
     }
 
     public function actionRefuse(int $id)
     {
-        $taskId = (new ReplyService())->refuse($id);
+        $taskId = (new ReplyService())->refuse(replyId: $id);
 
         return $this->redirect(['tasks/view', 'id' => $taskId]);
     }

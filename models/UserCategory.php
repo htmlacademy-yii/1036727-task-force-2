@@ -31,8 +31,8 @@ class UserCategory extends ActiveRecord
     {
         return [
             [['user_id', 'category_id'], 'integer'],
-            [['category_id'], 'exist', 'targetClass' => Category::class, 'targetAttribute' => ['category_id' => 'id']],
-            [['user_id'], 'exist', 'targetClass' => User::class, 'targetAttribute' => ['user_id' => 'id']],
+            [['user_id'], 'exist', 'targetClass' => User::class, 'targetAttribute' => 'id'],
+            [['category_id'], 'exist', 'targetClass' => Category::class, 'targetAttribute' => 'id'],
         ];
     }
 

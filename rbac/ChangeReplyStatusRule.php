@@ -6,9 +6,9 @@ use yii\rbac\Rule;
 use app\services\ReplyService;
 use app\services\TaskService;
 
-class AcceptReplyRule extends Rule
+class ChangeReplyStatusRule extends Rule
 {
-    public $name = 'acceptReply';
+    public $name = 'changeReplyStatus';
 
     /**
      * @param string|int $user the user ID.
@@ -18,7 +18,7 @@ class AcceptReplyRule extends Rule
      */
     public function execute($user, $item, $params)
     {
-        $taskId = (new ReplyService())->findOne($params['id'])->task_id;
+        $taskId = (new ReplyService())->findOne($params['replyId'])->task_id;
 
         return isset($taskId)
             ? (new TaskService())->canChangeReplyStatus($taskId, $user)

@@ -26,8 +26,7 @@ use anatolev\helpers\UserHelper;
             Задание «<a
                 href="<?= Url::to(['tasks/view', 'id' => $task->id]) ?>"
                 class="link link--small"
-            ><?= Html::encode($task->name) ?></a>»
-            <?= TaskHelper::doneStatus($task) ?>
+            ><?= Html::encode($task->name) ?></a>» выполнено
         </p>
     </div>
     <div class="feedback-wrapper">

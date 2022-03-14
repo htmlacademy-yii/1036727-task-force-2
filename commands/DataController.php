@@ -32,7 +32,7 @@ class DataController extends Controller
             }
         }
 
-        return ExitCode::OK;
+        return $this->run('rbac/init');
     }
 
     /**

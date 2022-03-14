@@ -45,19 +45,21 @@ class TasksController extends SecuredController
                         'allow' => true,
                         'actions' => ['cancel'],
                         'roles' => ['cancelOwnTask'],
-                        'roleParams' => ['id' => Yii::$app->request->get('id', 0)]
+                        'roleParams' => ['taskId' => Yii::$app->request->get('id', 0)]
                     ],
                     [
                         'allow' => true,
                         'actions' => ['complete'],
                         'roles' => ['completeOwnTask'],
-                        'roleParams' => ['id' => Yii::$app->request->post('CompleteForm')['task_id'] ?? 0]
+                        'roleParams' => [
+                            'taskId' => Yii::$app->request->post('CompleteForm')['task_id'] ?? 0
+                        ]
                     ],
                     [
                         'allow' => true,
                         'actions' => ['refuse'],
                         'roles' => ['refuseOwnTask'],
-                        'roleParams' => ['id' => Yii::$app->request->get('id', 0)]
+                        'roleParams' => ['taskId' => Yii::$app->request->get('id', 0)]
                     ],
                 ]
             ]
@@ -95,7 +97,14 @@ class TasksController extends SecuredController
 
     public function actionCancel(int $id)
     {
-        (new TaskService())->cancel($id);
+        (new TaskService())->cancel(taskId: $id);
+
+        return $this->redirect(['tasks/view', 'id' => $id]);
+    }
+
+    public function actionRefuse(int $id)
+    {
+        (new TaskService())->refuse(taskId: $id);
 
         return $this->redirect(['tasks/view', 'id' => $id]);
     }
@@ -117,8 +126,9 @@ class TasksController extends SecuredController
 
     public function actionUserTasks()
     {
-        $filter = Yii::$app->request->get('filter');
+        $query = null;
         $userId = Yii::$app->user->id;
+        $filter = Yii::$app->request->get('filter');
 
         if ((new UserService())->isExecutor($userId)) {
             $query = (new TaskService())->getExecutorTasks($userId, $filter);
@@ -136,13 +146,6 @@ class TasksController extends SecuredController
             'filter' => $filter,
             'dataProvider' => $dataProvider
         ]);
-    }
-
-    public function actionRefuse(int $id)
-    {
-        (new TaskService())->refuse($id);
-
-        return $this->redirect(['tasks/view', 'id' => $id]);
     }
 
     // разбить на 2 метода

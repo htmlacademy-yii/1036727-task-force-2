@@ -3,7 +3,7 @@
 use yii\db\Migration;
 
 /**
- * Handles the update of table `{{%reply}}`.
+ * Handles the update of table `{{%user_profile}}`.
  */
 class m220202_000020_update_user_profile_table extends Migration
 {

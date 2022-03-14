@@ -17,8 +17,8 @@ class CancelTaskRule extends Rule
      */
     public function execute($user, $item, $params)
     {
-        return isset($params['id'])
-            ? (new ActCancel())->checkUserRights($params['id'], $user)
+        return isset($params['taskId'])
+            ? (new ActCancel())->checkUserRights($params['taskId'], $user)
             : false;
     }
 }

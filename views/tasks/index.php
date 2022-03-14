@@ -19,7 +19,7 @@ $this->title = 'Новые задания';
 
     <?= ListView::widget([
         'dataProvider' => $dataProvider,
-        'itemView' => '//tasks/_task',
+        'itemView' => '_task',
         'pager' => [
             'prevPageLabel' => '',
             'nextPageLabel' => '',

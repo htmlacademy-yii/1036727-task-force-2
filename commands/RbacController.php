@@ -5,11 +5,10 @@ namespace app\commands;
 use Yii;
 use yii\console\Controller;
 use yii\console\ExitCode;
-use app\rbac\AcceptReplyRule;
 use app\rbac\CancelTaskRule;
+use app\rbac\ChangeReplyStatusRule;
 use app\rbac\CompleteTaskRule;
 use app\rbac\CreateReplyRule;
-use app\rbac\RefuseReplyRule;
 use app\rbac\RefuseTaskRule;
 
 class RbacController extends Controller
@@ -50,28 +49,16 @@ class RbacController extends Controller
         $auth->addChild($createReply, $createOwnReply);
 
 
-        $rule = new AcceptReplyRule();
+        $rule = new ChangeReplyStatusRule();
         $auth->add($rule);
 
-        $acceptReply = $auth->createPermission('acceptReply');
-        $auth->add($acceptReply);
+        $changeReplyStatus = $auth->createPermission('changeReplyStatus');
+        $auth->add($changeReplyStatus);
 
-        $acceptOwnReply = $auth->createPermission('acceptOwnReply');
-        $acceptOwnReply->ruleName = $rule->name;
-        $auth->add($acceptOwnReply);
-        $auth->addChild($acceptReply, $acceptOwnReply);
-
-
-        $rule = new RefuseReplyRule();
-        $auth->add($rule);
-
-        $refuseReply = $auth->createPermission('refuseReply');
-        $auth->add($refuseReply);
-
-        $refuseOwnReply = $auth->createPermission('refuseOwnReply');
-        $refuseOwnReply->ruleName = $rule->name;
-        $auth->add($refuseOwnReply);
-        $auth->addChild($refuseReply, $refuseOwnReply);
+        $changeOwnReplyStatus = $auth->createPermission('changeOwnReplyStatus');
+        $changeOwnReplyStatus->ruleName = $rule->name;
+        $auth->add($changeOwnReplyStatus);
+        $auth->addChild($changeReplyStatus, $changeOwnReplyStatus);
 
 
         $rule = new CompleteTaskRule();
@@ -102,8 +89,7 @@ class RbacController extends Controller
         $auth->add($customer);
         $auth->addChild($customer, $createTask);
         $auth->addChild($customer, $cancelTask);
-        $auth->addChild($customer, $acceptReply);
-        $auth->addChild($customer, $refuseReply);
+        $auth->addChild($customer, $changeReplyStatus);
         $auth->addChild($customer, $completeTask);
 
         $executor = $auth->createRole('executor');
