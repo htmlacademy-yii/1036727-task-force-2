@@ -64,7 +64,7 @@ use anatolev\service\Task;
         $isActualTask
         && !$reply->denied
         && $reply->task->customer_id === Yii::$app->user->id
-        && $reply->task->status->inner_name === Task::STATUS_NEW
+        && $reply->task->status_id === Task::STATUS_NEW_ID
     ): ?>
         <div class="button-popup">
             <a

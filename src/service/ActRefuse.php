@@ -10,7 +10,6 @@ class ActRefuse extends TaskAction
 {
     const NAME = 'Отказаться';
     const INNER_NAME = 'act_refuse';
-    const FORM_TYPE = 'refuse-form';
 
     /**
      * {@inheritdoc}

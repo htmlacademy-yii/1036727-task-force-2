@@ -9,8 +9,8 @@ use anatolev\service\Task;
 class ActDone extends TaskAction
 {
     const NAME = 'Выполнено';
-    const INNER_NAME = 'act_done';
-    const FORM_TYPE = 'complete-form';
+    // const INNER_NAME = 'act_done';
+    const INNER_NAME = 'act_complete';
 
     /**
      * {@inheritdoc}

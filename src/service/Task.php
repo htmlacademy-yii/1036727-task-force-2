@@ -23,7 +23,7 @@ class Task
     const STATUS_FAILED_ID = 5;
 
     private array $actions = [];
-    private string $status;
+    // private string $status;
 
     public function __construct(
         private int $task_id
@@ -46,39 +46,39 @@ class Task
     /**
      * @return array
      */
-    public function getActionMap(): array
-    {
-        $actions = [ActCancel::class, ActRespond::class, ActDone::class, ActRefuse::class];
-        $action_map = [];
+    // public function getActionMap(): array
+    // {
+    //     $actions = [ActCancel::class, ActRespond::class, ActDone::class, ActRefuse::class];
+    //     $action_map = [];
 
-        foreach ($actions as $action_key) {
-            $action = $this->getAction($action_key);
-            $action_map[$action->getInnerName()] = $action->getName();
-        }
+    //     foreach ($actions as $action_key) {
+    //         $action = $this->getAction($action_key);
+    //         $action_map[$action->getInnerName()] = $action->getName();
+    //     }
 
-        return $action_map;
-    }
+    //     return $action_map;
+    // }
 
     /**
      * @param string $action
      * @throws ActionNotExistException
      * @return string
      */
-    public function getNextStatus(string $action): string
-    {
-        if (!array_key_exists($action, $this->getActionMap())) {
-            throw new ActionNotExistException("Действие не существует");
-        }
+    // public function getNextStatus(string $action): string
+    // {
+    //     if (!array_key_exists($action, $this->getActionMap())) {
+    //         throw new ActionNotExistException("Действие не существует");
+    //     }
 
-        $array = [
-            $this->getAction(ActCancel::class)->getInnerName() => self::STATUS_CANCEL,
-            $this->getAction(ActRespond::class)->getInnerName() => self::STATUS_WORK,
-            $this->getAction(ActDone::class)->getInnerName() => self::STATUS_DONE,
-            $this->getAction(ActRefuse::class)->getInnerName() => self::STATUS_FAILED
-        ];
+    //     $array = [
+    //         $this->getAction(ActCancel::class)->getInnerName() => self::STATUS_CANCEL,
+    //         $this->getAction(ActRespond::class)->getInnerName() => self::STATUS_WORK,
+    //         $this->getAction(ActDone::class)->getInnerName() => self::STATUS_DONE,
+    //         $this->getAction(ActRefuse::class)->getInnerName() => self::STATUS_FAILED
+    //     ];
 
-        return $array[$action] ?? '';
-    }
+    //     return $array[$action] ?? '';
+    // }
 
     /**
      * @throws StatusNotExistException

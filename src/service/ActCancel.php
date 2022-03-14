@@ -10,7 +10,6 @@ class ActCancel extends TaskAction
 {
     const NAME = 'Отменить';
     const INNER_NAME = 'act_cancel';
-    const FORM_TYPE = 'cancel-form';
 
     /**
      * {@inheritdoc}

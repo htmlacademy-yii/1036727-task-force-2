@@ -38,7 +38,7 @@ $this->title = Html::encode($task->name);
         <a
             href="#"
             class="button button--blue open-modal"
-            data-for="<?= Html::encode($availableAction::FORM_TYPE) ?>"
+            data-for="<?= explode('_', $availableAction->getInnerName())[1] ?>-form"
         ><?= Html::encode($availableAction->getName()) ?></a>
     <?php endif; ?>
 

@@ -11,7 +11,6 @@ class ActRespond extends TaskAction
 {
     const NAME = 'Откликнуться';
     const INNER_NAME = 'act_respond';
-    const FORM_TYPE = 'respond-form';
 
     /**
      * {@inheritdoc}
