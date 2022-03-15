@@ -17,6 +17,15 @@ $config = [
         '@files' => 'uploads/files',
     ],
     'components' => [
+        'cache' => [
+            'class' => 'yii\redis\Cache',
+        ],
+        'redis' => [
+            'class' => 'yii\redis\Connection',
+            'hostname' => 'localhost',
+            'port' => 6379,
+            'database' => 0,
+        ],
         'authManager' => [
             'class' => 'yii\rbac\DbManager',
         ],
@@ -37,9 +46,6 @@ $config = [
         'request' => [
             // !!! insert a secret key in the following (if it is empty) - this is required by cookie validation
             'cookieValidationKey' => 'M48085L3F3Oy7cV4U01mWd1We7OtSiiG',
-        ],
-        'cache' => [
-            'class' => 'yii\caching\FileCache',
         ],
         'user' => [
             'identityClass' => 'app\models\UserIdentity',
