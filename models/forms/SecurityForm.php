@@ -15,33 +15,25 @@ class SecurityForm extends Model
     public $new_password;
     public $new_password_repeat;
 
+    public function __construct(User $user)
+    {
+        $this->attributes = $user->profile->attributes;
+    }
+
     public function rules()
     {
         return [
-            [['old_password'], 'required'],
-            [['private_contacts'], 'boolean'],
-            [['old_password'], 'string', 'length' => [6, 255]],
-            [['old_password'], 'validatePassword'],
-            [['new_password'], 'required',
-                'whenClient' => "function (attribute, value) {
-                    return $('#securityform-old_password').value;
-                }"
-            ],
-            [['new_password'], 'string', 'length' => [6, 255],
-                'whenClient' => "function (attribute, value) {
-                    return !$('#securityform-old_password').attr('aria-invalid');
-                }"
-            ],
-            [['new_password_repeat'], 'required',
-                'whenClient' => "function (attribute, value) {
-                    return $('#securityform-new_password').value;
-                }"
-            ],
-            [['new_password_repeat'], 'compare', 'compareAttribute' => 'new_password',
-                'whenClient' => "function (attribute, value) {
-                    return !$('#securityform-new_password').attr('aria-invalid');
-                }"
-            ],
+            [['old_password'], 'required', 'when' => $this->getOldPasswdCallback(), 'whenClient' => "() => $('securityform-old_password);"],
+            [['old_password'], 'string', 'length' => [6, 255], 'when' => $this->getOldPasswdCallback()],
+            [['old_password'], 'validatePassword', 'when' => $this->getOldPasswdCallback()],
+
+            [['new_password'], 'required', 'when' => $this->getNewPasswdCallback()],
+            [['new_password'], 'string', 'length' => [6, 255], 'when' => $this->getNewPasswdCallback()],
+
+            [['new_password_repeat'], 'required', 'when' => $this->getNewPasswdCallback()],
+            [['new_password_repeat'], 'compare', 'compareAttribute' => 'new_password', 'when' => $this->getNewPasswdCallback()],
+
+            [['private_contacts'], 'boolean']
         ];
     }
 
@@ -59,19 +51,20 @@ class SecurityForm extends Model
     {
         if (!$this->hasErrors()) {
             $email = (new UserService())->findOne(Yii::$app->user->id)->email;
-            $user = (new UserService())->getUser($email);
+            $user = (new UserService())->getUserIdentity($email);
             if (!$user || !$user->validatePassword($this->old_password)) {
                 $this->addError($attribute, 'Неправильный пароль');
             }
         }
     }
 
-    /**
-     * @param User $user
-     * @return void
-     */
-    public function loadCurrentValues(User $user): void
+    private function getOldPasswdCallback(): callable
     {
-        $this->private_contacts = $user->profile->private_contacts;
+        return fn($model) => (new UserService())->passwordIsset();
+    }
+
+    private function getNewPasswdCallback(): callable
+    {
+        return fn($model) => mb_strlen($model->old_password);
     }
 }

@@ -24,10 +24,9 @@ use anatolev\helpers\UserHelper;
         <p class="feedback"><?= ReviewHelper::comment($task) ?></p>
         <p class="task">
             Задание «<a
-                href="<?= Url::to(['tasks/view', 'id' => $task->id]) ?>"
+                href="<?= Url::to(['tasks/view', 'taskId' => $task->id]) ?>"
                 class="link link--small"
-            ><?= Html::encode($task->name) ?></a>»
-            <?= TaskHelper::doneStatus($task) ?>
+            ><?= Html::encode($task->name) ?></a>» выполнено
         </p>
     </div>
     <div class="feedback-wrapper">

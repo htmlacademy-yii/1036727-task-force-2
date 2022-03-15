@@ -6,14 +6,6 @@ use app\models\City;
 
 class CityService
 {
-    /**
-     * @return array
-     */
-    public function findAll(): array
-    {
-        return City::find()->limit(10)->all();
-    }
-
     public function findByName(string $name): ?City
     {
         return City::findOne(['name' => $name]);

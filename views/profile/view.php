@@ -56,7 +56,6 @@ $this->title = Html::encode($user->name);
         <div class="bio">
             <p class="head-info">Био</p>
             <p class="bio-info">
-                <!-- <span class="country-info">Россия</span>, -->
                 <span class="town-info"><?= UserHelper::city($user) ?></span>
 
                 <?php if (isset($user->profile->birthday)): ?>
@@ -91,7 +90,7 @@ $this->title = Html::encode($user->name);
             </dd>
 
             <dt>Место в рейтинге</dt>
-            <dd><?= Html::encode($user->place_in_rating) ?> место</dd>
+            <dd><?= Html::encode($user->placeInRating) ?> место</dd>
 
             <dt>Дата регистрации</dt>
             <dd><?= UserHelper::registerDate($user) ?></dd>

@@ -45,19 +45,21 @@ class TasksController extends SecuredController
                         'allow' => true,
                         'actions' => ['cancel'],
                         'roles' => ['cancelOwnTask'],
-                        'roleParams' => ['id' => Yii::$app->request->get('id', 0)]
+                        'roleParams' => ['taskId' => Yii::$app->request->get('taskId', 0)]
                     ],
                     [
                         'allow' => true,
                         'actions' => ['complete'],
                         'roles' => ['completeOwnTask'],
-                        'roleParams' => ['id' => Yii::$app->request->post('CompleteForm')['task_id'] ?? 0]
+                        'roleParams' => [
+                            'taskId' => Yii::$app->request->post('CompleteForm')['task_id'] ?? 0
+                        ]
                     ],
                     [
                         'allow' => true,
                         'actions' => ['refuse'],
                         'roles' => ['refuseOwnTask'],
-                        'roleParams' => ['id' => Yii::$app->request->get('id', 0)]
+                        'roleParams' => ['taskId' => Yii::$app->request->get('taskId', 0)]
                     ],
                 ]
             ]
@@ -81,7 +83,7 @@ class TasksController extends SecuredController
             if ($addTaskForm->validate()) {
                 $taskId = (new TaskService())->create($addTaskForm);
 
-                return $this->redirect(['tasks/view', 'id' => $taskId]);
+                return $this->redirect(['tasks/view', 'taskId' => $taskId]);
             }
         }
 
@@ -93,11 +95,18 @@ class TasksController extends SecuredController
         ]);
     }
 
-    public function actionCancel(int $id)
+    public function actionCancel(int $taskId)
     {
-        (new TaskService())->cancel($id);
+        (new TaskService())->cancel($taskId);
 
-        return $this->redirect(['tasks/view', 'id' => $id]);
+        return $this->redirect(['tasks/view', 'taskId' => $taskId]);
+    }
+
+    public function actionRefuse(int $taskId)
+    {
+        (new TaskService())->refuse($taskId);
+
+        return $this->redirect(['tasks/view', 'taskId' => $taskId]);
     }
 
     public function actionComplete()
@@ -110,15 +119,16 @@ class TasksController extends SecuredController
             if ($completeForm->validate()) {
                 (new TaskService())->complete($completeForm);
 
-                return $this->redirect(['tasks/view', 'id' => $completeForm->task_id]);
+                return $this->redirect(['tasks/view', 'taskId' => $completeForm->task_id]);
             }
         }
     }
 
     public function actionUserTasks()
     {
-        $filter = Yii::$app->request->get('filter');
+        $query = null;
         $userId = Yii::$app->user->id;
+        $filter = Yii::$app->request->get('filter');
 
         if ((new UserService())->isExecutor($userId)) {
             $query = (new TaskService())->getExecutorTasks($userId, $filter);
@@ -138,24 +148,16 @@ class TasksController extends SecuredController
         ]);
     }
 
-    public function actionRefuse(int $id)
-    {
-        (new TaskService())->refuse($id);
-
-        return $this->redirect(['tasks/view', 'id' => $id]);
-    }
-
-    // разбить на 2 метода
-    public function actionIndex(?string $category = null)
+    public function actionIndex()
     {
         $searchForm = new SearchForm();
+        $categories = (new CategoryService())->findAll();
 
         if (Yii::$app->request->isPost) {
             $searchForm->load(Yii::$app->request->post());
+        } elseif ($category = Yii::$app->request->get('category')) {
 
-        } elseif (isset($category)) {
-
-            if ($id = (new CategoryService())->getByInnerName($category)?->id) {
+            if ($id = (new CategoryService())->getId($category)) {
                 $searchForm->categories[] = $id;
             }
         }
@@ -163,12 +165,12 @@ class TasksController extends SecuredController
         $query = (new TaskService())->getAllQuery();
 
         if ($searchForm->validate()) {
-            $cityId = $this->user->city_id;
-            $query = (new TaskService())->getFilterQuery($searchForm, $cityId);
+            $query = (new TaskService())->getFilterQuery(
+                $searchForm,
+                $this->user->city_id
+            );
         }
 
-        $categories = (new CategoryService())->findAll();
-        
         $dataProvider = new ActiveDataProvider([
             'query' => $query,
             'pagination' => ['pageSize' => 5]
@@ -182,16 +184,16 @@ class TasksController extends SecuredController
         ]);
     }
 
-    public function actionView(int $id)
+    public function actionView(int $taskId)
     {
-        if (!$task = (new TaskService())->findOne($id)) {
+        if (!$task = (new TaskService())->findOne($taskId)) {
             throw new NotFoundHttpException();
         }
 
         $completeForm = new CompleteForm();
         $responseForm = new ResponseForm();
 
-        $availableAction = (new Task($id))->getAvailableAction();
+        $availableAction = (new Task($taskId))->getAvailableAction();
 
         return $this->render('view', [
             'task' => $task,

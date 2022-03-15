@@ -45,8 +45,6 @@ class UserService
                 $signupForm->name = "{$attributes['first_name']} {$attributes['last_name']}";
                 $signupForm->email = $attributes['email'];
                 $signupForm->city_id = (new CityService())->findByName($attributes['city']['title'])->id ?? 1;
-                $signupForm->password = $passwd = Yii::$app->security->generateRandomString();
-                $signupForm->password_repeat = $passwd;
                 $signupForm->is_executor = 1;
 
                 $transaction = Yii::$app->db->beginTransaction();
@@ -68,8 +66,11 @@ class UserService
      */
     public function create(SignupForm $model): ?User
     {
-        $hash = Yii::$app->getSecurity()->generatePasswordHash($model->password);
-        
+        $hash = null;
+        if (isset($model->password)) {
+            $hash = Yii::$app->getSecurity()->generatePasswordHash($model->password);
+        }
+
         $transaction = Yii::$app->db->beginTransaction();
         try {
             $user = new User();
@@ -126,8 +127,8 @@ class UserService
         $user = User::findOne(['id' => $userId, 'is_executor' => 1]);
 
         if (isset($user)) {
-            $user->is_busy = $this->isBusy($userId);
-            $user->place_in_rating = $this->getPlaceInRating($userId);
+            $user->isBusy = $this->isBusy($userId);
+            $user->placeInRating = $this->getPlaceInRating($userId);
             $user->showContacts = $this->showContacts($userId);
         }
 
@@ -138,7 +139,7 @@ class UserService
      * @param string $email
      * @return ?UserIdentity
      */
-    public function getUser(string $email): ?UserIdentity
+    public function getUserIdentity(string $email): ?UserIdentity
     {
         return UserIdentity::findOne(['email' => $email]);
     }
@@ -173,7 +174,38 @@ class UserService
      */
     public function login(string $email): void
     {
-        Yii::$app->user->login($this->getUser($email));
+        Yii::$app->user->login($this->getUserIdentity($email));
+    }
+
+    /**
+     * @return bool
+     */
+    public function passwordIsset(): bool
+    {
+        return boolval(User::findOne(Yii::$app->user->id)?->password);
+    }
+
+    /**
+     * @param int $userId;
+     */
+    public function updateCurrentRate(int $userId): void
+    {
+        $query = Review::find()
+            ->joinWith('task t')
+            ->where(['t.executor_id' => $userId]);
+        $overallRating = $query->sum('rating');
+        $reviewCount = $query->count();
+
+        $query = UserProfile::find()->where(['user_id' => $userId]);
+        $failedTaskCount = $query->one()->failed_task_count;
+
+        $devider = $reviewCount + $failedTaskCount;
+        $currentRate = $devider ? $overallRating / $devider : 0;
+
+        $user = User::findOne($userId);
+        $user->profile->current_rate = round($currentRate, 2);
+
+        $user->profile->save();
     }
 
     /**
@@ -277,7 +309,7 @@ class UserService
     private function isBusy(int $userId): bool
     {
         $condition = ['executor_id' => $userId, 'status_id' => Task2::STATUS_WORK_ID];
-        
+
         return Task::find()->where($condition)->exists();
     }
 
@@ -288,32 +320,15 @@ class UserService
     private function showContacts(int $userId): bool
     {
         $privateContacts = $this->findOne($userId)->profile->private_contacts;
-        $conditions = ['customer_id' => Yii::$app->user->id, 'executor_id' => $userId];
+
+        $conditions = [
+            'status_id' => Task2::STATUS_WORK_ID,
+            'customer_id' => Yii::$app->user->id,
+            'executor_id' => $userId
+        ];
+
         $isExecutor = Task::find()->where($conditions)->exists();
 
         return !$privateContacts || $isExecutor;
-    }
-
-    /**
-     * @param int $userId;
-     */
-    public function updateCurrentRate(int $userId): void
-    {
-        $query = Review::find()
-            ->joinWith('task t')
-            ->where(['t.executor_id' => $userId]);
-        $overall_rating = $query->sum('rating');
-        $review_count = $query->count();
-
-        $query = UserProfile::find()->where(['id' => $userId]);
-        $failed_task_count = $query->one()->failed_task_count;
-
-        $devider = $review_count + $failed_task_count;
-        $current_rate = $devider ? $overall_rating / $devider : 0;
-
-        $user = User::findOne($userId);
-        $user->profile->current_rate = round($current_rate, 2);
-
-        $user->profile->save();
     }
 }

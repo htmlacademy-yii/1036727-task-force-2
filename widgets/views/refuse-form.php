@@ -1,8 +1,8 @@
 <?php
 
 /** @var yii\web\View $this */
+/** @var int $taskId */
 
-use yii\helpers\Html;
 use yii\helpers\Url;
 
 ?>
@@ -18,9 +18,8 @@ use yii\helpers\Url;
     <button class="button__form-modal button" id="close-modal" type="button">Отмена</button>
     <a
         style="float: right; border: 1px solid transparent;"
-        href="<?= Url::to(['tasks/refuse', 'id' => Yii::$app->request->get('id')]) ?>"
+        href="<?= Url::to(['tasks/refuse', 'taskId' => $taskId]) ?>"
         class="button__form-modal refusal-button button"
     >Отказаться</a>
     <button class="form-modal-close" type="button">Закрыть</button>
-
 </section>

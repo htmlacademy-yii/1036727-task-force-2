@@ -8,12 +8,10 @@ use yii\helpers\Url;
 use anatolev\helpers\FormatHelper;
 use anatolev\helpers\TaskHelper;
 
-$model = isset($task) ? $task : $model;
-
 ?>
 <div class="task-card">
     <div class="header-task">
-        <?php $href = Url::to(['tasks/view', 'id' => $model->id]); ?>
+        <?php $href = Url::to(['tasks/view', 'taskId' => $model->id]); ?>
         <a href="<?= $href ?>" class="link link--block link--big"><?= Html::encode($model->name) ?></a>
 
         <?php if (isset($model->budget)): ?>

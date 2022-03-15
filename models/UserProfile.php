@@ -38,6 +38,7 @@ class UserProfile extends ActiveRecord
     public function rules()
     {
         return [
+            [['about'], 'trim'],
             [['user_id'], 'required'],
             [['about', 'avatar_path'], 'string', 'max' => 128],
             [['avatar_path'], 'unique'],

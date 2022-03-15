@@ -1,7 +1,6 @@
 <?php
 
 /** @var yii\web\View $this */
-/** @var app\models\City[] $cities */
 /** @var app\models\forms\SignupForm $model */
 
 use yii\authclient\widgets\AuthChoice;

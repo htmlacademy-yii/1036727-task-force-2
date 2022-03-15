@@ -17,11 +17,7 @@ class ProfileForm extends Model
     public $about;
     public $categories;
 
-    /**
-     * @param User $user
-     * @return void
-     */
-    public function loadCurrentValues(User $user): void
+    public function __construct(User $user)
     {
         $this->attributes = array_merge(
             $user->attributes,

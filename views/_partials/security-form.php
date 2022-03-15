@@ -20,7 +20,10 @@ use yii\widgets\ActiveForm;
 
     <?php endif; ?>
 
-    <?= $form->field($model, 'old_password')->passwordInput(); ?>
+    <?php if ($this->context->user?->password): ?>
+        <?= $form->field($model, 'old_password')->passwordInput(); ?>
+    <?php endif; ?>
+
     <?= $form->field($model, 'new_password')->passwordInput(); ?>
     <?= $form->field($model, 'new_password_repeat')->passwordInput(); ?>
 

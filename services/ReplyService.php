@@ -22,12 +22,12 @@ class ReplyService
     }
 
     /**
-     * @param int $reply_id
+     * @param int $replyId
      * @return int
      */
-    public function accept(int $reply_id): int
+    public function accept(int $replyId): int
     {
-        $reply = Reply::findOne($reply_id);
+        $reply = Reply::findOne($replyId);
         $task = (new TaskService())->findOne($reply->task_id);
 
         $task->executor_id = $reply->user_id;
@@ -38,12 +38,12 @@ class ReplyService
     }
 
     /**
-     * @param $reply_id
+     * @param $replyId
      * @return int
      */
-    public function refuse(int $reply_id): int
+    public function refuse(int $replyId): int
     {
-        $reply = Reply::findOne($reply_id);
+        $reply = Reply::findOne($replyId);
         $reply->denied = 1;
         $reply->save();
 
@@ -51,22 +51,22 @@ class ReplyService
     }
 
     /**
-     * @param int $reply_id
+     * @param int $replyId
      * @return ?Reply
      */
-    public function findOne(int $reply_id): ?Reply
+    public function findOne(int $replyId): ?Reply
     {
-        return Reply::findOne($reply_id);
+        return Reply::findOne($replyId);
     }
 
     /**
-     * @param int $task_id
-     * @param int $user_id
+     * @param int $taskId
+     * @param int $userId
      * @return bool
      */
-    public function exist(int $task_id, int $user_id): bool
+    public function exist(int $taskId, int $userId): bool
     {
-        $condition = ['task_id' => $task_id, 'user_id' => $user_id];
+        $condition = ['task_id' => $taskId, 'user_id' => $userId];
 
         return Reply::find()->where($condition)->exists();
     }

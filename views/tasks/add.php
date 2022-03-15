@@ -8,10 +8,11 @@ use yii\helpers\Html;
 use yii\helpers\Url;
 use yii\widgets\ActiveForm;
 use app\assets\AutoCompleteAsset;
+use app\assets\FileInputAsset;
 
 AutoCompleteAsset::register($this);
+FileInputAsset::register($this);
 
-$this->registerJsFile('/js/file-input.js');
 $this->title = 'Создать задание';
 $this->params['mainClass'] = ' main-content--center';
 

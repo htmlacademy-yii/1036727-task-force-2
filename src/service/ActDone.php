@@ -6,11 +6,10 @@ use Yii;
 use app\services\TaskService;
 use anatolev\service\Task;
 
-class ActDone extends TaskAction
+class ActDone implements TaskActionInterface
 {
     const NAME = 'Выполнено';
-    const INNER_NAME = 'act_done';
-    const FORM_TYPE = 'complete-form';
+    const INNER_NAME = 'act_complete';
 
     /**
      * {@inheritdoc}
@@ -34,9 +33,9 @@ class ActDone extends TaskAction
     public function checkUserRights(int $taskId, int $userId): bool
     {
         $service = new TaskService();
-        $taskStatus = $service->getStatus($taskId);
-        $isCustomer = $service->isTaskCustomer($taskId, $userId);
+        $statusId = $service->getStatusId($taskId);
+        $isTaskCustomer = $service->isTaskCustomer($taskId, $userId);
 
-        return $taskStatus === Task::STATUS_WORK && $isCustomer;
+        return $statusId === Task::STATUS_WORK_ID && $isTaskCustomer;
     }
 }

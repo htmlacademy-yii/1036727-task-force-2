@@ -3,15 +3,14 @@
 namespace anatolev\service;
 
 use Yii;
+use app\services\ReplyService;
 use app\services\TaskService;
 use app\services\UserService;
-use app\services\ReplyService;
 
-class ActRespond extends TaskAction
+class ActRespond implements TaskActionInterface
 {
     const NAME = 'Откликнуться';
     const INNER_NAME = 'act_respond';
-    const FORM_TYPE = 'respond-form';
 
     /**
      * {@inheritdoc}
@@ -34,10 +33,10 @@ class ActRespond extends TaskAction
      */
     public function checkUserRights(int $taskId, int $userId): bool
     {
-        $taskStatus = (new TaskService())->getStatus($taskId);
-        // $isExecutor = (new UserService())->isExecutor($userId);
+        $statusId = (new TaskService())->getStatusId($taskId);
+        $isExecutor = (new UserService())->isExecutor($userId);
         $replyExist = (new ReplyService())->exist($taskId, $userId);
 
-        return !$replyExist && $taskStatus === Task::STATUS_NEW;
+        return !$replyExist && $statusId === Task::STATUS_NEW_ID && $isExecutor;
     }
 }

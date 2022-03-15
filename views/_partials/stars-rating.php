@@ -3,7 +3,12 @@
 /** @var yii\web\View $this */
 /** @var int $rating */
 
+$maxRating = Yii::$app->params['maxUserRating'];
+
 ?>
-<?php for ($i = 1; $i <= Yii::$app->params['maxUserRating']; $i++): ?>
-    <span class="<?= $i <= intval($rating) ? 'fill-star' : '' ?>">&nbsp;</span>
+<?php for ($i = 1; $i <= $maxRating; $i++): ?>
+    <?php $className = $i <= intval($rating) ? 'fill-star' : ''; ?>
+
+    <span class="<?= $className ?>">&nbsp;</span>
+
 <?php endfor; ?>

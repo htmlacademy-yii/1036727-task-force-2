@@ -81,11 +81,8 @@ class UserController extends Controller
             }
         }
 
-        $cities = (new CityService())->findAll();
-
         return $this->render('signup', [
             'model' => $signupForm,
-            'cities' => $cities
         ]);
     }
 

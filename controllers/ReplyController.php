@@ -22,14 +22,14 @@ class ReplyController extends Controller
                     [
                         'allow' => true,
                         'actions' => ['accept'],
-                        'roles' => ['acceptOwnReply'],
-                        'roleParams' => ['id' => Yii::$app->request->get('id', 0)],
+                        'roles' => ['changeOwnReplyStatus'],
+                        'roleParams' => ['replyId' => Yii::$app->request->get('replyId', 0)],
                     ],
                     [
                         'allow' => true,
                         'actions' => ['refuse'],
-                        'roles' => ['refuseOwnReply'],
-                        'roleParams' => ['id' => Yii::$app->request->get('id', 0)],
+                        'roles' => ['changeOwnReplyStatus'],
+                        'roleParams' => ['replyId' => Yii::$app->request->get('replyId', 0)],
                     ],
                     [
                         'allow' => true,
@@ -54,22 +54,22 @@ class ReplyController extends Controller
             if ($responseForm->validate()) {
                 $taskId = (new ReplyService())->create($responseForm);
 
-                return $this->redirect(['tasks/view', 'id' => $taskId]);
+                return $this->redirect(['tasks/view', 'taskId' => $taskId]);
             }
         }
     }
 
-    public function actionAccept(int $id)
+    public function actionAccept(int $replyId)
     {
-        $taskId = (new ReplyService())->accept($id);
+        $taskId = (new ReplyService())->accept($replyId);
 
-        return $this->redirect(['tasks/view', 'id' => $taskId]);
+        return $this->redirect(['tasks/view', 'taskId' => $taskId]);
     }
 
-    public function actionRefuse(int $id)
+    public function actionRefuse(int $replyId)
     {
-        $taskId = (new ReplyService())->refuse($id);
+        $taskId = (new ReplyService())->refuse($replyId);
 
-        return $this->redirect(['tasks/view', 'id' => $taskId]);
+        return $this->redirect(['tasks/view', 'taskId' => $taskId]);
     }
 }

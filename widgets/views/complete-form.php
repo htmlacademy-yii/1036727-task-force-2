@@ -2,6 +2,7 @@
 
 /** @var yii\web\View $this */
 /** @var app\models\forms\CompleteForm $model */
+/** @var int $taskId */
 
 use yii\helpers\Html;
 use yii\helpers\Url;
@@ -18,15 +19,15 @@ use yii\widgets\ActiveForm;
 
         <?= $form->field($model, 'comment', ['labelOptions' => ['class' => 'form-modal-description']])
             ->textarea(['class' => 'input textarea', 'rows' => '4', 'placeholder' => 'Place your text']) ?>
-        <?= $form->field($model, 'task_id', ['template' => '{input}'])->hiddenInput(['value' => Yii::$app->request->get('id')]) ?>
+        <?= $form->field($model, 'task_id', ['template' => '{input}'])->hiddenInput(['value' => $taskId]) ?>
 
         <?= Html::tag('p', 'Оценка', ['class' => 'form-modal-description']) ?>
         <div class="feedback-card__top--name completion-form-star">
-            <span class="star-disabled" data-rating="1"></span>
-            <span class="star-disabled" data-rating="2"></span>
-            <span class="star-disabled" data-rating="3"></span>
-            <span class="star-disabled" data-rating="4"></span>
-            <span class="star-disabled" data-rating="5"></span>
+
+            <?php for ($i = 1; $i <= Yii::$app->params['maxUserRating']; $i++): ?>
+                <span class="star-disabled" data-rating="<?= $i ?>"></span>
+            <?php endfor; ?>
+
         </div>
         <p></p>
 

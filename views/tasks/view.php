@@ -9,16 +9,11 @@
 use yii\helpers\Html;
 use yii\helpers\Url;
 use app\assets\ModalFormAsset;
-use app\components\GeocoderClient;
 use app\widgets\ModalForm;
 use anatolev\helpers\FileHelper;
 use anatolev\helpers\TaskHelper;
 
 ModalFormAsset::register($this);
-
-$apiKey = Yii::$app->params['geocoderApiKey'];
-$this->registerJsFile("https://api-maps.yandex.ru/2.1/?apikey={$apiKey}&lang=ru_RU");
-$this->registerJsFile('/js/yandex-map.js');
 
 $this->title = Html::encode($task->name);
 
@@ -38,7 +33,7 @@ $this->title = Html::encode($task->name);
         <a
             href="#"
             class="button button--blue open-modal"
-            data-for="<?= Html::encode($availableAction::FORM_TYPE) ?>"
+            data-for="<?= explode('_', $availableAction->getInnerName())[1] ?>-form"
         ><?= Html::encode($availableAction->getName()) ?></a>
     <?php endif; ?>
 
@@ -59,11 +54,11 @@ $this->title = Html::encode($task->name);
     <?php endif; ?>
 
     <?php if ($replies = TaskHelper::getReplies($task)): ?>
-        <h4 class="head-regular"><?= TaskHelper::getRepliesHeader($task, count($replies)) ?></h4>
+        <h4 class="head-regular"><?= TaskHelper::getRepliesDesc($task, count($replies)) ?></h4>
 
         <?php foreach ($replies as $reply): ?>
 
-            <?= $this->render('_reply', ['reply' => $reply, 'isActualTask' => TaskHelper::isActual($task)]) ?>
+            <?= $this->render('_reply', ['reply' => $reply, 'isExpiredTask' => TaskHelper::isExpired($task)]) ?>
 
         <?php endforeach; ?>
 
@@ -116,9 +111,9 @@ $this->title = Html::encode($task->name);
 
 </div>
 
-<?= ModalForm::widget(['formType' => 'cancel']) ?>
-<?= ModalForm::widget(['formType' => 'refuse']) ?>
-<?= ModalForm::widget(['formType' => 'complete', 'model' => $completeForm]) ?>
-<?= ModalForm::widget(['formType' => 'response', 'model' => $responseForm]) ?>
+<?= ModalForm::widget(['formType' => 'cancel', 'taskId' => $task->id]) ?>
+<?= ModalForm::widget(['formType' => 'refuse', 'taskId' => $task->id]) ?>
+<?= ModalForm::widget(['formType' => 'complete', 'taskId' => $task->id, 'model' => $completeForm]) ?>
+<?= ModalForm::widget(['formType' => 'response', 'taskId' => $task->id, 'model' => $responseForm]) ?>
 
 <div style="display: none;" class="overlay"></div>

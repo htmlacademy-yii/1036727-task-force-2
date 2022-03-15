@@ -44,7 +44,7 @@ class UserHelper extends Helper
      */
     public static function getBusyStatus(User $user): string
     {
-        return $user->is_busy ? 'Занят' : 'Открыт для новых заказов';
+        return $user->isBusy ? 'Занят' : 'Открыт для новых заказов';
     }
 
     /**
@@ -89,6 +89,6 @@ class UserHelper extends Helper
      */
     public static function getRegisterDate(User $user): string
     {
-        return date('j F, H:i', strtotime($user->dt_add));
+        return date('j F', strtotime($user->dt_add));
     }
 }

@@ -61,7 +61,7 @@ $user = $this->context->user;
 
                     <?= Menu::widget([
                         'items' => [
-                            ['label' => 'Настройки', 'url' => ['#']],
+                            ['label' => 'Настройки', 'url' => ['profile/settings']],
                             ['label' => 'Связаться с нами', 'url' => ['#']],
                             ['label' => 'Выход из системы', 'url' => ['user/logout']]
                         ],

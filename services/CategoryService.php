@@ -16,10 +16,10 @@ class CategoryService
 
     /**
      * @param string $innerName
-     * @return ?Category
+     * @return ?int
      */
-    public function getByInnerName(string $innerName): ?Category
+    public function getId(string $innerName): ?int
     {
-        return Category::findOne(['inner_name' => $innerName]);
+        return Category::findOne(['inner_name' => $innerName])?->id;
     }
 }

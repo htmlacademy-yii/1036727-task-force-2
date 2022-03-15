@@ -9,11 +9,6 @@ use app\models\forms\LoginForm;
 
 LandingAsset::register($this);
 
-$this->registerMetaTag([
-    'name' => 'description',
-    'content' => Yii::$app->params['description']
-]);
-
 ?>
 <?php $this->beginPage() ?>
 <!DOCTYPE html>

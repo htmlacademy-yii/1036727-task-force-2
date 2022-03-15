@@ -6,11 +6,10 @@ use Yii;
 use app\services\TaskService;
 use anatolev\service\Task;
 
-class ActRefuse extends TaskAction
+class ActRefuse implements TaskActionInterface
 {
     const NAME = 'Отказаться';
     const INNER_NAME = 'act_refuse';
-    const FORM_TYPE = 'refuse-form';
 
     /**
      * {@inheritdoc}
@@ -34,9 +33,9 @@ class ActRefuse extends TaskAction
     public function checkUserRights(int $taskId, int $userId): bool
     {
         $service = new TaskService();
-        $taskStatus = $service->getStatus($taskId);
-        $isExecutor = $service->isTaskExecutor($taskId, $userId);
+        $statusId = $service->getStatusId($taskId);
+        $isTaskExecutor = $service->isTaskExecutor($taskId, $userId);
 
-        return $taskStatus === Task::STATUS_WORK && $isExecutor;
+        return $statusId === Task::STATUS_WORK_ID && $isTaskExecutor;
     }
 }
