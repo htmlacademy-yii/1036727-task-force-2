@@ -37,9 +37,9 @@ class Task
 
     /**
      * @throws StatusNotExistException
-     * @return ?TaskAction
+     * @return ?TaskActionInterface
      */
-    public function getAvailableAction(): ?TaskAction
+    public function getAvailableAction(): ?TaskActionInterface
     {
         $statusId = (new TaskService())->getStatusId($this->taskId);
 
@@ -58,24 +58,24 @@ class Task
             ]
         ];
 
-        $availableActions = [];
+        $availableAction = null;
 
         foreach ($array[$statusId] ?? [] as $action) {
 
-            if ($action->checkUserRights($this->task_id, Yii::$app->user->id)) {
-                $availableActions[] = $action;
+            if ($action->checkUserRights($this->taskId, Yii::$app->user->id)) {
+                $availableAction = $action;
             }
         }
 
-        return $availableActions[0] ?? null;
+        return $availableAction;
     }
 
     /**
      * @param string $action
      * @throws SourceFileException
-     * @return TaskAction
+     * @return TaskActionInterface
      */
-    private function getAction(string $action): TaskAction
+    private function getAction(string $action): TaskActionInterface
     {
         if (!class_exists($action)) {
             throw new SourceFileException("Класс действия не найден");

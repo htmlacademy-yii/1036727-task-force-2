@@ -6,7 +6,7 @@ use Yii;
 use app\services\TaskService;
 use anatolev\service\Task;
 
-class ActRefuse extends TaskAction
+class ActRefuse implements TaskActionInterface
 {
     const NAME = 'Отказаться';
     const INNER_NAME = 'act_refuse';

@@ -6,7 +6,7 @@ use Yii;
 use app\services\TaskService;
 use anatolev\service\Task;
 
-class ActCancel extends TaskAction
+class ActCancel implements TaskActionInterface
 {
     const NAME = 'Отменить';
     const INNER_NAME = 'act_cancel';

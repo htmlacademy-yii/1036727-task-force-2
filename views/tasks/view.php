@@ -111,9 +111,9 @@ $this->title = Html::encode($task->name);
 
 </div>
 
-<?= ModalForm::widget(['formType' => 'cancel']) ?>
-<?= ModalForm::widget(['formType' => 'refuse']) ?>
-<?= ModalForm::widget(['formType' => 'complete', 'model' => $completeForm]) ?>
-<?= ModalForm::widget(['formType' => 'response', 'model' => $responseForm]) ?>
+<?= ModalForm::widget(['formType' => 'cancel', 'taskId' => $task->id]) ?>
+<?= ModalForm::widget(['formType' => 'refuse', 'taskId' => $task->id]) ?>
+<?= ModalForm::widget(['formType' => 'complete', 'taskId' => $task->id, 'model' => $completeForm]) ?>
+<?= ModalForm::widget(['formType' => 'response', 'taskId' => $task->id, 'model' => $responseForm]) ?>
 
 <div style="display: none;" class="overlay"></div>

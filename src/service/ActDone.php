@@ -6,10 +6,9 @@ use Yii;
 use app\services\TaskService;
 use anatolev\service\Task;
 
-class ActDone extends TaskAction
+class ActDone implements TaskActionInterface
 {
     const NAME = 'Выполнено';
-    // const INNER_NAME = 'act_done';
     const INNER_NAME = 'act_complete';
 
     /**

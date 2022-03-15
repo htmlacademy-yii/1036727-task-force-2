@@ -3,11 +3,11 @@
 namespace anatolev\service;
 
 use Yii;
+use app\services\ReplyService;
 use app\services\TaskService;
 use app\services\UserService;
-use app\services\ReplyService;
 
-class ActRespond extends TaskAction
+class ActRespond implements TaskActionInterface
 {
     const NAME = 'Откликнуться';
     const INNER_NAME = 'act_respond';
@@ -37,6 +37,6 @@ class ActRespond extends TaskAction
         $isExecutor = (new UserService())->isExecutor($userId);
         $replyExist = (new ReplyService())->exist($taskId, $userId);
 
-        return !$replyExist && $statusId === Task::STATUS_NEW_ID;
+        return !$replyExist && $statusId === Task::STATUS_NEW_ID && $isExecutor;
     }
 }

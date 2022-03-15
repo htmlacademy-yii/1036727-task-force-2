@@ -23,13 +23,13 @@ class ReplyController extends Controller
                         'allow' => true,
                         'actions' => ['accept'],
                         'roles' => ['changeOwnReplyStatus'],
-                        'roleParams' => ['replyId' => Yii::$app->request->get('id', 0)],
+                        'roleParams' => ['replyId' => Yii::$app->request->get('replyId', 0)],
                     ],
                     [
                         'allow' => true,
                         'actions' => ['refuse'],
                         'roles' => ['changeOwnReplyStatus'],
-                        'roleParams' => ['replyId' => Yii::$app->request->get('id', 0)],
+                        'roleParams' => ['replyId' => Yii::$app->request->get('replyId', 0)],
                     ],
                     [
                         'allow' => true,
@@ -54,7 +54,7 @@ class ReplyController extends Controller
             if ($responseForm->validate()) {
                 $taskId = (new ReplyService())->create($responseForm);
 
-                return $this->redirect(['tasks/view', 'id' => $taskId]);
+                return $this->redirect(['tasks/view', 'taskId' => $taskId]);
             }
         }
     }
@@ -63,13 +63,13 @@ class ReplyController extends Controller
     {
         $taskId = (new ReplyService())->accept($replyId);
 
-        return $this->redirect(['tasks/view', 'id' => $taskId]);
+        return $this->redirect(['tasks/view', 'taskId' => $taskId]);
     }
 
     public function actionRefuse(int $replyId)
     {
         $taskId = (new ReplyService())->refuse($replyId);
 
-        return $this->redirect(['tasks/view', 'id' => $taskId]);
+        return $this->redirect(['tasks/view', 'taskId' => $taskId]);
     }
 }
