@@ -33,10 +33,10 @@ class ActRespond extends TaskAction
      */
     public function checkUserRights(int $taskId, int $userId): bool
     {
-        $taskStatus = (new TaskService())->getStatus($taskId);
-        // $isExecutor = (new UserService())->isExecutor($userId);
+        $statusId = (new TaskService())->getStatusId($taskId);
+        $isExecutor = (new UserService())->isExecutor($userId);
         $replyExist = (new ReplyService())->exist($taskId, $userId);
 
-        return !$replyExist && $taskStatus === Task::STATUS_NEW;
+        return !$replyExist && $statusId === Task::STATUS_NEW_ID;
     }
 }

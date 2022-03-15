@@ -33,9 +33,9 @@ class ActRefuse extends TaskAction
     public function checkUserRights(int $taskId, int $userId): bool
     {
         $service = new TaskService();
-        $taskStatus = $service->getStatus($taskId);
-        $isExecutor = $service->isTaskExecutor($taskId, $userId);
+        $statusId = $service->getStatusId($taskId);
+        $isTaskExecutor = $service->isTaskExecutor($taskId, $userId);
 
-        return $taskStatus === Task::STATUS_WORK && $isExecutor;
+        return $statusId === Task::STATUS_WORK_ID && $isTaskExecutor;
     }
 }

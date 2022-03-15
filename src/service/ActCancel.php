@@ -33,9 +33,9 @@ class ActCancel extends TaskAction
     public function checkUserRights(int $taskId, int $userId): bool
     {
         $service = new TaskService();
-        $taskStatus = $service->getStatus($taskId);
-        $isCustomer = $service->isTaskCustomer($taskId, $userId);
+        $statusId = $service->getStatusId($taskId);
+        $isTaskCustomer = $service->isTaskCustomer($taskId, $userId);
 
-        return $taskStatus === Task::STATUS_NEW && $isCustomer;
+        return $statusId === Task::STATUS_NEW_ID && $isTaskCustomer;
     }
 }

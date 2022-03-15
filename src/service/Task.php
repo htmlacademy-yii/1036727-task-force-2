@@ -5,17 +5,10 @@ namespace anatolev\service;
 use Yii;
 use anatolev\exception\SourceFileException;
 use anatolev\exception\StatusNotExistException;
-use anatolev\exception\ActionNotExistException;
 use app\services\TaskService;
 
 class Task
 {
-    const STATUS_NEW = 'new';
-    const STATUS_CANCEL = 'cancel';
-    const STATUS_WORK = 'work';
-    const STATUS_DONE = 'done';
-    const STATUS_FAILED = 'failed';
-
     const STATUS_NEW_ID = 1;
     const STATUS_CANCEL_ID = 2;
     const STATUS_WORK_ID = 3;
@@ -23,10 +16,9 @@ class Task
     const STATUS_FAILED_ID = 5;
 
     private array $actions = [];
-    // private string $status;
 
     public function __construct(
-        private int $task_id
+        private int $taskId
     ) {}
 
     /**
@@ -35,50 +27,13 @@ class Task
     public function getStatusMap(): array
     {
         return [
-            self::STATUS_NEW => 'Новое',
-            self::STATUS_CANCEL => 'Отменено',
-            self::STATUS_WORK => 'В работе',
-            self::STATUS_DONE => 'Выполнено',
-            self::STATUS_FAILED => 'Провалено'
+            self::STATUS_NEW_ID,
+            self::STATUS_CANCEL_ID,
+            self::STATUS_WORK_ID,
+            self::STATUS_DONE_ID,
+            self::STATUS_FAILED_ID
         ];
     }
-
-    /**
-     * @return array
-     */
-    // public function getActionMap(): array
-    // {
-    //     $actions = [ActCancel::class, ActRespond::class, ActDone::class, ActRefuse::class];
-    //     $action_map = [];
-
-    //     foreach ($actions as $action_key) {
-    //         $action = $this->getAction($action_key);
-    //         $action_map[$action->getInnerName()] = $action->getName();
-    //     }
-
-    //     return $action_map;
-    // }
-
-    /**
-     * @param string $action
-     * @throws ActionNotExistException
-     * @return string
-     */
-    // public function getNextStatus(string $action): string
-    // {
-    //     if (!array_key_exists($action, $this->getActionMap())) {
-    //         throw new ActionNotExistException("Действие не существует");
-    //     }
-
-    //     $array = [
-    //         $this->getAction(ActCancel::class)->getInnerName() => self::STATUS_CANCEL,
-    //         $this->getAction(ActRespond::class)->getInnerName() => self::STATUS_WORK,
-    //         $this->getAction(ActDone::class)->getInnerName() => self::STATUS_DONE,
-    //         $this->getAction(ActRefuse::class)->getInnerName() => self::STATUS_FAILED
-    //     ];
-
-    //     return $array[$action] ?? '';
-    // }
 
     /**
      * @throws StatusNotExistException
@@ -86,33 +41,33 @@ class Task
      */
     public function getAvailableAction(): ?TaskAction
     {
-        $this->status = (new TaskService())->getStatus($this->task_id);
+        $statusId = (new TaskService())->getStatusId($this->taskId);
 
-        if (!array_key_exists($this->status, $this->getStatusMap())) {
+        if (!in_array($statusId, $this->getStatusMap())) {
             throw new StatusNotExistException("Статус не существует");
         }
 
         $array = [
-            self::STATUS_NEW => [
+            self::STATUS_NEW_ID => [
                 $this->getAction(ActCancel::class),
                 $this->getAction(ActRespond::class)
             ],
-            self::STATUS_WORK => [
+            self::STATUS_WORK_ID => [
                 $this->getAction(ActDone::class),
                 $this->getAction(ActRefuse::class)
             ]
         ];
 
-        $available_actions = [];
+        $availableActions = [];
 
-        foreach ($array[$this->status] ?? [] as $action) {
+        foreach ($array[$statusId] ?? [] as $action) {
 
             if ($action->checkUserRights($this->task_id, Yii::$app->user->id)) {
-                $available_actions[] = $action;
+                $availableActions[] = $action;
             }
         }
 
-        return $available_actions[0] ?? null;
+        return $availableActions[0] ?? null;
     }
 
     /**

@@ -309,7 +309,7 @@ class UserService
     private function isBusy(int $userId): bool
     {
         $condition = ['executor_id' => $userId, 'status_id' => Task2::STATUS_WORK_ID];
-        
+
         return Task::find()->where($condition)->exists();
     }
 

@@ -91,9 +91,7 @@ class Task extends ActiveRecord
 
     public function getDone(): bool
     {
-        $inner_name = $this->getStatus()->one()->inner_name;
-
-        return $inner_name === \anatolev\service\Task::STATUS_DONE;
+        return $this->status_id === \anatolev\service\Task::STATUS_DONE_ID;
     }
 
     /**

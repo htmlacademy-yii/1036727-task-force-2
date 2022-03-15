@@ -34,9 +34,9 @@ class ActDone extends TaskAction
     public function checkUserRights(int $taskId, int $userId): bool
     {
         $service = new TaskService();
-        $taskStatus = $service->getStatus($taskId);
-        $isCustomer = $service->isTaskCustomer($taskId, $userId);
+        $statusId = $service->getStatusId($taskId);
+        $isTaskCustomer = $service->isTaskCustomer($taskId, $userId);
 
-        return $taskStatus === Task::STATUS_WORK && $isCustomer;
+        return $statusId === Task::STATUS_WORK_ID && $isTaskCustomer;
     }
 }

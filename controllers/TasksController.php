@@ -45,7 +45,7 @@ class TasksController extends SecuredController
                         'allow' => true,
                         'actions' => ['cancel'],
                         'roles' => ['cancelOwnTask'],
-                        'roleParams' => ['taskId' => Yii::$app->request->get('id', 0)]
+                        'roleParams' => ['taskId' => Yii::$app->request->get('taskId', 0)]
                     ],
                     [
                         'allow' => true,
@@ -59,7 +59,7 @@ class TasksController extends SecuredController
                         'allow' => true,
                         'actions' => ['refuse'],
                         'roles' => ['refuseOwnTask'],
-                        'roleParams' => ['taskId' => Yii::$app->request->get('id', 0)]
+                        'roleParams' => ['taskId' => Yii::$app->request->get('taskId', 0)]
                     ],
                 ]
             ]
@@ -83,7 +83,7 @@ class TasksController extends SecuredController
             if ($addTaskForm->validate()) {
                 $taskId = (new TaskService())->create($addTaskForm);
 
-                return $this->redirect(['tasks/view', 'id' => $taskId]);
+                return $this->redirect(['tasks/view', 'taskId' => $taskId]);
             }
         }
 
@@ -99,14 +99,14 @@ class TasksController extends SecuredController
     {
         (new TaskService())->cancel($taskId);
 
-        return $this->redirect(['tasks/view', 'id' => $taskId]);
+        return $this->redirect(['tasks/view', 'taskId' => $taskId]);
     }
 
     public function actionRefuse(int $taskId)
     {
         (new TaskService())->refuse($taskId);
 
-        return $this->redirect(['tasks/view', 'id' => $taskId]);
+        return $this->redirect(['tasks/view', 'taskId' => $taskId]);
     }
 
     public function actionComplete()
@@ -119,7 +119,7 @@ class TasksController extends SecuredController
             if ($completeForm->validate()) {
                 (new TaskService())->complete($completeForm);
 
-                return $this->redirect(['tasks/view', 'id' => $completeForm->task_id]);
+                return $this->redirect(['tasks/view', 'taskId' => $completeForm->task_id]);
             }
         }
     }

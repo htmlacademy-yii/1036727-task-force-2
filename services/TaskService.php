@@ -23,10 +23,10 @@ class TaskService
     public function canChangeReplyStatus(int $taskId, int $userId): bool
     {
         $isExpired = $this->isExpired($taskId);
-        $taskStatus = $this->getStatus($taskId);
+        $taskStatus = $this->getStatusId($taskId);
         $isCustomer = $this->isTaskCustomer($taskId, $userId);
 
-        return !$isExpired && $taskStatus === Task2::STATUS_NEW && $isCustomer;
+        return !$isExpired && $taskStatus === Task2::STATUS_NEW_ID && $isCustomer;
     }
 
     /**
@@ -234,11 +234,11 @@ class TaskService
 
     /**
      * @param int $taskId
-     * @return ?string
+     * @return ?int
      */
-    public function getStatus(int $taskId): ?string
+    public function getStatusId(int $taskId): ?int
     {
-        return Task::findOne($taskId)?->status->inner_name;
+        return Task::findOne($taskId)?->status_id;
     }
 
     /**
