@@ -148,17 +148,16 @@ class TasksController extends SecuredController
         ]);
     }
 
-    // разбить на 2 метода
-    public function actionIndex(?string $category = null)
+    public function actionIndex()
     {
         $searchForm = new SearchForm();
+        $categories = (new CategoryService())->findAll();
 
         if (Yii::$app->request->isPost) {
             $searchForm->load(Yii::$app->request->post());
+        } elseif ($category = Yii::$app->request->get('category')) {
 
-        } elseif (isset($category)) {
-
-            if ($id = (new CategoryService())->getByInnerName($category)?->id) {
+            if ($id = (new CategoryService())->getId($category)) {
                 $searchForm->categories[] = $id;
             }
         }
@@ -166,12 +165,12 @@ class TasksController extends SecuredController
         $query = (new TaskService())->getAllQuery();
 
         if ($searchForm->validate()) {
-            $cityId = $this->user->city_id;
-            $query = (new TaskService())->getFilterQuery($searchForm, $cityId);
+            $query = (new TaskService())->getFilterQuery(
+                $searchForm,
+                $this->user->city_id
+            );
         }
 
-        $categories = (new CategoryService())->findAll();
-        
         $dataProvider = new ActiveDataProvider([
             'query' => $query,
             'pagination' => ['pageSize' => 5]
