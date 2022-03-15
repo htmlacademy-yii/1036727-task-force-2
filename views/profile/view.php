@@ -56,7 +56,6 @@ $this->title = Html::encode($user->name);
         <div class="bio">
             <p class="head-info">Био</p>
             <p class="bio-info">
-                <!-- <span class="country-info">Россия</span>, -->
                 <span class="town-info"><?= UserHelper::city($user) ?></span>
 
                 <?php if (isset($user->profile->birthday)): ?>

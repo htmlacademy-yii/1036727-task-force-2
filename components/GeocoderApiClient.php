@@ -46,23 +46,28 @@ class GeocoderApiClient extends Component
             }
 
             $featureMembers = $responseData
-                ->response
-                ->GeoObjectCollection
-                ->featureMember;
+                ?->response
+                ?->GeoObjectCollection
+                ?->featureMember;
 
             $result = [];
 
-            foreach ($featureMembers as $i => $featureMember) {
-                $geoObject = $featureMember->GeoObject;
-                $geocoderMetaData = $geoObject->metaDataProperty->GeocoderMetaData;
-                $components = $geocoderMetaData->Address->Components;
-                $locality = array_values(array_filter($components, fn($city) => $city->kind === 'locality'))[0] ?? null;
+            foreach ($featureMembers ?? [] as $i => $featureMember) {
+                $geoObject = $featureMember?->GeoObject;
+                $geocoderMetaData = $geoObject?->metaDataProperty?->GeocoderMetaData;
+                $components = $geocoderMetaData?->Address?->Components ?? [];
 
-                $result[$i] = [
-                    'pos' => explode(' ', $geoObject->Point->pos),
-                    'text' => $geocoderMetaData->text,
-                    'city' => $locality?->name
-                ];
+                $pos = !$geoObject?->Point?->pos ?: explode(' ', $geoObject->Point->pos);
+                $text = $geocoderMetaData?->text;
+                $city = array_values(array_filter($components, fn($city) => $city?->kind === 'locality'))[0]->name ?? null;
+
+                if (isset($pos, $text, $city)) {
+                    $result[$i] = [
+                        'pos' => $pos,
+                        'text' => $text,
+                        'city' => $city
+                    ];
+                }
             }
         } catch (RequestException $ex) {
             $result = [];
