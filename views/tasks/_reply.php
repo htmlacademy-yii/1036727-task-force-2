@@ -68,12 +68,12 @@ use anatolev\service\Task;
     ): ?>
         <div class="button-popup">
             <a
-                href="<?= Url::to(['reply/accept', 'id' => $reply->id]) ?>"
+                href="<?= Url::to(['reply/accept', 'replyId' => $reply->id]) ?>"
                 class="button button--blue button--small"
             >Принять</a>
 
             <a
-                href="<?= Url::to(['reply/refuse', 'id' => $reply->id]) ?>"
+                href="<?= Url::to(['reply/refuse', 'replyId' => $reply->id]) ?>"
                 class="button button--orange button--small"
             >Отказать</a>
         </div>

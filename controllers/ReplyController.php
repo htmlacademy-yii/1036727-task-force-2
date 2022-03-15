@@ -59,16 +59,16 @@ class ReplyController extends Controller
         }
     }
 
-    public function actionAccept(int $id)
+    public function actionAccept(int $replyId)
     {
-        $taskId = (new ReplyService())->accept(replyId: $id);
+        $taskId = (new ReplyService())->accept($replyId);
 
         return $this->redirect(['tasks/view', 'id' => $taskId]);
     }
 
-    public function actionRefuse(int $id)
+    public function actionRefuse(int $replyId)
     {
-        $taskId = (new ReplyService())->refuse(replyId: $id);
+        $taskId = (new ReplyService())->refuse($replyId);
 
         return $this->redirect(['tasks/view', 'id' => $taskId]);
     }

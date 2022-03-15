@@ -95,18 +95,18 @@ class TasksController extends SecuredController
         ]);
     }
 
-    public function actionCancel(int $id)
+    public function actionCancel(int $taskId)
     {
-        (new TaskService())->cancel(taskId: $id);
+        (new TaskService())->cancel($taskId);
 
-        return $this->redirect(['tasks/view', 'id' => $id]);
+        return $this->redirect(['tasks/view', 'id' => $taskId]);
     }
 
-    public function actionRefuse(int $id)
+    public function actionRefuse(int $taskId)
     {
-        (new TaskService())->refuse(taskId: $id);
+        (new TaskService())->refuse($taskId);
 
-        return $this->redirect(['tasks/view', 'id' => $id]);
+        return $this->redirect(['tasks/view', 'id' => $taskId]);
     }
 
     public function actionComplete()
@@ -185,16 +185,16 @@ class TasksController extends SecuredController
         ]);
     }
 
-    public function actionView(int $id)
+    public function actionView(int $taskId)
     {
-        if (!$task = (new TaskService())->findOne($id)) {
+        if (!$task = (new TaskService())->findOne($taskId)) {
             throw new NotFoundHttpException();
         }
 
         $completeForm = new CompleteForm();
         $responseForm = new ResponseForm();
 
-        $availableAction = (new Task($id))->getAvailableAction();
+        $availableAction = (new Task($taskId))->getAvailableAction();
 
         return $this->render('view', [
             'task' => $task,

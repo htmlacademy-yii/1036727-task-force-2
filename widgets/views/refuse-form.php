@@ -18,7 +18,7 @@ use yii\helpers\Url;
     <button class="button__form-modal button" id="close-modal" type="button">Отмена</button>
     <a
         style="float: right; border: 1px solid transparent;"
-        href="<?= Url::to(['tasks/refuse', 'id' => Yii::$app->request->get('id')]) ?>"
+        href="<?= Url::to(['tasks/refuse', 'taskId' => Yii::$app->request->get('taskId')]) ?>"
         class="button__form-modal refusal-button button"
     >Отказаться</a>
     <button class="form-modal-close" type="button">Закрыть</button>

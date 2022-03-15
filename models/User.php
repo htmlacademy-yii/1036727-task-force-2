@@ -44,7 +44,7 @@ class User extends ActiveRecord
     public function rules()
     {
         return [
-            [['email', 'name'], 'trim'],
+            [['email', 'name', 'password'], 'trim'],
             [['email', 'name', 'city_id'], 'required'],
             [['email'], 'string', 'max' => 128],
             [['email'], 'email'],
