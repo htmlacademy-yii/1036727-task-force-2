@@ -9,7 +9,6 @@ use yii\web\NotFoundHttpException;
 use yii\web\Response;
 use yii\web\UploadedFile;
 use yii\widgets\ActiveForm;
-
 use app\models\forms\AddTaskForm;
 use app\models\forms\SearchForm;
 use app\models\forms\CompleteForm;
@@ -17,7 +16,6 @@ use app\models\forms\ResponseForm;
 use app\services\CategoryService;
 use app\services\TaskService;
 use app\services\UserService;
-
 use anatolev\service\ActCancel;
 use anatolev\service\ActDone;
 use anatolev\service\ActRefuse;
@@ -156,7 +154,6 @@ class TasksController extends SecuredController
         if (Yii::$app->request->isPost) {
             $searchForm->load(Yii::$app->request->post());
         } elseif ($category = Yii::$app->request->get('category')) {
-
             if ($id = (new CategoryService())->getId($category)) {
                 $searchForm->categories[] = $id;
             }

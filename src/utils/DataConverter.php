@@ -13,12 +13,12 @@ class DataConverter
 
     public function __construct(
         private string $file_path
-    ) {}
+    ) {
+    }
 
     public function convert(): self
     {
         if (file_exists($this->file_path)) {
-
             try {
                 $this->input_file = new \SplFileObject($this->file_path);
             } catch (RuntimeException $ex) {
@@ -42,7 +42,6 @@ class DataConverter
         $result = [];
 
         foreach ($this->import_data ?? [] as $line) {
-
             foreach ($this->import_columns as $i => $column) {
                 $values[$column] = $line[$i] ?: null;
             }
@@ -72,7 +71,6 @@ class DataConverter
             $values = [];
 
             foreach ($row as $value) {
-
                 if (is_numeric($value)) {
                     $values[] = $value;
                 } else {

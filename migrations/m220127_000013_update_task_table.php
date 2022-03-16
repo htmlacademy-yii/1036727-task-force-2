@@ -14,7 +14,7 @@ class m220127_000013_update_task_table extends Migration
     {
         $this->renameColumn('{{task}}', 'address', 'location');
     }
-    
+
     /**
      * {@inheritdoc}
      */

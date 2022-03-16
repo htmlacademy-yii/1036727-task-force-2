@@ -9,8 +9,8 @@ use app\services\UserService;
 
 class ActRespond implements TaskActionInterface
 {
-    const NAME = 'Откликнуться';
-    const INNER_NAME = 'act_respond';
+    public const NAME = 'Откликнуться';
+    public const INNER_NAME = 'act_respond';
 
     /**
      * {@inheritdoc}

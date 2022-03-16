@@ -4,12 +4,12 @@ namespace anatolev\helpers;
 
 class FormatHelper
 {
-    const SECONDS_PER_MINUTE = 60;
-    const SECONDS_PER_HOUR = self::SECONDS_PER_MINUTE * 60;
-    const SECONDS_PER_DAY = self::SECONDS_PER_HOUR * 24;
-    const SECONDS_PER_WEEK = self::SECONDS_PER_DAY * 7;
-    const SECONDS_PER_MONTH = self::SECONDS_PER_DAY * 30;
-    const SECONDS_PER_YEAR = self::SECONDS_PER_MONTH * 12;
+    public const SECONDS_PER_MINUTE = 60;
+    public const SECONDS_PER_HOUR = self::SECONDS_PER_MINUTE * 60;
+    public const SECONDS_PER_DAY = self::SECONDS_PER_HOUR * 24;
+    public const SECONDS_PER_WEEK = self::SECONDS_PER_DAY * 7;
+    public const SECONDS_PER_MONTH = self::SECONDS_PER_DAY * 30;
+    public const SECONDS_PER_YEAR = self::SECONDS_PER_MONTH * 12;
 
     /**
      * @param string $date

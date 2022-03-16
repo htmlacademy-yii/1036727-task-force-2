@@ -14,7 +14,7 @@ class m220202_000016_update_task_table extends Migration
     {
         $this->alterColumn('{{task}}', 'expire', $this->date()->null());
     }
-    
+
     /**
      * {@inheritdoc}
      */

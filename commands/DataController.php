@@ -11,7 +11,7 @@ use anatolev\utils\DataConverter;
 
 class DataController extends Controller
 {
-    const CSV_MIME_TYPES = ['application/csv', 'text/csv'];
+    public const CSV_MIME_TYPES = ['application/csv', 'text/csv'];
 
     /**
      * @return int Exit code

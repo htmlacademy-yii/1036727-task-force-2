@@ -23,7 +23,8 @@ class SecurityForm extends Model
     public function rules()
     {
         return [
-            [['old_password'], 'required', 'when' => $this->getOldPasswdCallback(), 'whenClient' => "() => $('securityform-old_password);"],
+            [['old_password'], 'required', 'when' => $this->getOldPasswdCallback(),
+                'whenClient' => "() => $('securityform-old_password);"],
             [['old_password'], 'string', 'length' => [6, 255], 'when' => $this->getOldPasswdCallback()],
             [['old_password'], 'validatePassword', 'when' => $this->getOldPasswdCallback()],
 
@@ -31,7 +32,8 @@ class SecurityForm extends Model
             [['new_password'], 'string', 'length' => [6, 255], 'when' => $this->getNewPasswdCallback()],
 
             [['new_password_repeat'], 'required', 'when' => $this->getNewPasswdCallback()],
-            [['new_password_repeat'], 'compare', 'compareAttribute' => 'new_password', 'when' => $this->getNewPasswdCallback()],
+            [['new_password_repeat'], 'compare', 'compareAttribute' => 'new_password',
+                'when' => $this->getNewPasswdCallback()],
 
             [['private_contacts'], 'boolean']
         ];

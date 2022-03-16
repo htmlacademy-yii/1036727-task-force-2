@@ -15,7 +15,7 @@ class m220202_000015_update_review_table extends Migration
         $this->renameColumn('{{review}}', 'rate', 'rating');
         $this->alterColumn('{{review}}', 'task_id', $this->integer()->unsigned()->notNull()->unique());
     }
-    
+
     /**
      * {@inheritdoc}
      */

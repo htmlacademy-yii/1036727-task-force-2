@@ -8,7 +8,7 @@ use app\models\TaskFile;
 
 class FileHelper
 {
-    const BYTE_PER_KILOBYTE = 1024;
+    public const BYTE_PER_KILOBYTE = 1024;
 
     /**
      * @param array $files
