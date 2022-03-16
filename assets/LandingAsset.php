@@ -10,10 +10,10 @@ class LandingAsset extends AssetBundle
 
     public $css = [
         'css/normalize.css',
-        'css/landing.css'
+        'css/landing.css',
     ];
 
     public $js = [
-        'js/landing.js'
+        'js/landing.js',
     ];
 }

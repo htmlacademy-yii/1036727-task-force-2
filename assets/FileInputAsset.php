@@ -9,9 +9,6 @@ class FileInputAsset extends AssetBundle
 {
     public $basePath = '@webroot';
 
-    public $css = [
-    ];
-
     public $js = [
         'js/file-input.js',
     ];

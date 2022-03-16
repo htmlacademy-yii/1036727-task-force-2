@@ -11,7 +11,7 @@ class ModalFormAsset extends AssetBundle
     public $basePath = '@webroot';
 
     public $css = [
-        'css/modal-form.css'
+        'css/modal-form.css',
     ];
 
     public $js = [
