@@ -39,8 +39,8 @@ $this->params['avatar'] = $avatar = UserHelper::getAvatar($user);
     </div>
 
     <div class="half-wrapper">
-        <?= $form->field($model, 'contact_phone')->input('tel') ?>
-        <?= $form->field($model, 'contact_tg')->textInput() ?>
+        <?= $form->field($model, 'contact_phone', ['enableAjaxValidation' => true])->input('tel') ?>
+        <?= $form->field($model, 'contact_tg', ['enableAjaxValidation' => true])->textInput() ?>
     </div>
 
     <?= $form->field($model, 'about')->textarea() ?>
