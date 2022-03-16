@@ -19,7 +19,6 @@ class m211213_000011_create_reply_table extends Migration
             'comment' => $this->string(255)->null(),
             'task_id' => $this->integer()->unsigned()->notNull(),
             'author_id' => $this->integer()->unsigned()->notNull()
-            // 'user_id' => $this->integer()->unsigned()->notNull()
         ]);
 
         // add foreign key for table `{{%task}}`
@@ -41,8 +40,6 @@ class m211213_000011_create_reply_table extends Migration
             'id',
             'CASCADE'
         );
-
-        // $this->execute('ALTER TABLE reply ADD UNIQUE INDEX task_author (task_id, author_id)');
     }
 
     /**
