@@ -35,7 +35,6 @@ class UserService
         if ($auth = (new AuthService())->findOne($source, $sourceId)) {
             $this->login($auth->user->email);
         } elseif ($email = ArrayHelper::getValue($attributes, 'email')) {
-
             if ($user = $this->findByEmail($email)) {
                 (new AuthService())->create($user->id, $source, $sourceId);
                 $this->login($email);
@@ -77,7 +76,7 @@ class UserService
             $user->attributes = $model->attributes;
             $user->password = $hash;
             $user->save();
-            
+
             $auth = Yii::$app->authManager;
             $userRole = $user->is_executor
                 ? $auth->getRole('executor')
@@ -92,7 +91,6 @@ class UserService
             $transaction->commit();
 
             return $user;
-
         } catch (\Throwable $e) {
             $transaction->rollBack();
         }

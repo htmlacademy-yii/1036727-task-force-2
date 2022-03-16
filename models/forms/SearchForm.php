@@ -12,7 +12,7 @@ class SearchForm extends Model
     public $no_response;
     public $period_value;
 
-    const PERIOD_VALUES = [
+    public const PERIOD_VALUES = [
         '0' => 'Без ограничений',
         '1' => '1 час',
         '12' => '12 часов',
@@ -22,7 +22,8 @@ class SearchForm extends Model
     public function rules(): array
     {
         return [
-            [['categories'], 'exist', 'targetClass' => Category::class, 'targetAttribute' => 'id', 'allowArray' => true],
+            [['categories'], 'exist', 'targetClass' => Category::class, 'targetAttribute' => 'id',
+                'allowArray' => true],
             [['isTelework', 'no_response'], 'boolean'],
             [['period_value'], 'in', 'range' => array_keys(self::PERIOD_VALUES)]
         ];

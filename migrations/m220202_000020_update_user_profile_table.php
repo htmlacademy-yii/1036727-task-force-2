@@ -22,7 +22,7 @@ class m220202_000020_update_user_profile_table extends Migration
         $this->dropColumn('{{user_profile}}', 'notice_review');
         $this->dropColumn('{{user_profile}}', 'show_profile');
     }
-    
+
     /**
      * {@inheritdoc}
      */

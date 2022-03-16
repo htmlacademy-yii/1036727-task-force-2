@@ -8,8 +8,8 @@ use anatolev\service\Task;
 
 class ActRefuse implements TaskActionInterface
 {
-    const NAME = 'Отказаться';
-    const INNER_NAME = 'act_refuse';
+    public const NAME = 'Отказаться';
+    public const INNER_NAME = 'act_refuse';
 
     /**
      * {@inheritdoc}

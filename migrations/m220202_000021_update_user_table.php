@@ -14,7 +14,7 @@ class m220202_000021_update_user_table extends Migration
     {
         $this->alterColumn('{{user}}', 'password', $this->string(255)->null());
     }
-    
+
     /**
      * {@inheritdoc}
      */

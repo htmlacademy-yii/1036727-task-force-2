@@ -8,8 +8,8 @@ use anatolev\service\Task;
 
 class ActDone implements TaskActionInterface
 {
-    const NAME = 'Выполнено';
-    const INNER_NAME = 'act_complete';
+    public const NAME = 'Выполнено';
+    public const INNER_NAME = 'act_complete';
 
     /**
      * {@inheritdoc}

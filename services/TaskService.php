@@ -35,7 +35,7 @@ class TaskService
      */
     public function create(AddTaskForm $model): int
     {
-        $task = new Task;
+        $task = new Task();
 
         $task->attributes = $model->attributes;
         $task->status_id = Task2::STATUS_NEW_ID;

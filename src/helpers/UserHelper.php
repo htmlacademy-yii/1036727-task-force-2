@@ -10,7 +10,7 @@ use anatolev\helpers\FormatHelper;
 
 class UserHelper extends Helper
 {
-    const DEFAULT_AVATAR_COUNT = 5;
+    public const DEFAULT_AVATAR_COUNT = 5;
 
     /**
      * @param User $user

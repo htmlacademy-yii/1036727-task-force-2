@@ -7,7 +7,7 @@ use yii\web\AssetBundle;
 
 class ModalFormAsset extends AssetBundle
 {
-    const YANDEX_MAPS_API_URL = 'https://api-maps.yandex.ru/2.1';
+    public const YANDEX_MAPS_API_URL = 'https://api-maps.yandex.ru/2.1';
     public $basePath = '@webroot';
 
     public $css = [

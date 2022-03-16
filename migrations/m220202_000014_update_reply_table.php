@@ -16,7 +16,7 @@ class m220202_000014_update_reply_table extends Migration
         $this->renameColumn('{{reply}}', 'price', 'payment');
         $this->renameColumn('{{reply}}', 'author_id', 'user_id');
     }
-    
+
     /**
      * {@inheritdoc}
      */

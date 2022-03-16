@@ -9,17 +9,18 @@ use app\services\TaskService;
 
 class Task
 {
-    const STATUS_NEW_ID = 1;
-    const STATUS_CANCEL_ID = 2;
-    const STATUS_WORK_ID = 3;
-    const STATUS_DONE_ID = 4;
-    const STATUS_FAILED_ID = 5;
+    public const STATUS_NEW_ID = 1;
+    public const STATUS_CANCEL_ID = 2;
+    public const STATUS_WORK_ID = 3;
+    public const STATUS_DONE_ID = 4;
+    public const STATUS_FAILED_ID = 5;
 
     private array $actions = [];
 
     public function __construct(
         private int $taskId
-    ) {}
+    ) {
+    }
 
     /**
      * @return array
@@ -61,7 +62,6 @@ class Task
         $availableAction = null;
 
         foreach ($array[$statusId] ?? [] as $action) {
-
             if ($action->checkUserRights($this->taskId, Yii::$app->user->id)) {
                 $availableAction = $action;
             }

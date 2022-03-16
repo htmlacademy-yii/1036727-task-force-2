@@ -13,7 +13,7 @@ use GuzzleHttp\Psr7\Request;
 
 class GeocoderApiClient extends Component
 {
-    const BASE_URL = 'https://geocode-maps.yandex.ru/1.x/';
+    public const BASE_URL = 'https://geocode-maps.yandex.ru/1.x/';
 
     /**
      * @param string $geocode
@@ -59,7 +59,9 @@ class GeocoderApiClient extends Component
 
                 $pos = !$geoObject?->Point?->pos ?: explode(' ', $geoObject->Point->pos);
                 $text = $geocoderMetaData?->text;
-                $city = array_values(array_filter($components, fn($city) => $city?->kind === 'locality'))[0]->name ?? null;
+                $city = array_values(array_filter($components, function ($city) {
+                    return $city?->kind === 'locality';
+                }))[0]->name ?? null;
 
                 if (isset($pos, $text, $city)) {
                     $result[$i] = [
