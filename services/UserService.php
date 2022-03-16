@@ -325,8 +325,9 @@ class UserService
             'executor_id' => $userId
         ];
 
+        $myProfile = $userId === Yii::$app->user->id;
         $isExecutor = Task::find()->where($conditions)->exists();
 
-        return !$privateContacts || $isExecutor;
+        return !$privateContacts || $isExecutor || $myProfile;
     }
 }
