@@ -325,7 +325,6 @@ class UserService
             'executor_id' => $userId
         ];
 
-        $myProfile = $userId === Yii::$app->user->id;
         $isExecutor = Task::find()->where($conditions)->exists();
         $myProfile = $userId === Yii::$app->user->id;
 
