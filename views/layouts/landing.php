@@ -24,9 +24,9 @@ LandingAsset::register($this);
 <body class="landing">
 <?php $this->beginBody() ?>
 
-    <div class="table-layout">
+<div class="table-layout">
 
-        <?= $this->render('_landing-header') ?>
+    <?= $this->render('_landing-header') ?>
 
         <main>
             <?= Alert::widget() ?>
