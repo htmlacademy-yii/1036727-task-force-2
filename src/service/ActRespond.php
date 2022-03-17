@@ -34,7 +34,7 @@ class ActRespond implements TaskActionInterface
     public function checkUserRights(int $taskId, int $userId): bool
     {
         $statusId = (new TaskService())->getStatusId($taskId);
-        $isExecutor = (new UserService())->isExecutor($userId);
+        $isExecutor = Yii::$app->user->can('executor');
         $replyExist = (new ReplyService())->exist($taskId, $userId);
 
         return !$replyExist && $statusId === Task::STATUS_NEW_ID && $isExecutor;

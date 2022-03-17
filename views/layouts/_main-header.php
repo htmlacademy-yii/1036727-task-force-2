@@ -27,7 +27,7 @@ $user = $this->context->user;
                 ];
 
                 $menuItem = ['label' => 'Создать задание', 'url' => ['tasks/create']];
-                !$user->is_executor && array_splice($menuItems, 2, 0, array($menuItem));
+                Yii::$app->user->can('customer') && array_splice($menuItems, 2, 0, array($menuItem));
                 ?>
 
                 <?= Menu::widget([
@@ -46,7 +46,7 @@ $user = $this->context->user;
 
     <?php if (!Yii::$app->user->isGuest): ?>
         <div class="user-block">
-            <a href="<?= $user->is_executor ? Url::to(['profile/view', 'userId' => $user->id]) : '#' ?>">
+            <a href="<?= Yii::$app->user->can('executor') ? Url::to(['profile/view', 'userId' => $user->id]) : '#' ?>">
                 <img
                     class="user-photo"
                     src="<?= $this->params['avatar'] ?? UserHelper::getAvatar($user) ?>"

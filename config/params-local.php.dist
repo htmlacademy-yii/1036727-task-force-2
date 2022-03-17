@@ -4,4 +4,7 @@ return [
     'geocoderApiKey' => '',
     'vkontakte_client_id' => '',
     'vkontakte_client_secret' => '',
+    'redis_hostname' => '',
+    'redis_port' => 1234,
+    'redis_database' => 0,
 ];

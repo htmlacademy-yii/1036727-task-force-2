@@ -21,6 +21,8 @@ use anatolev\service\Task as Task2;
 
 class UserService
 {
+    public const RBAC_ERROR_MESSAGE = 'Непредвиденная ошибка';
+
     /**
      * @param ClientInterface $client
      * @return void
@@ -65,6 +67,15 @@ class UserService
      */
     public function create(SignupForm $model): ?User
     {
+        $auth = Yii::$app->authManager;
+        $executor = $auth->getRole('executor');
+        $customer = $auth->getRole('customer');
+
+        if (!isset($executor, $customer)) {
+            Yii::$app->session->setFlash('error', self::RBAC_ERROR_MESSAGE);
+            Yii::error(self::RBAC_ERROR_MESSAGE);
+        }
+
         $hash = null;
         if (isset($model->password)) {
             $hash = Yii::$app->getSecurity()->generatePasswordHash($model->password);
@@ -77,10 +88,9 @@ class UserService
             $user->password = $hash;
             $user->save();
 
-            $auth = Yii::$app->authManager;
             $userRole = $user->is_executor
-                ? $auth->getRole('executor')
-                : $auth->getRole('customer');
+                ? $executor
+                : $customer;
 
             $auth->assign($userRole, $user->id);
 
