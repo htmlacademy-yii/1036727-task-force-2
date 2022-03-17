@@ -15,7 +15,6 @@ use app\models\forms\CompleteForm;
 use app\models\forms\ResponseForm;
 use app\services\CategoryService;
 use app\services\TaskService;
-use app\services\UserService;
 use anatolev\service\ActCancel;
 use anatolev\service\ActDone;
 use anatolev\service\ActRefuse;
@@ -128,7 +127,7 @@ class TasksController extends SecuredController
         $userId = Yii::$app->user->id;
         $filter = Yii::$app->request->get('filter');
 
-        if ((new UserService())->isExecutor($userId)) {
+        if (Yii::$app->user->can('executor')) {
             $query = (new TaskService())->getExecutorTasks($userId, $filter);
         } else {
             $query = (new TaskService())->getCustomerTasks($userId, $filter);
