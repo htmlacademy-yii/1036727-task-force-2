@@ -6,6 +6,7 @@
 use yii\helpers\Html;
 use app\assets\LandingAsset;
 use app\models\forms\LoginForm;
+use app\widgets\Alert;
 
 LandingAsset::register($this);
 
@@ -23,11 +24,12 @@ LandingAsset::register($this);
 <body class="landing">
 <?php $this->beginBody() ?>
 
-    <div class="table-layout">
+<div class="table-layout">
 
-        <?= $this->render('_landing-header') ?>
+    <?= $this->render('_landing-header') ?>
 
         <main>
+            <?= Alert::widget() ?>
             <?= $content ?>
         </main>
 
