@@ -22,9 +22,9 @@ $config = [
         ],
         'redis' => [
             'class' => 'yii\redis\Connection',
-            'hostname' => 'localhost',
-            'port' => 6379,
-            'database' => 0,
+            'hostname' => $params['redis_hostname'],
+            'port' => $params['redis_port'],
+            'database' => $params['redis_database'],
         ],
         'authManager' => [
             'class' => 'yii\rbac\DbManager',
