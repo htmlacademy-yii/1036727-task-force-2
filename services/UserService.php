@@ -153,30 +153,6 @@ class UserService
     }
 
     /**
-     * @param int $userId
-     * @return bool
-     */
-    public function isCustomer(int $userId): bool
-    {
-        $query = User::find()
-            ->where(['id' => $userId, 'is_executor' => 0]);
-
-        return $query->exists();
-    }
-
-    /**
-     * @param int $userId
-     * @return bool
-     */
-    public function isExecutor(int $userId): bool
-    {
-        $query = User::find()
-            ->where(['id' => $userId, 'is_executor' => 1]);
-
-        return $query->exists();
-    }
-
-    /**
      * @param string $email
      * @return void
      */
