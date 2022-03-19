@@ -15,7 +15,7 @@ class LandingController extends Controller
         return [
             'access' => [
                 'class' => AccessControl::class,
-                'denyCallback' => function ($rule, $action) {
+                'denyCallback' => function () {
                     $this->redirect(['tasks/index']);
                 },
                 'rules' => [

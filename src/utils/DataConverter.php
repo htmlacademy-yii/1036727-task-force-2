@@ -95,8 +95,6 @@ class DataConverter
 
     private function getNextLine(): ?iterable
     {
-        $result = null;
-
         while (!$this->input_file->eof()) {
             yield $this->input_file->fgetcsv();
         }
